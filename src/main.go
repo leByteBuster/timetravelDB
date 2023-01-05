@@ -37,22 +37,22 @@ var adjacency_list []map[int]int
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	var client_interface map[string]interface{} = map[string]interface{}{
-		"IP":       "string",
-		"firewall": "boolean",
-		"root":     "string",
-		"Risc":     "int",
+		"IP": "string",
+		//"firewall": "boolean",
+		//"root":     "string",
+		"Risc": "int",
 		"components": map[string]interface{}{
 			"gpu": "string",
-			"cpu": "string",
+			//"cpu": "string",
 			"ram": "string",
 		},
 	}
 
 	var server_interface map[string]interface{} = map[string]interface{}{
-		"IP":       "string",
-		"firewall": "boolean",
-		"root":     "string",
-		"Risc":     "int",
+		"IP": "string",
+		//"firewall": "boolean",
+		//"root":     "string",
+		"Risc": "int",
 		"components": map[string]interface{}{
 			"cpu": "string",
 			"ram": "string",
@@ -69,15 +69,15 @@ func main() {
 	}
 
 	var generic_traffic_interface map[string]interface{} = map[string]interface{}{
-		"TCP/UDP":   "string",
-		"IPv4/IPv6": "string",
-		"Risc":      "int",
-		"Count":     "int",
+		//"TCP/UDP":   "string",
+		//"IPv4/IPv6": "string",
+		"Risc":  "int",
+		"Count": "int",
 	}
 
-	server_nodes := generatePropertyNodes(5, "Server", server_interface)
-	printer_nodes := generatePropertyNodes(10, "Server", printer_interface)
-	client_nodes := generatePropertyNodes(100, "Server", client_interface)
+	server_nodes := generatePropertyNodes(1, "Server", server_interface)
+	printer_nodes := generatePropertyNodes(3, "Server", printer_interface)
+	client_nodes := generatePropertyNodes(3, "Server", client_interface)
 
 	graph_nodes = append(server_nodes, printer_nodes...)
 	graph_nodes = append(graph_nodes, client_nodes...)
@@ -85,11 +85,11 @@ func main() {
 	fmt.Printf("Servers: %v\n, Printers: %v\n, Clients: %v\n", server_nodes, printer_nodes, client_nodes)
 
 	// generate 10 "Traffic" relations between server nodes. Generate properties from traffic_property_struct for each
-	server_relation_objects := generateIntraRelations(10, "Traffic", server_nodes, generic_traffic_interface)
+	server_relation_objects := generateIntraRelations(2, "Traffic", server_nodes, generic_traffic_interface)
 	// generate 10 "Traffic" relations between server nodes and client_nodes. Generate properties from traffic_property_struct for each
-	server_client_relation_objects := generateInterRelations(10, "Traffic", server_nodes, client_nodes, generic_traffic_interface)
+	server_client_relation_objects := generateInterRelations(3, "Traffic", server_nodes, client_nodes, generic_traffic_interface)
 	// generate 10 "Traffic" relations between server nodes and printer_nodes. Generate properties from traffic_property_struct for each
-	server_printer_relation_objects := generateInterRelations(10, "Traffic", server_nodes, printer_nodes, generic_traffic_interface)
+	server_printer_relation_objects := generateInterRelations(3, "Traffic", server_nodes, printer_nodes, generic_traffic_interface)
 
 	graph_edges = append(server_relation_objects, server_client_relation_objects...)
 	graph_edges = append(graph_edges, server_printer_relation_objects...)
