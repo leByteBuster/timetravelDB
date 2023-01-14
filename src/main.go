@@ -13,10 +13,15 @@ import (
 	"time"
 )
 
-type TmpPropVal[T any] struct {
-	Start string
-	End   string
-	Value T
+type TmpPropVal struct {
+	Start time.Time
+	End   time.Time
+	Value interface{}
+}
+
+type PropFeatures struct {
+	DataType string
+	Quantity uint
 }
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -37,47 +42,63 @@ var adjacency_list []map[int]int
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	var client_interface map[string]interface{} = map[string]interface{}{
-		"IP": "string",
-		//"firewall": "boolean",
-		//"root":     "string",
-		"Risc": "int",
+		// "IP":       PropFeatures{"string", 5},
+		"IP":       PropFeatures{"string", 2},
+		"firewall": PropFeatures{"boolean", 1},
+		"root":     PropFeatures{"string", 2},
+		//"Risc":     PropFeatures{"int", 300},
+		"Risc": PropFeatures{"int", 3},
 		"components": map[string]interface{}{
-			"gpu": "string",
-			//"cpu": "string",
-			"ram": "string",
+			"gpu": PropFeatures{"string", 1},
+			"cpu": PropFeatures{"string", 1},
+			"ram": PropFeatures{"string", 2},
 		},
 	}
 
 	var server_interface map[string]interface{} = map[string]interface{}{
-		"IP": "string",
-		//"firewall": "boolean",
-		//"root":     "string",
-		"Risc": "int",
+		"IP":       PropFeatures{"string", 1},
+		"firewall": PropFeatures{"boolean", 1},
+		"root":     PropFeatures{"string", 2},
+		// "Risc": PropFeatures{"int", 800},
+		"Risc": PropFeatures{"int", 4},
 		"components": map[string]interface{}{
-			"cpu": "string",
-			"ram": "string",
+			"cpu": PropFeatures{"string", 1},
+			"ram": PropFeatures{"string", 1},
 		},
 	}
 
 	var printer_interface map[string]interface{} = map[string]interface{}{
-		"IP":   "string",
-		"root": "string",
-		"Risc": "int",
+		"IP":   PropFeatures{"string", 1},
+		"root": PropFeatures{"string", 1},
+		//"Risc": PropFeatures{"int", 100},
+		"Risc": PropFeatures{"int", 2},
 		"components": map[string]interface{}{
-			"wifi": "string",
+			"wifi": PropFeatures{"string", 1},
 		},
 	}
 
 	var generic_traffic_interface map[string]interface{} = map[string]interface{}{
-		//"TCP/UDP":   "string",
-		//"IPv4/IPv6": "string",
-		"Risc":  "int",
-		"Count": "int",
+		//"TCP/UDP":   PropFeatures{"string", 200},
+		"TCP/UDP": PropFeatures{"string", 2},
+		//"IPv4/IPv6": PropFeatures{"string", 200},
+		"IPv4/IPv6": PropFeatures{"string", 2},
+		//"Risc":      PropFeatures{"int", 1000},
+		"Risc": PropFeatures{"int", 1},
+		//"Count":     PropFeatures{"int", 10000},
+		"Count": PropFeatures{"int", 1},
 	}
 
-	server_nodes := generatePropertyNodes(1, "Server", server_interface)
-	printer_nodes := generatePropertyNodes(3, "Server", printer_interface)
-	client_nodes := generatePropertyNodes(3, "Server", client_interface)
+	// TODO: parse correctly
+	begin, err := time.Parse("2006-01-02 15:04:05.0000000 -0700 MST", "2022-12-22 15:33:13.0000005 +0000 UTC")
+	end, err := time.Parse("2006-01-02 15:04:05.0000000 -0700 MST", "2023-01-12 15:33:13.0000005 +0000 UTC")
+
+	if err != nil {
+		fmt.Printf("couldn't parse time: %v", err)
+	}
+
+	server_nodes := generatePropertyNodes(1, "Server", server_interface, begin, end)
+	printer_nodes := generatePropertyNodes(3, "Server", printer_interface, begin, end)
+	client_nodes := generatePropertyNodes(3, "Server", client_interface, begin, end)
 
 	graph_nodes = append(server_nodes, printer_nodes...)
 	graph_nodes = append(graph_nodes, client_nodes...)
@@ -143,17 +164,17 @@ func exportGraphAsJson(graph_nodes []map[string]interface{}, graph_edges []map[s
 	}
 }
 
-func generatePropertyNodes(numberNodes int, nodelabel string, property_fields map[string]interface{}) []map[string]interface{} {
+func generatePropertyNodes(numberNodes int, nodelabel string, property_fields map[string]interface{}, begin time.Time, end time.Time) []map[string]interface{} {
 	nodes := []map[string]interface{}{}
 	for i := 0; i < numberNodes; i++ {
 		node := make(map[string]interface{})
 		node["nodeid"] = current_node_id
 		node["label"] = nodelabel
-		node["start"] = randomTimestamp().String()
-		node["end"] = randomTimestamp().String() // (in the range 1 - 1000)
+		node["start"] = begin
+		node["end"] = end
 		properties := make(map[string]interface{})
 		for key, value := range property_fields {
-			properties = setProperty(key, value, properties)
+			properties = setProperty(key, value, properties, begin, end)
 		}
 		node["properties"] = properties
 		nodes = append(nodes, node)
@@ -177,14 +198,17 @@ func generateIntraRelations(numberRelations int, relation_label string, nodes []
 		relation["relationid"] = current_relation_id
 		relation["label"] = relation_label
 		// TODO: time frame condition for timestamps (between the time of the nodes)
-		relation["start"] = randomTimestamp().String()
-		relation["end"] = randomTimestamp().String() // (in the range 1 - 1000)
 		random_from_index := rand.Intn(len(nodes))
 		from_node := nodes[random_from_index]
 		random_to_index := rand.Intn(len(nodes))
 		to_node := nodes[random_to_index]
 		node_id_from := from_node["nodeid"].(int)
 		node_id_to := to_node["nodeid"].(int)
+
+		begin, end := minTimeBoundaries(from_node, to_node)
+
+		relation["start"] = begin
+		relation["end"] = end
 		relation["from"] = node_id_from
 		relation["to"] = node_id_to
 
@@ -193,13 +217,38 @@ func generateIntraRelations(numberRelations int, relation_label string, nodes []
 
 		properties := make(map[string]interface{})
 		for key, value := range property_fields {
-			properties = setProperty(key, value, properties)
+			properties = setProperty(key, value, properties, begin, end)
 		}
 		relation["properties"] = properties
 		relations = append(relations, relation)
 		current_relation_id++
 	}
 	return relations
+}
+
+// returns the biggest of the two start values and the lowest of the two end values
+// so a relation can only exist when both nodes exist
+func minTimeBoundaries(from_node, to_node map[string]interface{}) (time.Time, time.Time) {
+	from_start := from_node["start"].(time.Time)
+	to_start := to_node["start"].(time.Time)
+	from_end := from_node["end"].(time.Time)
+	to_end := to_node["end"].(time.Time)
+
+	var start, end time.Time
+
+	if from_start.After(to_start) {
+		start = from_start
+	} else {
+		start = to_start
+	}
+
+	if from_end.Before(to_end) {
+		end = from_end
+	} else {
+		end = to_end
+	}
+
+	return start, end
 }
 
 // This function generates >numberRelations< random relations between the passed from_nodes and to_nodes. It sets reandom values for the passed property_fields.
@@ -217,15 +266,18 @@ func generateInterRelations(numberRelations int, relation_label string, from_nod
 		// set all the obligatory fields
 		relation["relationid"] = current_relation_id
 		relation["label"] = relation_label
-		// TODO: time frame condition for timestamps (between the time of the nodes)
-		relation["start"] = randomTimestamp().String()
-		relation["end"] = randomTimestamp().String() // (in the range 1 - 1000)
+
 		random_from_index := rand.Intn(len(from_nodes))
 		from_node := from_nodes[random_from_index]
 		random_to_index := rand.Intn(len(to_nodes))
 		to_node := to_nodes[random_to_index]
 		node_id_from := from_node["nodeid"].(int)
 		node_id_to := to_node["nodeid"].(int)
+
+		begin, end := minTimeBoundaries(from_node, to_node)
+
+		relation["start"] = begin
+		relation["end"] = end
 		relation["from"] = node_id_from
 		relation["to"] = node_id_to
 
@@ -235,7 +287,7 @@ func generateInterRelations(numberRelations int, relation_label string, from_nod
 		// Generate all the properties of <property_fields>
 		var properties = make(map[string]interface{})
 		for key, value := range property_fields {
-			properties = setProperty(key, value, properties)
+			properties = setProperty(key, value, properties, begin, end)
 		}
 		relation["properties"] = properties
 		relations = append(relations, relation)
@@ -247,7 +299,7 @@ func generateInterRelations(numberRelations int, relation_label string, from_nod
 func randomTimestamp() time.Time {
 	randomTime := rand.Int63n(time.Now().Unix()-94608000) + 94608000
 
-	randomNow := time.Unix(randomTime, 0)
+	randomNow := time.Unix(randomTime, 500)
 
 	return randomNow
 }
@@ -260,34 +312,56 @@ func randSeq(n int) string {
 	return string(b)
 }
 
-// assign a random value to a property field depending on the type. Type may be string integer or an object
-// containing properties itself. In this case, every field of the object is assigned a value recursively.
+// assign a random value to a property field depending on the type. Type may be a struct which consists of
+// a struct PropFeatures which contains the DataType field which describes the data type in the form of a string
+// : "boolean", "string", "integer" and the field Quantity which holds an integer which defines the number of values.
+// Or it contains an object containing properties itself. In this case, every field of the object is assigned a
+// value recursively.
 // TODO:
-// if a TmpPropVal is returned it hast to be added to the array of values. If a [string]map{interface} is returned it has
+// if a TmpPropVal is returned it has to be added to the array of values. If a [string]map{interface} is returned it has
 // to be the value itself. Either differentiate by the returned value everywhere where setField is called or find another
 // solution
-func setField(fieldtype any) (any, any) {
-	if str, ok := fieldtype.(string); ok {
-		if str == "string" {
-			return nil, TmpPropVal[string]{
-				Start: randomTimestamp().String(),
-				End:   randomTimestamp().String(),
-				Value: randSeq(rand.Intn(10-3) + 3),
+func setField(fieldtype interface{}, parentBegin, parentEnd time.Time) (interface{}, []interface{}) {
+	if features, ok := fieldtype.(PropFeatures); ok {
+		if features.DataType == "string" {
+			arr := make([]interface{}, 0)
+			var lastTimestampEnd time.Time = parentBegin
+			for i := uint(0); i < features.Quantity; i++ {
+				begin, end := generateTimeseriesTimestamp(lastTimestampEnd, parentBegin, parentEnd, features.Quantity)
+				arr = append(arr, TmpPropVal{
+					Start: begin,
+					End:   end,
+					Value: randSeq(rand.Intn(10-3) + 3),
+				})
+				lastTimestampEnd = end
 			}
-		}
-		if str == "int" {
-			return nil, TmpPropVal[int]{
-				Start: randomTimestamp().String(),
-				End:   randomTimestamp().String(),
-				Value: rand.Intn(100),
+			return nil, arr
+		} else if features.DataType == "int" {
+			arr := make([]interface{}, 0)
+			var lastTimestampEnd time.Time = parentBegin
+			for i := uint(0); i < features.Quantity; i++ {
+				begin, end := generateTimeseriesTimestamp(lastTimestampEnd, parentBegin, parentEnd, features.Quantity)
+				arr = append(arr, TmpPropVal{
+					Start: begin,
+					End:   end,
+					Value: rand.Intn(100),
+				})
+				lastTimestampEnd = end
 			}
-		}
-		if str == "boolean" {
-			return nil, TmpPropVal[bool]{
-				Start: randomTimestamp().String(),
-				End:   randomTimestamp().String(),
-				Value: false,
+			return nil, arr
+		} else if features.DataType == "boolean" {
+			arr := make([]interface{}, 0)
+			var lastTimestampEnd time.Time = parentBegin
+			for i := uint(0); i < features.Quantity; i++ {
+				begin, end := generateTimeseriesTimestamp(lastTimestampEnd, parentBegin, parentEnd, features.Quantity)
+				arr = append(arr, TmpPropVal{
+					Start: begin,
+					End:   end,
+					Value: false,
+				})
+				lastTimestampEnd = end
 			}
+			return nil, arr
 		}
 	}
 
@@ -298,22 +372,55 @@ func setField(fieldtype any) (any, any) {
 	// set nested properties
 	var nested_properties = make(map[string]interface{})
 	for key, val := range property_val {
-		nested_properties = setProperty(key, val, nested_properties)
+		nested_properties = setProperty(key, val, nested_properties, parentBegin, parentEnd)
 	}
 	return nested_properties, nil
 }
 
-func setProperty(key string, val any, nested_properties map[string]interface{}) map[string]interface{} {
-	nested_val, array_val := setField(val)
+func generateTimeseriesTimestamp(lastTimestampEnd, parentBegin, parentEnd time.Time, numberTimestamps uint) (time.Time, time.Time) {
+	var start, end time.Time
+	if lastTimestampEnd.IsZero() {
+		start = parentBegin
+	} else {
+		start = lastTimestampEnd
+	}
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	duration := (parentEnd.Sub(parentBegin)) / time.Duration(numberTimestamps)
+	fmt.Printf("Max duration: %v", duration)
+	randDuration := time.Duration(r.Int63n(int64(duration)))
+	if randDuration == time.Duration(0) {
+		randDuration = time.Duration(int64(time.Millisecond))
+	}
+	fmt.Printf("Rand duration: %v", duration)
+	end = start.Add(randDuration)
+	if end.After(parentEnd) {
+		end = parentEnd
+	}
+	return start, end
+}
+
+func setProperty(key string, val interface{}, nested_properties map[string]interface{}, begin, end time.Time) map[string]interface{} {
+	// nested_val is defined if the value is nested. Array_val is defined if the val holds an array of actual values.
+	// This means there is no further level of nesting but The time-series of values has been found.
+	// In the case of nested_value, it is set on all nested levels at this point already becauese setField()
+	// contains a recursive call on the setProperty() function.
+	nested_val, array_val := setField(val, begin, end)
 	if nested_val != nil {
 		nested_properties[key] = nested_val
 	} else {
+		// if value for key doesnt exist yet create array and add value
 		if nested_properties[key] == nil {
-			nested_properties[key] = [...]any{array_val}
+			nested_properties[key] = array_val
+			// if a value for the key exists already, add it to the array
 		} else {
 			switch x := nested_properties[key].(type) {
 			case []interface{}:
-				nested_properties[key] = append(x, array_val)
+				fmt.Printf("\narr_val: %v\n", array_val)
+				fmt.Printf("\nnested_properties: %v\n", nested_properties)
+				nested_properties[key] = append(x, array_val...)
+			default:
+				err := fmt.Errorf("Unexpected type of value")
+				panic(err)
 			}
 		}
 	}
