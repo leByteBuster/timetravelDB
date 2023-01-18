@@ -1,0 +1,4 @@
+github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
+github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/neo4j/neo4j-go-driver/v5 v5.3.0 h1:lHar0TrufgbFWo8uYoVVBDemYlPVxw3+sRJOxPmf1uE=
+github.com/neo4j/neo4j-go-driver/v5 v5.3.0/go.mod h1:Vff8OwT7QpLm7L2yYr85XNWe9Rbqlbeb9asNXJTHO4k=
