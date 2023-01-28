@@ -1,3 +1,15 @@
+
+!!!! Need to merge the READMEs
+
+get back brocken docker container (create new with old database):
+    docker run \
+    --publish=7474:7474 --publish=7687:7687 \
+    --volume=$HOME/neo4j/data:/data \
+    --volume=$HOME/neo4j/logs:/logs \
+    neo4j:latest
+
+
+
 Property structure out of data generator : 
 node/edge {
   id: _

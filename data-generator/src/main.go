@@ -78,10 +78,10 @@ func main() {
 	}
 
 	var generic_traffic_interface map[string]interface{} = map[string]interface{}{
-		//"TCP/UDP":   PropFeatures{"string", 200},
-		"TCP/UDP": PropFeatures{"string", 2},
-		//"IPv4/IPv6": PropFeatures{"string", 200},
-		"IPv4/IPv6": PropFeatures{"string", 2},
+		//"TCPUDP":   PropFeatures{"string", 200},
+		"TCPUDP": PropFeatures{"string", 2},
+		//"IPv4IPv6": PropFeatures{"string", 200},
+		"IPv4IPv6": PropFeatures{"string", 2},
 		//"Risc":      PropFeatures{"int", 1000},
 		"Risc": PropFeatures{"int", 1},
 		//"Count":     PropFeatures{"int", 10000},
@@ -120,7 +120,9 @@ func main() {
 	//fmt.Printf("Server-Printer relations: %v\n", server_printer_relation_objects)
 	//fmt.Printf("Adjacency List: %v\n", adjacency_list)
 
-	exportGraphAsJson(graph_nodes, graph_edges, "")
+	//exportGraphAsJson(graph_nodes, graph_edges, "")
+	exportGraphAsJson(graph_nodes, graph_edges, "../../data-adapter/src/")
+	exportGraphAsJson(graph_nodes, graph_edges, "../../data-adapter-neo4j-only/src/")
 }
 
 func exportGraphAsJson(graph_nodes []map[string]interface{}, graph_edges []map[string]interface{}, file_path string) {

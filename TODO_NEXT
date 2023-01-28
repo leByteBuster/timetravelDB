@@ -1,0 +1,21 @@
+Cretaing the parser
+  - 
+
+
+-[] Rhebo Daten anschauen 
+-[] Liste von Queries überlegen die zu implementieren sind
+-[] Plan für die Query implementierung machen
+  - Queries ggf so: "start end <cypher query>
+    und dann die cypher query zerlegen in teil der graphen mit einbezieht und teil der time-series
+    mit einbezieht.  
+  - alles was property daten mit einbezieht muss gesplittet werden. 
+    - checken ob man das anhand der keywords sagen kann 
+  - ggf. neo4j parser anschauen. 
+
+
+
+- Difficulties: 
+  - creating a parser
+
+
+

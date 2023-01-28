@@ -8,6 +8,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
@@ -182,10 +184,25 @@ func generateNeo4jNodeProperties(property map[string]interface{}) ([]string, str
 			}
 			queryFragmentInner += innerFragment
 
-		// in the case of string not much has to be done but this case does not occour because the values are always lists of maps/objects
+			fmt.Println("map[string]interface{}")
+		// in the case of string propertyValue is tested for being a date-time value
+		// if its a date-time value, the propertyValue is just a regular string value
+		// or not in the right format (ISO 8601)
 		case string:
-			propertyFragment := key + `: "` + propertyValue + `", `
-			queryPropertyFragments = append(queryPropertyFragments, propertyFragment)
+
+			datetime, err := time.Parse("2006-01-02T15:04:05.9999999999Z", fmt.Sprint(propertyValue))
+
+			if err == nil {
+				propertyFragment := key + `: ` + fmt.Sprint(datetime) + `, `
+				queryPropertyFragments = append(queryPropertyFragments, propertyFragment)
+				fmt.Printf("\nno Error Parsing DateTime")
+				panic("Correct")
+			} else {
+				fmt.Printf("\nError Parsing DateTime: %e\n", err)
+				propertyFragment := key + `: "` + propertyValue + `", `
+				queryPropertyFragments = append(queryPropertyFragments, propertyFragment)
+			}
+			fmt.Println("string")
 
 		// in the case of an array of maps, every map object represents a temporal value of a property in the form of {start:_, end:_, value:_}. Create an
 		// query entry for creating an own node for every of these temporal property values
@@ -197,12 +214,17 @@ func generateNeo4jNodeProperties(property map[string]interface{}) ([]string, str
 
 			// iterate over the array of maps and create a value-node query fragment for each of them (for the CREATE query)
 			for _, value := range convertedPropertyValue {
-
 				// create an unique node id (maybe later use the internal node id only)
 				node_id := uuid.NewString()
 				valueNodeIds = append(valueNodeIds, node_id)
-
 				// generate a node vor the temporal value (a temporal value is in the for {start:_, end:_ , value:_ })
+				_, err := time.Parse("2006-01-02T15:04:05.9999999999Z", fmt.Sprint(value["Start"]))
+				_, err2 := time.Parse("2006-01-02T15:04:05.9999999999Z", fmt.Sprint(value["End"]))
+
+				if err != nil || err2 != nil {
+					fmt.Printf("\nError Parsing DateTime. No ISO8601: %e\n", err)
+				}
+
 				queryFragmentInner += `(:Node { node_id: "` + node_id + `", start: "` + fmt.Sprint(value["Start"]) + `", end: "` + fmt.Sprint(value["End"]) + `", value: `
 				switch valueType := value["Value"].(type) {
 				case string:
@@ -210,19 +232,14 @@ func generateNeo4jNodeProperties(property map[string]interface{}) ([]string, str
 				default:
 					queryFragmentInner += fmt.Sprint(valueType) + `}), `
 				}
-
-				// add id of the new node as a value to the list of nodes (the list is the value of the property representet by queryFragment)
-				// queryFragment +=
 			}
 
-			propertyFragment := key + `: [`
-			for _, node_id := range valueNodeIds {
-				propertyFragment += `"` + node_id + `"`
-			}
-			propertyFragment += `], `
+			propertyFragment := fmt.Sprintf("%s: [%s], ", key, strings.Join(valueNodeIds, `","`))
 			queryPropertyFragments = append(queryPropertyFragments, propertyFragment)
+			fmt.Println("interface{}")
 
 		default:
+			fmt.Println("default")
 			propertyFragment := key + `: ` + fmt.Sprint(propertyValue) + `, `
 			queryPropertyFragments = append(queryPropertyFragments, propertyFragment)
 			// An dieser stelle über v iterieren und für jeden eintrag einen Knoten erstellen und mit papa knoten verbinden
@@ -277,6 +294,7 @@ func generateNeo4jFlatProperties(property map[string]interface{}) []string {
 
 		// in the case of string not much has to be done but this case does not occour because the values are always lists of maps/objects
 		case string:
+
 			propertyFragment := key + `: "` + propertyValue + `", `
 			queryPropertyFragments = append(queryPropertyFragments, propertyFragment)
 
@@ -288,6 +306,13 @@ func generateNeo4jFlatProperties(property map[string]interface{}) []string {
 
 			// iterate over the array of maps and create a value-node query fragment for each of them (for the CREATE query)
 			for i, value := range valueList {
+
+				_, err := time.Parse("2006-01-02T15:04:05.9999999999Z", fmt.Sprint(value["Start"]))
+				_, err2 := time.Parse("2006-01-02T15:04:05.9999999999Z", fmt.Sprint(value["End"]))
+
+				if err != nil || err2 != nil {
+					panic("\nError Parsing DateTime. No ISO8601")
+				}
 
 				// generate a unique property entry for every property value in the list. Number the property fields by the index of the list
 				valueFragmentStart := key + `_` + fmt.Sprint(i) + `_` + `start` + `: "` + fmt.Sprint(value["Start"]) + `", `

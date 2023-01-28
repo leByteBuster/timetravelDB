@@ -1,0 +1,37 @@
+add properties to a group of existing nodes:
+  MATCH (n:Node)
+  SET n += { properties_Risc_1_value: 60, properties_Risc_1_start: 10, properties_Risc_1_end: 12}
+  RETURN n
+
+Query properties of a node n which start with a certain string: 
+  MATCH (n)
+  WHERE ID(n) = 1 AND ANY(x IN keys(n) WHERE x STARTS WITH 'properties_Risc_' AND n[x] > 10)
+  RETURN n
+
+Query nodes n with properties which start with a certain string: 
+  MATCH (n)
+  WHERE ANY(x IN keys(n) WHERE x STARTS WITH 'properties_Risc_' AND n[x] > 10)
+  RETURN n
+
+
+
+Problem: Wie kann ich die einzelnen geflatteten properties abfragen? Zum beispiel wenn ich von einer speziellen property die mit
+Property1_property1.1_ anfängt alle properties haben möchte die um 10:00 oder später beginnen, dann brauche ich alle properties mit
+Property1_property1.1_{ID}_begin und muss diese auf >= 10:00 checken. Wenn das Ergebnis true ist, will ich aber für alle diese properties
+den value von der Property Property1_property1.1_{ID}_value zurückgeben. Und das für jeden wert der für {ID} existiert.
+1. Ansatz: regular expressions 
+  Ich glaube es ist nicht möglich regular expressions in einem property name zu benutzen. Aber ich habe es auf stackoverflow gefragt: 
+  https://stackoverflow.com/questions/75042118/regular-expression-on-the-string-of-a-property-name-in-cypher
+2. liste speichern mit IDs für jede property. Also wenn ich eine Property "Mainboard.Components.CPU.." habe, dann speichere ich in einer
+  property "Mainboard.Components.CPU.IDs: idlist []string" eine liste von ids ab (am besten aufsteigend). zb:
+  idlist []string = ["1","2","3","4",..]. dann kann ich die Property abfragen, und weiß, dass für jede dieser IDs eine property existiert:
+
+  Property1_property1.1_1_value  Property1_property1.1_1_start Property1_property1.1_1_end 
+  Property1_property1.1_2_value  Property1_property1.1_2_start Property1_property1.1_2_end
+  Property1_property1.1_3_value  Property1_property1.1_3_start Property1_property1.1_3_end
+  Property1_property1.1_4_value  Property1_property1.1_4_start Property1_property1.1_4_end
+  ...                            ...                           ...
+
+  existieren alle. aufgefallenes problem: jeder knoten hat eigene Properties. ist das überhaupt möglich? oder brauchen die dann alle
+  ein eigenes label? das wäre ziemlicher overhead
+ 

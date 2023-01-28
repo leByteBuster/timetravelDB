@@ -26,7 +26,7 @@ func loadDataTimeScaleDB(timeSeriesMapNodes map[uuid.UUID][]map[string]interface
 
 		fmt.Printf("\nDatatype of value fields: %v\n", reflect.TypeOf(valueArr[0]["Value"]))
 		switch value := valueArr[0]["Value"].(type) {
-		// den fall gibt es noch nicht (zumindest nicht durch generierte daten)
+		// TODO: falls wir komplexe datentypen als time-series values erlauben
 		case map[string]interface{}:
 			println(value)
 			// // datentyp für die map erstellen: TODO if needed
@@ -41,7 +41,8 @@ func loadDataTimeScaleDB(timeSeriesMapNodes map[uuid.UUID][]map[string]interface
 			// // TODO wahrscheinlich braucht der typ "map" einen unique value für jede art von map
 			// createTableQuery += "map MAP );"
 
-		// den fall gibt es noch nicht (zumindest nicht durch generierte daten)
+		// TODO: falls wir listen als datentypen verwenden
+		// PS: ggf muss ich dann noch einen switch über den typ der array elemente  machen
 		case []interface{}:
 			// TODO similar as map[string]interface{}
 		case string:
