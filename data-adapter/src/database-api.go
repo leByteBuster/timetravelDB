@@ -73,7 +73,7 @@ func queryMultipleTimeScaleSameQuery(query string, parameters [][]interface{}, u
 	// create the table according to  the data type
 	conn := connectTimescale(username, password, port, dbname)
 	defer conn.Close(context.Background())
-	for i, _ := range parameters {
+	for i := range parameters {
 		_, err := conn.Exec(context.Background(), query, parameters[i]...)
 		if err != nil {
 			fmt.Println(err)

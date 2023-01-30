@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 func main() {
@@ -13,7 +15,7 @@ func main() {
 	fmt.Printf("\n Number nodes: %v", len(graph_nodes))
 	fmt.Printf("\n Number edges: %v", len(graph_edges))
 
-	nodeQuereis, timeSeriesNodes := getQuerStringsNodes(graph_nodes, context.Background(), "neo4j://localhost:7687", "neo4j", "rhebo")
+	nodeQuereis, timeSeriesNodes := getQuerStringsNodes(graph_nodes)
 	edgeQueries, timeSeriesEdges := getQueryStringsEdges(graph_edges)
 
 	queryMultipleNeo4j(context.Background(), "neo4j://localhost:7687", "neo4j", "rhebo", nodeQuereis)
@@ -22,7 +24,16 @@ func main() {
 	fmt.Printf("\n Number time-series map nodes: %v", len(timeSeriesNodes))
 	fmt.Printf("\n Number time-series map edges: %v", len(timeSeriesEdges))
 
-	loadDataTimeScaleDB(timeSeriesNodes, timeSeriesEdges)
+	timeSeries := map[uuid.UUID][]map[string]interface{}{}
+
+	for k, v := range timeSeriesNodes {
+		timeSeries[k] = v
+	}
+	for k, v := range timeSeriesEdges {
+		timeSeries[k] = v
+	}
+
+	loadDataTimeScaleDB(timeSeries)
 
 	if err != nil {
 		fmt.Printf("Error: %v", err)

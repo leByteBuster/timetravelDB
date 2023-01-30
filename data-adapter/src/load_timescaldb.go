@@ -13,12 +13,12 @@ import (
 
 // this function takes a map with uiids as keys and lists of maps (with strings as keys and values of arbitrary type) as values
 // every of theses lists represent a time-series which can
-func loadDataTimeScaleDB(timeSeries map[uuid.UUID][]map[string]interface{}, timeSeriesMapEdges map[uuid.UUID][]map[string]interface{}) {
+func loadDataTimeScaleDB(timeseries map[uuid.UUID][]map[string]interface{}) {
 
 	// maybe solve "if timestamp" differently. For example per grouping tables or something like this ?
 	creatTablePrefix := `CREATE TABLE IF NOT EXISTS `
 
-	for uuid, values := range timeSeries {
+	for uuid, values := range timeseries {
 
 		// probably deletable
 		uiidUnderscore := strings.ReplaceAll(uuid.String(), "-", "_")

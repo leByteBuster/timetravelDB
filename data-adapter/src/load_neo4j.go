@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -19,7 +18,7 @@ type TmpPropVal[T any] struct {
 	Value T
 }
 
-func getQuerStringsNodes(graph_nodes []map[string]interface{}, ctx context.Context, uri, username, password string) ([]string, map[uuid.UUID][]map[string]interface{}) {
+func getQuerStringsNodes(graph_nodes []map[string]interface{}) ([]string, map[uuid.UUID][]map[string]interface{}) {
 
 	var queries = make([]string, 0)
 	var timeSeries = map[uuid.UUID][]map[string]interface{}{}
