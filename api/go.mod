@@ -2,7 +2,16 @@ module github.com/LexaTRex/api
 
 go 1.19
 
-require github.com/jackc/pgx/v5 v5.2.0
+require (
+	github.com/jackc/pgconn v1.13.0
+	github.com/jackc/pgx/v5 v5.2.0
+)
+
+require (
+	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
+	github.com/jackc/pgio v1.0.0 // indirect
+	github.com/jackc/pgproto3/v2 v2.3.1 // indirect
+)
 
 require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
