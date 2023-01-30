@@ -35,3 +35,24 @@ den value von der Property Property1_property1.1_{ID}_value zurückgeben. Und da
   existieren alle. aufgefallenes problem: jeder knoten hat eigene Properties. ist das überhaupt möglich? oder brauchen die dann alle
   ein eigenes label? das wäre ziemlicher overhead
  
+
+
+# queries to implement:
+- question: hide shallow or make it expilicit. ?
+  - hiding it would be better 
+  - hide it where possible
+  - use it where necessary
+- Shallow 
+  - get all nodes (of a type)
+  - get property names
+- Not Shallow
+  - path queries, other graph pattern queries
+    - not so important maybe because nothing changes
+      -> not so sure about this. the graph becomes lighter so 
+         it might be faster   
+  - get all properties of a node
+  - get one property of a node
+  - get all nodes (of a type)
+  - all operations which contain property values
+
+
