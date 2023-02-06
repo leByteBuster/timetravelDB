@@ -3,15 +3,71 @@ add properties to a group of existing nodes:
   SET n += { properties_Risc_1_value: 60, properties_Risc_1_start: 10, properties_Risc_1_end: 12}
   RETURN n
 
-Query properties of a node n which start with a certain string: 
-  MATCH (n)
-  WHERE ID(n) = 1 AND ANY(x IN keys(n) WHERE x STARTS WITH 'properties_Risc_' AND n[x] > 10)
-  RETURN n
+  Query properties of a node n which start with a certain string: 
+    MATCH (n)
+    WHERE ID(n) = 1 AND ANY(x IN keys(n) WHERE x STARTS WITH 'properties_Risc_' AND n[x] > 10)
+    RETURN n
+  
+  Query nodes n with properties which start with a certain string: 
+    MATCH (n)
+    WHERE ANY(x IN keys(n) WHERE x STARTS WITH 'properties_Risc_' AND n[x] > 10)
+    RETURN n
+ 
+  Query nodes which contain a certain property and fulfill conditions on it 
+    query:  FROM 1 TO 4 Match (n) where n.score IS NOT NULL AND n.score > 20 return n.score  | note: FROM is inclusive, TO is exclusive (from,to]
+ 
 
-Query nodes n with properties which start with a certain string: 
-  MATCH (n)
-  WHERE ANY(x IN keys(n) WHERE x STARTS WITH 'properties_Risc_' AND n[x] > 10)
-  RETURN n
+######################################
+######################################
+## Anfragen die ich umsetzen möchte ## 
+######################################
+######################################
+
+- note: ALLE Anfragen starten mit von X bis Y (setzen einen Zeitrahmen)
+1. gib mir alle knoten n zurück   
+2. gib mir alle knoten id zurück
+3. gib mir alle knoten n:label zurück
+4. gib mir alle  
+
+  MATCH (c:City)
+  WHERE c.name = "London"   // query all nodes, query properties name and population_size, return c.population_size
+  RETURN c.population_size;
+
+  MATCH (city:City)-[:IN]-(country:Country)     // query resp all nodes, query city.name and country.name properties, throw out nodes which do not fit the condition
+  WHERE city.name = "London"                    // return    
+  RETURN country.name;
+
+  MATCH (c:City)   // query resp nodes, query all properties of these nodes and merge results
+  RETURN c;
+
+  MATCH (c)       // same as before
+  WHERE c:City
+  RETURN c;
+
+  MATCH (c:City:Country)    // just need to query all properties and merge results
+  RETURN c;
+
+  MATCH (c)            // i think i prefere the version before. Maybe only use WHERE clause for property stuff. Therefore use property stuff ONLY in the WHERE clause
+  WHERE c:City AND c:Country
+  RETURN c;
+
+######################################
+############## ONLY NEO  #############
+######################################
+
+ 
+######################################
+########## timetravelDB  #############
+######################################
+
+ 
+
+######################################
+######################################
+
+
+
+
 
 
 
@@ -54,5 +110,54 @@ den value von der Property Property1_property1.1_{ID}_value zurückgeben. Und da
   - get one property of a node
   - get all nodes (of a type)
   - all operations which contain property values
+
+
+
+##  Questions to solve: 
+
+Only neo4j example:
+
+  node: 
+    {
+      ...
+      "properties": {
+        "score": 34,
+        "name": "Andy"
+      }
+    }
+
+
+  query:  Match (n) where n.score IS NOT NULL AND n.score > 20 return n.score
+
+      - das gibt nur einen einzelnen Property value zurück: 34
+
+
+Annahme TimeTravelDb node:
+  {
+    ...
+    "properties": {
+      "score": timeseries: [{0,34},{1,32},{2,35}, {3,18}, ..]   | mit {time,value} 
+      "name": "Andy"
+    }
+  }
+
+  query:  FROM 1 TO 4 Match (n) where n.score IS NOT NULL AND n.score > 20 return n.score  | note: FROM is inclusive, TO is exclusive (from,to]
+
+    - jetzt hätte ich also zwei werte auf die das zutreffen würde: {1,32} & {2,35}
+      - what to do ? 
+        - [X] möglichkeit 1: nichts zurückgeben weil die Bedingung nicht für alle Werte in dem Zeitraum gilt 
+        - [ ] möglichkeit 2: nur Werte zurückgeben für welche die Bedingung in dem Zeitraum gilt  (am ehesten das. FROM, TO sollte ich einfach als zusatzbedinung sehen)
+            -> FROM & TO könnten genauso in der WHERE clause stehen. Dann würde das zurückgegeben für das alle bedingungen wahr sind und nicht gleich nichts.
+               Die Bedingungen sollten auf einzelne Werte in der time-series abgebildet werden, nicht auf die time-series als Wert an sich
+            -> möglichkeit 1 lässt sich immernoch folgendermaßen erreichen:
+              -    
+               
+
+Alle elemente einer liste zurückgeben die bedingung erfüllen 
+ 
+  query:  MATCH (n:Test)  UNWIND n.score AS elem WHERE elem > 100  RETURN elem  |  funktioniert so nicht
+  corrected version:  MATCH (n:Test) UNWIND n.score AS elem WITH elem WHERE elem > 100 RETURN elem
+        
+
 
 

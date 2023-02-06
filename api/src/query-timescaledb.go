@@ -2,28 +2,28 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
-
-	"github.com/jackc/pgx/v5"
 )
 
-// get properties for one node, if aggr != "" apply aggregate function on the result
-func getPropertiesFromNode(from, to, aggr, table string) (pgx.Rows, error) {
+// get property / single time-series for the period (from,to], apply aggregation on it if not empty
+func getPropertyAggr(from, to, aggr, table string) interface{} {
 
 	// build query string
-	query := fmt.Sprint("SELECT %s(value) FROM %s WHERE time >= %s AND time < %s", table, aggr, from, to)
+	query := fmt.Sprintf("SELECT %s(value) FROM %s WHERE time >= '%s' AND time < '%s'", aggr, table, from, to)
+	fmt.Printf("Query: %v\n", query)
 
-	//TODO: change this so it isnt hard coded anymore. Should be read from config or so
-	username := "postgres"
-	password := "password"
-	port := "5432"
-	dbname := "postgres"
-	connStr := fmt.Sprintf("postgresql://%s:%s@localhost:%s/%s", username, password, port, dbname)
-	return sendQuery(connStr, query)
+	// res := queryTimeScale(query, username, password, port, dbname)
+	val, err := readRowValueTimescale(query, nil, UserTS, PassTS, PortTS, DBnameTS)
+	if err != nil {
+		log.Printf("Query failed: %v", err)
+	}
+
+	return val
 }
 
-// get properties for multiple nodes, if aggr != "" apply aggregate function on the result
-func getPropertiesFromNodes(from, to, aggr string, tables []string) {
+// get properties / multiple time-series and apply aggrergation on it if not empty
+func getProperties(from, to, aggr string, tables []string) (aggrRes interface{}, res []TimeSeriesRow) {
 
 	var builder strings.Builder
 
@@ -54,4 +54,18 @@ func getPropertiesFromNodes(from, to, aggr string, tables []string) {
 	// Get the query string from the StringBuilder
 	query := builder.String()
 	fmt.Println(query)
+
+	rows, err := readRowsTimescale(query, nil, UserTS, PassTS, PortTS, DBnameTS)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	if aggr != "" && len(rows) == 1 {
+		return rows[0].value, nil
+	} else if aggr != "" && len(rows) > 1 {
+		panic("Aggregation returned more than one row")
+	}
+
+	return nil, rows
 }
