@@ -3,7 +3,7 @@
 // 	-[] should be fixed but double check
 // -[] restrictios for time values einführen? ggf. erst später. Ist erst später wichtig
 
-package main
+package datagenerator
 
 import (
 	"encoding/json"
@@ -39,7 +39,7 @@ var graph_edges []map[string]interface{}
 // 1: ...
 var adjacency_list []map[int]int
 
-func main() {
+func GenerateData() {
 	rand.Seed(time.Now().UnixNano())
 	var client_interface map[string]interface{} = map[string]interface{}{
 		// "IP":       PropFeatures{"string", 5},
