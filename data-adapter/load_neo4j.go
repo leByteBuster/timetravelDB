@@ -1,4 +1,4 @@
-package main
+package dataadapter
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ type TmpPropVal[T any] struct {
 	Value T
 }
 
-func getQuerStringsNodes(graph_nodes []map[string]interface{}) ([]string, map[uuid.UUID][]map[string]interface{}) {
+func getQueryStringsNodes(graph_nodes []map[string]interface{}) ([]string, map[uuid.UUID][]map[string]interface{}) {
 
 	var queries = make([]string, 0)
 	var timeSeries = map[uuid.UUID][]map[string]interface{}{}
@@ -111,7 +111,7 @@ func generateNeo4jFlatProperties(property map[string]interface{}) ([]string, map
 			}
 
 		case []interface{}:
-			valueList := convertMaps(propertyValue)
+			valueList := ConvertMaps(propertyValue)
 
 			id := uuid.New()
 			valueFragmentUuid := key + `: "` + id.String() + `", `

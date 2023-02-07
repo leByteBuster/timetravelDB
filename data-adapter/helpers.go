@@ -1,11 +1,11 @@
-package main
+package dataadapter
 
 import (
 	"encoding/json"
 	"os"
 )
 
-func loadJsonData(path string) ([]map[string]interface{}, error) {
+func LoadJsonData(path string) ([]map[string]interface{}, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func loadJsonData(path string) ([]map[string]interface{}, error) {
 	return data, nil
 }
 
-func convertMaps(originalMaps []interface{}) []map[string]interface{} {
+func ConvertMaps(originalMaps []interface{}) []map[string]interface{} {
 	convertedMaps := make([]map[string]interface{}, 0)
 	for _, originalMap := range originalMaps {
 		convertedMap := map[string]interface{}{}
