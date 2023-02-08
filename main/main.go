@@ -1,7 +1,7 @@
 package main
 
-import tti "github.com/LexaTRex/timetravelDB/parser/ttql_interface"
+import parser "github.com/LexaTRex/timetravelDB/parser"
 
 func main() {
-	tti.ParseTest()
+	parser.ParseTest()
 }

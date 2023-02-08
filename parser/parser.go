@@ -42,35 +42,60 @@ func ParseTest() {
 		//		parser.GetErrorListenerDispatch()
 		//		parser._SyntaxErrors
 		//
+		fmt.Println()
 		fmt.Println("............................................")
+		fmt.Println()
 
 		antlr.ParseTreeWalkerDefault.Walk(li.NewTreeShapeListener(), treectx)
 
+		fmt.Println()
 		fmt.Println("............................................")
+		fmt.Println()
 		fmt.Printf("Tree: %v", treectx.GetText())
 
 		fmt.Println("Query is valid.")
 
+		fmt.Println()
 		fmt.Println("............................................")
-		propertyLookupListener := li.NewPropertyLookupListener()
-		antlr.ParseTreeWalkerDefault.Walk(propertyLookupListener, treectx)
-		propertyClauseInsights := propertyLookupListener.Insights
+		fmt.Println()
+		timeListener := li.NewTimeClauseListener()
+		antlr.ParseTreeWalkerDefault.Walk(timeListener, treectx)
+		fmt.Printf("\nTimeClauseInsights: \n from: %v\nto: %v", timeListener.TimePeriod.From, timeListener.TimePeriod.To)
+		fmt.Println()
+		fmt.Println("............................................")
+		fmt.Println()
+		//propertyLookupListener := li.NewPropertyLookupListener()
+		propertyListener := li.NewPropertyOrLabelsExpressionListener()
+
+		antlr.ParseTreeWalkerDefault.Walk(propertyListener, treectx)
+		propertyClauseInsights := propertyListener.Insights
 		fmt.Printf("PropertyClauseInsights: %v", propertyClauseInsights)
 
 		fmt.Println("............................................")
 		for _, subquery := range propertyClauseInsights {
 			subqueryClause := subquery.PropertyLookupClause
+			comparisonCtx := subquery.ComparisonContext
+			field := subquery.Field
+			propKeys := subquery.PropertyKeys
+			labels := subquery.Labels
+			compareOp := subquery.CompareOperator
+
 			isWhere := subquery.IsWhere
 			isReturn := subquery.IsReturn
-			fmt.Println()
+			isComparison := subquery.IsComparison
+			isPartialComparison := subquery.IsPartialComparison
+			isPropertyLookup := subquery.IsPropertyLookup
+			isValid := subquery.IsValid
 
-			fmt.Println(subqueryClause)
-			if isWhere {
-				fmt.Println("PROPERTY ACCESS WHERE CLAUSE")
-			}
-			if isReturn {
-				fmt.Println("PROPERTY ACCESS RETURN CLAUSE")
-			}
+			fmt.Printf("\nSubquery: %v \ncomparisonCtx: %v \nfield: %v \npropKeys: %v \nlabels: %v \ncompareOp: %v", subqueryClause, comparisonCtx, field, propKeys, labels, compareOp)
+
+			// print all of the subquery insights
+			fmt.Printf("\nIsWhere: %v	\nIsReturn: %v	\nIsComparison: %v	\nIsPartialComparison: %v	\nIsPropertyLookup: %v	\nIsValid: %v",
+				isWhere, isReturn, isComparison, isPartialComparison, isPropertyLookup, isValid)
+
+			fmt.Println("")
+			fmt.Println("............................................")
+			fmt.Println("............................................")
 		}
 	}
 
