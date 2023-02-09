@@ -1,14 +1,14 @@
 package api
 
 import (
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func main() {
+func Api() {
+
 	// conn := connectTimescale("postgres", "password", "5432", "postgres")
 	// defer conn.Close(context.Background())
 
@@ -48,29 +48,5 @@ func main() {
 	// fmt.Println(reflect.TypeOf(node))
 
 	// #### TEST PARSING QUERY STRING ####
-
-	valid_queries := []string{"FROM 2022-12-22T15:33:13.4Z TO 2022-12-29T20:24:36.311107Z SHALLOW MATCH (n:Node) RETURN n",
-		"FROM 2022-12-22T15:33:13Z TO 2022-12-29T20:24:36.311107Z MATCH (n:Node) RETURN n",
-		"FROM 2022-12-22T15:33:13Z TO 2022-12-29T20:24:36.311107Z MATCH (n:Node) WHERE xyz RETURN n"}
-	for i, query := range valid_queries {
-		start, end, shallow, cypher, err := ParseQuery(query)
-		if err != nil {
-			log.Printf("Parsing query failed Query i: %v", err)
-			os.Exit(1)
-		}
-		fmt.Printf("Query %v: \n Start: %v\n End: %v\n Shallow: %v\n Cypher: %v\n", i, start, end, shallow, cypher)
-	}
-
-	invalid_queries := []string{"FROM 2022-12-22T:33:13Z TO 2022-12-29T20:24:36.311107Z SHALLOW MATCH (n:Node) RETURN n",
-		"FROM 2022-12-22T15:33:13Z TO 2022-12-29T20:24:36.311107GMT MATCH (n:Node) RETURN n",
-		"FROM 2022-12-22T15:33:13Z TO 2022-12-29T20:24:36.311107Z  (n:Node) WHERE xyz RETURN n"}
-	for i, query := range invalid_queries {
-		_, _, _, _, err = ParseQuery(query)
-		if err != nil {
-			log.Printf("Query nr %v expectedly invalid, err: %v", i, query)
-		} else {
-			log.Printf("should not be valid: Query number %v: %v\n", i, query)
-		}
-	}
 
 }

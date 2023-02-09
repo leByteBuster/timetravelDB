@@ -1,7 +1,9 @@
 package main
 
-import parser "github.com/LexaTRex/timetravelDB/parser"
+import (
+	"github.com/LexaTRex/timetravelDB/api"
+)
 
 func main() {
-	parser.ParseTest()
+	api.Api()
 }
