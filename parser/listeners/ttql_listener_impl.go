@@ -229,6 +229,19 @@ func (listener *TimeShallowListener) EnterTtQL_Query(qC *tti.TtQL_QueryContext) 
 	listener.IsShallow = isShallow
 }
 
+type MatchListener struct {
+	*tti.BaseTTQLListener
+	MatchClause string
+}
+
+func NewMatchListener() *MatchListener {
+	return new(MatchListener)
+}
+
+func (listener *MatchListener) EnterOC_Match(wC *tti.OC_MatchContext) {
+	listener.MatchClause = wC.GetText()
+}
+
 type WhereListener struct {
 	*tti.BaseTTQLListener
 	WhereClause string

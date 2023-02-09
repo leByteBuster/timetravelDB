@@ -47,8 +47,9 @@ func ParseQuery(query string) (ParseResult, error) {
 	}
 
 	// initialize listeners
-	timeListener := li.NewTimeShallowListener()
+	timeShallowListener := li.NewTimeShallowListener()
 	propertyListener := li.NewPropertyOrLabelsExpressionListener()
+	matchListener := li.NewMatchListener()
 	whereListener := li.NewWhereListener()
 	returnListener := li.NewReturnListener()
 
@@ -65,11 +66,13 @@ func ParseQuery(query string) (ParseResult, error) {
 	fmt.Println()
 	fmt.Println("............................................")
 	fmt.Println()
-	antlr.ParseTreeWalkerDefault.Walk(timeListener, treectx)
-	fmt.Printf("\nTimeClauseInsights: \n from: %v\nto: %v\nisShallow: %v", timeListener.TimePeriod.From, timeListener.TimePeriod.To, timeListener.IsShallow)
+	antlr.ParseTreeWalkerDefault.Walk(timeShallowListener, treectx)
+	fmt.Printf("\nTimeClauseInsights: \n from: %v\nto: %v\nisShallow: %v", timeShallowListener.TimePeriod.From,
+		timeShallowListener.TimePeriod.To, timeShallowListener.IsShallow)
 	fmt.Println()
 	fmt.Println("............................................")
 	fmt.Println()
+	antlr.ParseTreeWalkerDefault.Walk(matchListener, treectx)
 	antlr.ParseTreeWalkerDefault.Walk(whereListener, treectx)
 	antlr.ParseTreeWalkerDefault.Walk(returnListener, treectx)
 	fmt.Printf("\nWhereClause: %v\nReturnClause: %v", whereListener.WhereClause, returnListener.ReturnClause)
@@ -96,7 +99,8 @@ func ParseQuery(query string) (ParseResult, error) {
 		isPropertyLookup := subquery.IsPropertyLookup
 		isValid := subquery.IsValid
 
-		fmt.Printf("\nSubquery: %v \ncomparisonCtx: %v \nfield: %v \npropKeys: %v \nlabels: %v \ncompareOp: %v", subqueryClause, comparisonCtx, field, propKeys, labels, compareOp)
+		fmt.Printf("\nSubquery: %v \ncomparisonCtx: %v \nfield: %v \npropKeys: %v \nlabels: %v \ncompareOp: %v", subqueryClause,
+			comparisonCtx, field, propKeys, labels, compareOp)
 
 		// print all of the subquery insights
 		fmt.Printf("\nIsWhere: %v	\nIsReturn: %v	\nIsComparison: %v	\nIsPartialComparison: %v	\nIsPropertyLookup: %v	\nIsValid: %v",
@@ -112,9 +116,10 @@ func ParseQuery(query string) (ParseResult, error) {
 	// String cypherQuery4 = "MATCH (a)-[x]->(b) WHERE a.ping > 22" + " RETURN a.ping, b "; // should parse
 
 	return ParseResult{
-		IsShallow:              timeListener.IsShallow,
-		From:                   timeListener.TimePeriod.From,
-		To:                     timeListener.TimePeriod.To,
+		IsShallow:              timeShallowListener.IsShallow,
+		From:                   timeShallowListener.TimePeriod.From,
+		To:                     timeShallowListener.TimePeriod.To,
+		MatchClause:            matchListener.MatchClause,
 		WhereClause:            whereListener.WhereClause,
 		ReturnClause:           returnListener.ReturnClause,
 		PropertyClauseInsights: propertyClauseInsights,
