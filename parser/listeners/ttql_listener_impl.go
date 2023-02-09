@@ -23,7 +23,7 @@ func (treeShapeListener *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleC
 
 // PropertyLookupListener is a listener that collects insights about property lookup clauses
 
-type PropertyClauseInsights struct {
+type PropertyClauseInsight struct {
 	PropertyLookupClause string
 	ComparisonContext    *tti.OC_ComparisonExpressionContext
 	Field                string
@@ -83,7 +83,7 @@ type PropertyClauseInsights struct {
 
 type PropertyOrLabelsExpressionListener struct {
 	*tti.BaseTTQLListener
-	Insights []PropertyClauseInsights
+	Insights []PropertyClauseInsight
 }
 
 func NewPropertyOrLabelsExpressionListener() *PropertyOrLabelsExpressionListener {
@@ -91,7 +91,6 @@ func NewPropertyOrLabelsExpressionListener() *PropertyOrLabelsExpressionListener
 }
 
 func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.OC_PropertyOrLabelsExpressionContext) {
-	fmt.Println(pOLE.GetText())
 	propertyLookupClause := pOLE.GetText()
 
 	var isWhere = false
@@ -111,7 +110,9 @@ func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpr
 	// get the property lookup if existing, looping is necessary for eventual white space
 	// (until now only one. but this is easy to extend for multiple property lookups)
 	for _, child := range pOLE.GetChildren() {
+		fmt.Println("in loop")
 		if t, ok := child.(*tti.OC_PropertyLookupContext); ok {
+			fmt.Println("is lookup")
 			propertyLookup = t
 			isPropertyLookup = true
 			break
@@ -135,7 +136,7 @@ func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpr
 	// 1: property Lookup is true: run until WHERE or RETURN is found. If not found, then it is invalid
 	// 2: property Lookup is false: run and see if CompareExpression is found. If not, then it is NOT invalid
 	// Note: when Searching for WHERE or RETURN, the ComparissonExpression would be passed on the way anywas so no extra check needed
-	for parent != nil && (!isPropertyLookup && !isComparison || isPropertyLookup && (isReturn || isWhere)) {
+	for parent != nil && (!isPropertyLookup && !isComparison || isPropertyLookup && !(isReturn || isWhere)) {
 		if e, ok := parent.(*tti.OC_PartialComparisonExpressionContext); ok {
 			partialComparison = e
 			isPartialComparison = true
@@ -159,7 +160,7 @@ func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpr
 		fmt.Printf("PartialComparisonExpression: %v", compareOperator)
 	}
 
-	listener.Insights = append(listener.Insights, PropertyClauseInsights{
+	listener.Insights = append(listener.Insights, PropertyClauseInsight{
 		PropertyLookupClause: propertyLookupClause,
 		ComparisonContext:    comparison,
 		Field:                field,
@@ -167,6 +168,7 @@ func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpr
 		Labels:               []string{},
 		CompareOperator:      compareOperator,
 		IsComparison:         isComparison,
+		IsPropertyLookup:     isPropertyLookup,
 		IsPartialComparison:  isPartialComparison,
 		IsWhere:              isWhere,
 		IsReturn:             isReturn,
@@ -182,21 +184,34 @@ type TimePeriod struct {
 	To   string
 }
 
-type TimeClauseListener struct {
+type TimeShallowListener struct {
 	*tti.BaseTTQLListener
 	TimePeriod
+	IsShallow bool
 }
 
-func NewTimeClauseListener() *TimeClauseListener {
-	return new(TimeClauseListener)
+func NewTimeShallowListener() *TimeShallowListener {
+	return new(TimeShallowListener)
 }
 
-func (listener *TimeClauseListener) EnterTtQL_TimeClause(tC *tti.TtQL_TimeClauseContext) {
-	fmt.Println("\nTimeclause: ", tC.GetText())
+func (listener *TimeShallowListener) EnterTtQL_Query(qC *tti.TtQL_QueryContext) {
+
+	isShallow := false
+	tC := qC.TtQL_TimeClause()
+
+	lastChild := qC.GetChild(qC.GetChildCount() - 1)
+	switch c := lastChild.GetPayload().(type) {
+	case antlr.Token:
+		if c.GetTokenType() == tti.TTQLParserSHALLOW {
+			isShallow = true
+		}
+	}
 
 	var from antlr.Token
 	var to antlr.Token
 	for _, child := range tC.GetChildren() {
+
+		// all children are antlr Tokens
 		leaf := child.GetPayload().(antlr.Token)
 		if leaf.GetTokenType() == tti.TTQLParserDATETIME {
 			if from == nil {
@@ -211,4 +226,45 @@ func (listener *TimeClauseListener) EnterTtQL_TimeClause(tC *tti.TtQL_TimeClause
 		From: from.GetText(),
 		To:   to.GetText(),
 	}
+	listener.IsShallow = isShallow
+}
+
+type WhereListener struct {
+	*tti.BaseTTQLListener
+	WhereClause string
+}
+
+func NewWhereListener() *WhereListener {
+	return new(WhereListener)
+}
+
+func (listener *WhereListener) EnterOC_Where(wC *tti.OC_WhereContext) {
+	listener.WhereClause = wC.GetText()
+}
+
+type ReturnListener struct {
+	*tti.BaseTTQLListener
+	ReturnClause string
+}
+
+func NewReturnListener() *ReturnListener {
+	return new(ReturnListener)
+}
+
+func (listener *ReturnListener) EnterOC_Return(rC *tti.OC_ReturnContext) {
+	listener.ReturnClause = rC.GetText()
+}
+
+type ErrorListener struct {
+	*antlr.DefaultErrorListener
+	Errors []string
+}
+
+func (el *ErrorListener) SyntaxError(recognizer antlr.Recognizer, offendingSymbol interface{}, line, column int, msg string, e antlr.RecognitionException) {
+	errorMessage := fmt.Sprintf("line %d:%d %s", line, column, msg)
+	el.Errors = append(el.Errors, errorMessage)
+}
+
+func NewErrorListener() *ErrorListener {
+	return new(ErrorListener)
 }
