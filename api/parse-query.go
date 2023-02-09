@@ -13,6 +13,13 @@ func ProcessQuery(query string) error {
 		return err
 	}
 
+	// TODO HERE: Get MATCH CLAUSE
+	// TODO HERE: Get WHERE CLAUSE
+	// TODO HERE: Get RETURN CLAUSE
+
+	// TODO HERE: Check if a property lookup is happens
+	// - if more then one: check if they are compared to each other (compare objects of clause)
+
 	fmt.Printf("res: %v", res)
 	return nil
 }
