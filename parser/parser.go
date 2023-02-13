@@ -11,13 +11,16 @@ import (
 )
 
 type ParseResult struct {
-	IsShallow              bool
-	From                   string
-	To                     string
-	MatchClause            string
-	WhereClause            string
-	ReturnClause           string
-	PropertyClauseInsights []li.PropertyClauseInsight
+	IsShallow                 bool
+	ContainsPropertyLookup    bool
+	ContainsOnlyNullPredicate bool
+	From                      string
+	To                        string
+	MatchClause               string
+	WhereClause               string
+	ReturnClause              string
+	GraphElements             li.GraphElements
+	PropertyClauseInsights    map[tti.OC_ComparisonExpressionContext][]li.PropertyClauseInsight
 }
 
 func ParseQuery(query string) (ParseResult, error) {
@@ -49,9 +52,7 @@ func ParseQuery(query string) (ParseResult, error) {
 	// initialize listeners
 	timeShallowListener := li.NewTimeShallowListener()
 	propertyListener := li.NewPropertyOrLabelsExpressionListener()
-	matchListener := li.NewMatchListener()
-	whereListener := li.NewWhereListener()
-	returnListener := li.NewReturnListener()
+	elementListener := li.NewElementListener()
 
 	// HOW TO GET THE ERRORS ?????
 	//		parser.GetErrorHandler()
@@ -72,10 +73,9 @@ func ParseQuery(query string) (ParseResult, error) {
 	fmt.Println()
 	fmt.Println("............................................")
 	fmt.Println()
-	antlr.ParseTreeWalkerDefault.Walk(matchListener, treectx)
-	antlr.ParseTreeWalkerDefault.Walk(whereListener, treectx)
-	antlr.ParseTreeWalkerDefault.Walk(returnListener, treectx)
-	fmt.Printf("\nWhereClause: %v\nReturnClause: %v", whereListener.WhereClause, returnListener.ReturnClause)
+	antlr.ParseTreeWalkerDefault.Walk(elementListener, treectx)
+	fmt.Printf("\nMatchClause variables: %v\nWhereClause variables: %v\nReturnClause variables: %v",
+		elementListener.GraphElements.MatchGraphElements, elementListener.GraphElements.WhereGraphElements, elementListener.GraphElements.ReturnGraphElements)
 	fmt.Println()
 	fmt.Println("............................................")
 	fmt.Println()
@@ -84,8 +84,11 @@ func ParseQuery(query string) (ParseResult, error) {
 	propertyClauseInsights := propertyListener.Insights
 
 	fmt.Println("............................................")
+	containsPropertyLookup := false
+	containsOnlyNullPredicate := true
 	for _, subquery := range propertyClauseInsights {
-		subqueryClause := subquery.PropertyLookupClause
+		subqueryClause := subquery.ComparisonContext.GetText() // this should be the part of the string to be cut out
+		subqueryClauseLookup := subquery.PropertyLookupClause
 		comparisonCtx := subquery.ComparisonContext
 		field := subquery.Field
 		propKeys := subquery.PropertyKeys
@@ -97,10 +100,16 @@ func ParseQuery(query string) (ParseResult, error) {
 		isComparison := subquery.IsComparison
 		isPartialComparison := subquery.IsPartialComparison
 		isPropertyLookup := subquery.IsPropertyLookup
+		if subquery.IsPropertyLookup {
+			containsPropertyLookup = true
+		}
+		if !subquery.IsAppendixOfNullPredicate {
+			containsOnlyNullPredicate = false
+		}
 		isValid := subquery.IsValid
 
-		fmt.Printf("\nSubquery: %v \ncomparisonCtx: %v \nfield: %v \npropKeys: %v \nlabels: %v \ncompareOp: %v", subqueryClause,
-			comparisonCtx, field, propKeys, labels, compareOp)
+		fmt.Printf("\nComparisonWithPropertyLookupQuery: %v\nPropertyLookupSubquery: %v \ncomparisonCtx: %v \nfield: %v \npropKeys: %v \nlabels: %v \ncompareOp: %v", subqueryClause,
+			subqueryClauseLookup, comparisonCtx, field, propKeys, labels, compareOp)
 
 		// print all of the subquery insights
 		fmt.Printf("\nIsWhere: %v	\nIsReturn: %v	\nIsComparison: %v	\nIsPartialComparison: %v	\nIsPropertyLookup: %v	\nIsValid: %v",
@@ -116,12 +125,15 @@ func ParseQuery(query string) (ParseResult, error) {
 	// String cypherQuery4 = "MATCH (a)-[x]->(b) WHERE a.ping > 22" + " RETURN a.ping, b "; // should parse
 
 	return ParseResult{
-		IsShallow:              timeShallowListener.IsShallow,
-		From:                   timeShallowListener.TimePeriod.From,
-		To:                     timeShallowListener.TimePeriod.To,
-		MatchClause:            matchListener.MatchClause,
-		WhereClause:            whereListener.WhereClause,
-		ReturnClause:           returnListener.ReturnClause,
-		PropertyClauseInsights: propertyClauseInsights,
+		IsShallow:                 timeShallowListener.IsShallow,
+		ContainsPropertyLookup:    containsPropertyLookup,
+		ContainsOnlyNullPredicate: containsOnlyNullPredicate,
+		From:                      timeShallowListener.TimePeriod.From,
+		To:                        timeShallowListener.TimePeriod.To,
+		MatchClause:               elementListener.MatchClause,
+		WhereClause:               elementListener.WhereClause,
+		ReturnClause:              elementListener.ReturnClause,
+		GraphElements:             elementListener.GraphElements,
+		PropertyClauseInsights:    propertyClauseInsights,
 	}, nil
 }

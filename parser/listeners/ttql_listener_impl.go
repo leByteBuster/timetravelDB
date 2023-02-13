@@ -24,8 +24,8 @@ func (treeShapeListener *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleC
 // PropertyLookupListener is a listener that collects insights about property lookup clauses
 
 type PropertyClauseInsight struct {
-	PropertyLookupClause string
-	ComparisonContext    *tti.OC_ComparisonExpressionContext
+	PropertyLookupClause string                              //
+	ComparisonContext    *tti.OC_ComparisonExpressionContext // if isPropertyLookup is true, the comparison string can be retrieved from this to split the Clause
 	Field                string
 	PropertyKeys         []string
 	Labels               []string
@@ -33,17 +33,19 @@ type PropertyClauseInsight struct {
 	//take care. this can be a property lookup as well. how to handle ?
 	// maybe set a bool. if true then use the next propertyClauseInsights in line as comparison value
 	// or maybe just a pointer ?
-	IsPropertyLookup    bool
-	IsComparison        bool
-	IsPartialComparison bool
-	IsWhere             bool
-	IsReturn            bool
-	IsValid             bool
+	IsPropertyLookup          bool
+	IsComparison              bool
+	IsPartialComparison       bool
+	IsWhere                   bool
+	IsReturn                  bool
+	IsValid                   bool
+	CountPartialComparison    int
+	IsAppendixOfNullPredicate bool
 }
 
 // type PropertyLookupListener struct {
 // 	*tti.BaseTTQLListener
-// 	Insights []PropertyClauseInsights
+// 	Insights map[OC_ComparisonExpression][]PropertyClauseInsights
 // }
 //
 // func NewPropertyLookupListener() *PropertyLookupListener {
@@ -83,7 +85,9 @@ type PropertyClauseInsight struct {
 
 type PropertyOrLabelsExpressionListener struct {
 	*tti.BaseTTQLListener
-	Insights []PropertyClauseInsight
+	// every comparison expression is mapped onto a list of its containing property clause insights
+	// a property clause insight is not always a property lookup
+	Insights map[*tti.OC_ComparisonExpressionContext][]PropertyClauseInsight
 }
 
 func NewPropertyOrLabelsExpressionListener() *PropertyOrLabelsExpressionListener {
@@ -98,10 +102,12 @@ func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpr
 	var isPropertyLookup = false
 	var isComparison = false
 	var isPartialComparison = false
+	var isAppendixOfNullPredicate = false
 
 	var comparison *tti.OC_ComparisonExpressionContext
 	var propertyLookup *tti.OC_PropertyLookupContext
 	var partialComparison *tti.OC_PartialComparisonExpressionContext
+	var countPartialComparison int = 0
 
 	var field string = pOLE.GetChild(0).(*tti.OC_AtomContext).GetText()
 	var propertyKey string
@@ -154,25 +160,42 @@ func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpr
 		parent = parent.GetParent()
 	}
 
+	if isComparison {
+		for _, ctx := range comparison.GetChildren() {
+			if _, ok := ctx.(*tti.OC_PartialComparisonExpressionContext); ok {
+				countPartialComparison++
+			}
+			if sCtx, ok := ctx.(*tti.OC_StringListNullPredicateExpressionContext); ok {
+				for _, ctx2 := range sCtx.GetChildren() {
+					if _, ok := ctx2.(*tti.OC_NullPredicateExpressionContext); ok {
+						isAppendixOfNullPredicate = true
+					}
+				}
+			}
+		}
+
+	}
+
 	if isPartialComparison {
 		// the first child of the PartialComparisonExpression is always a compare token
 		compareOperator = partialComparison.GetChild(0).GetPayload().(antlr.Token).GetText()
 		fmt.Printf("PartialComparisonExpression: %v", compareOperator)
 	}
 
-	listener.Insights = append(listener.Insights, PropertyClauseInsight{
-		PropertyLookupClause: propertyLookupClause,
-		ComparisonContext:    comparison,
-		Field:                field,
-		PropertyKeys:         []string{propertyKey},
-		Labels:               []string{},
-		CompareOperator:      compareOperator,
-		IsComparison:         isComparison,
-		IsPropertyLookup:     isPropertyLookup,
-		IsPartialComparison:  isPartialComparison,
-		IsWhere:              isWhere,
-		IsReturn:             isReturn,
-		IsValid:              isWhere || isReturn,
+	listener.Insights[comparison] = append(listener.Insights[comparison], PropertyClauseInsight{
+		PropertyLookupClause:      propertyLookupClause,
+		Field:                     field,
+		PropertyKeys:              []string{propertyKey},
+		Labels:                    []string{},
+		IsWhere:                   isWhere,
+		IsReturn:                  isReturn,
+		IsValid:                   isWhere || isReturn,
+		IsComparison:              isComparison,
+		CompareOperator:           compareOperator,
+		IsPropertyLookup:          isPropertyLookup,
+		IsPartialComparison:       isPartialComparison,
+		CountPartialComparison:    countPartialComparison,
+		IsAppendixOfNullPredicate: isAppendixOfNullPredicate,
 	})
 
 }
@@ -229,42 +252,97 @@ func (listener *TimeShallowListener) EnterTtQL_Query(qC *tti.TtQL_QueryContext) 
 	listener.IsShallow = isShallow
 }
 
-type MatchListener struct {
+// type MatchListener struct {
+// 	*tti.BaseTTQLListener
+// 	GraphElements []string
+// }
+//
+// func NewMatchListener() *MatchListener {
+// 	return new(MatchListener)
+// }
+//
+// func (listener *MatchListener) EnterOC_NodePattern(nPC *tti.OC_NodePatternContext) {
+// 	var vC *tti.OC_VariableContext
+// 	for _, ctx := range nPC.GetChildren() {
+// 		if v, ok := ctx.(*tti.OC_VariableContext); ok {
+// 			vC = v
+// 			break
+// 		}
+// 	}
+// 	if vC != nil {
+// 		// add name of relationship to list of relationships
+// 		listener.GraphElements = append(listener.GraphElements, vC.GetText())
+// 	}
+// }
+//
+// func (listener *MatchListener) EnterOC_RelationshipDeatil(rDC *tti.OC_RelationshipDetailContext) {
+// 	var vC *tti.OC_VariableContext
+// 	for _, ctx := range rDC.GetChildren() {
+// 		if v, ok := ctx.(*tti.OC_VariableContext); ok {
+// 			vC = v
+// 			break
+// 		}
+// 	}
+// 	if vC != nil {
+// 		// add name of relationship to list of relationships
+// 		listener.GraphElements = append(listener.GraphElements, vC.GetText())
+// 	}
+// }
+
+// get all graph elements (nodes and edges) in the match clause, where clause and return clause
+
+type GraphElements struct {
+	MatchGraphElements  []string
+	WhereGraphElements  []string
+	ReturnGraphElements []string
+}
+
+type ElementListener struct {
 	*tti.BaseTTQLListener
-	MatchClause string
-}
-
-func NewMatchListener() *MatchListener {
-	return new(MatchListener)
-}
-
-func (listener *MatchListener) EnterOC_Match(wC *tti.OC_MatchContext) {
-	listener.MatchClause = wC.GetText()
-}
-
-type WhereListener struct {
-	*tti.BaseTTQLListener
-	WhereClause string
-}
-
-func NewWhereListener() *WhereListener {
-	return new(WhereListener)
-}
-
-func (listener *WhereListener) EnterOC_Where(wC *tti.OC_WhereContext) {
-	listener.WhereClause = wC.GetText()
-}
-
-type ReturnListener struct {
-	*tti.BaseTTQLListener
+	GraphElements
+	MatchClause  string
+	WhereClause  string
 	ReturnClause string
 }
 
-func NewReturnListener() *ReturnListener {
-	return new(ReturnListener)
+func NewElementListener() *ElementListener {
+	return new(ElementListener)
 }
 
-func (listener *ReturnListener) EnterOC_Return(rC *tti.OC_ReturnContext) {
+func (listener *ElementListener) EnterOC_Variable(vC *tti.OC_VariableContext) {
+	el := vC.GetText()
+	parent := vC.GetParent()
+	for parent != nil {
+		if _, ok := parent.(*tti.OC_MatchContext); ok {
+			listener.GraphElements.MatchGraphElements = append(listener.GraphElements.MatchGraphElements, el)
+			break
+		} else if _, ok := parent.(*tti.OC_WhereContext); ok {
+			listener.GraphElements.WhereGraphElements = append(listener.GraphElements.WhereGraphElements, el)
+			break // no need to check further
+		} else if _, ok := parent.(*tti.OC_ReturnContext); ok {
+			listener.GraphElements.ReturnGraphElements = append(listener.GraphElements.ReturnGraphElements, el)
+			break // no need to check further
+		}
+		parent = parent.GetParent()
+	}
+
+	// after parsing the query, the tree walk is not conducted in case there have been any parse errors.
+	// This should not happen and therefore panics if it somehow does.
+	if parent == nil {
+		panic("This should not happen. variable not in match, where or return clause")
+	}
+
+}
+
+func (listener *ElementListener) EnterOC_Match(wC *tti.OC_MatchContext) {
+	listener.MatchClause = wC.GetText()
+}
+
+func (listener *ElementListener) EnterOC_Where(wC *tti.OC_WhereContext) {
+	listener.WhereClause = wC.GetText()
+}
+
+func (listener *ElementListener) EnterOC_Return(rC *tti.OC_ReturnContext) {
 	listener.ReturnClause = rC.GetText()
 }
 
