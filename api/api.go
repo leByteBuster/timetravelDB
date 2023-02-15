@@ -1,25 +1,16 @@
 package api
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"os"
 
+	"github.com/c-bata/go-prompt"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 func Api() {
-
-	// conn := connectTimescale("postgres", "password", "5432", "postgres")
-	// defer conn.Close(context.Background())
-
-	//query := `SELECT time, timestamps, value FROM ts_05318d0f_6a49_4e67_b9a5_62b46af5c209 WHERE value='zFCvbu';`
-	//query := `SELECT time, timestamps, value FROM ts_05318d0f_6a49_4e67_b9a5_62b46af5c209;`
-
-	// rows, err := readRowsTimescale(query, nil, "postgres", "password", "5432", "postgres")
-	// if err != nil {
-	// 	log.Println(err)
-	// 	os.Exit(1)
-	// }
 
 	// counts only one row because the period (from,to] is exclusive for the second value
 	// val := getPropertyAggr("2022-12-22T15:33:13Z", "2022-12-29T20:24:36.311106Z", "COUNT", "ts_05318d0f_6a49_4e67_b9a5_62b46af5c209")
@@ -29,12 +20,18 @@ func Api() {
 	// fmt.Printf("Aggr: %v\n", val)
 	// fmt.Printf("Aggr: %v", val2)
 
+	ctx := context.Background()
+
 	var err error
-	driverNeo, err = neo4j.NewDriverWithContext(UriNeo, neo4j.BasicAuth(UserNeo, PassNeo, ""))
+	DriverNeo, err = neo4j.NewDriverWithContext(UriNeo, neo4j.BasicAuth(UserNeo, PassNeo, ""))
 	if err != nil {
 		log.Printf("Creating driver failed: %v", err)
 		os.Exit(1)
 	}
+	defer DriverNeo.Close(ctx)
+
+	SessionNeo = DriverNeo.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	defer SessionNeo.Close(ctx)
 
 	// TEST QUERIES
 	//String ttQuery2 = "FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ping > 22.33" + "RETURN n.ping, n ";
@@ -43,28 +40,75 @@ func Api() {
 	//String ttQuery = "FROM 2023-02-03T12:34:39Z TO 2023-02-03 SHALLOW MATCH (a)-[x]->(b) WHERE a.ping > 22" + " RETURN a "; // should parse
 	//String ttQuery6 = "FROM 2023-02-03T12:34:39Z TO 2023-02-03 SHALLOW MATCH (a) WHERE a.ping > 22" + " RETURN a "; // should parse
 	//String ttQuery5 = "FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (a)-[x]->(b) WHERE a.ping > 22" + " RETURN a.ping, b "; // should parse
-	ttQuery4 := "FROM 2023-02-03T12:34:39Z TO 2023-02-03 SHALLOW MATCH (a)-[x]->(b) WHERE a.ping > 22" + " RETURN a.ping, b " // should parse
+	//ttQuery4 := "FROM 2023-02-03T12:34:39Z TO 2023-02-03 SHALLOW MATCH (a)-[x]->(b) WHERE a.ping > 22" + " RETURN a.ping, b " // should parse
 	//ttQuery5 := "FROM 2023-02-03T12:34:39Z TO 2023-02-03 SHALLOW MATCH (a)-[x]->(b) WHERE a.ping > 22" + " RETURN a "         // should parse
 	//ttQuery6 := "FROM 2023-02-03T12:34:39Z TO 2023-02-03 SHALLOW MATCH (a) WHERE a.ping > 22" + " RETURN a "                  // should parse
 	//ttQuery5 := "FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (a)-[x]->(b) WHERE a.ping > 22" + " RETURN a.ping, b " // should parse
 
-	err = ProcessQuery(ttQuery4)
-	if err != nil {
-		log.Printf("Processing query failed: %v", err)
-		os.Exit(1)
+	//ttQuery5 := "FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (a)-[x]->(b) WHERE a.ping > 22" + " RETURN a.ping, b " // should parse
+
+	//query := "FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (a)-[x]->(b) WHERE a.ping IS NOT NULL" + " RETURN a.ping, b "
+
+	// ####
+	// correct path of the condition tree:
+	// ####
+	// query := "FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z SHALLOW MATCH (a)-[x]->(b) WHERE a.ping IS NOT NULL" + " RETURN a.ping, b "
+	// query := "FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z SHALLOW MATCH (a)-[x]->(b) WHERE a.ping IS NOT NULL" + " RETURN  b "
+	// query := "FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z SHALLOW MATCH (a)-[x]->(b) WHERE a.ping" + " RETURN  b "
+	// query := "FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z SHALLOW MATCH (a)-[x]->(b) WHERE a.ping" + " RETURN  b.st "
+	// query := "FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z SHALLOW MATCH (a)-[x]->(b) WHERE b.st IS NOT NULL AND a.ping IS NOT NULL" + " RETURN b "
+	// query := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NOT NULL" + " RETURN  b.st "
+
+	// ####
+	// ####
+	// ####
+	// ####
+	// PRESENTATION QUERIES 15.02
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NOT NULL RETURN *
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NOT NULL RETURN  a.properties_components_cpu
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.notExistingProperty IS NOT NULL RETURN *
+	// query := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NOT NULL RETURN  a.properties_components_cpu"
+	// ####
+	// ####
+	// ####
+	// ####
+
+	fmt.Print("Enter Query: \n")
+	p := prompt.New(
+		executor,
+		completer,
+		prompt.OptionTitle("MyPrompt"),
+	)
+
+	p.Run()
+
+}
+
+// executor for the prompt
+func executor(in string) {
+	switch in {
+	case "hello":
+		fmt.Println("Hello world!")
+	case "quit":
+		os.Exit(0)
+	case "exit":
+		os.Exit(0)
+	case "Quit":
+		os.Exit(0)
+	case "Exit":
+		os.Exit(0)
+	case "help":
+		fmt.Println("To query TimeTravelDB type in a valid TTQL query.\nTo exit the program type 'quit' or 'exit'.\nFor more infos: https://github.com/LexaTRex/timetravelDB/")
+	default:
+		fmt.Printf("Processing Query: %s\n", in)
+		err := ProcessQuery(in)
+		if err != nil {
+			log.Printf("Processing query failed: %v", err)
+		}
 	}
+}
 
-	// #### TEST QUERY SINGLE NODE NEO4J ####
-	// node, err := queryNodeNeo4j(2)
-
-	// if err != nil {
-	// 	log.Printf("Querying node failed: %v", err)
-	// 	os.Exit(1)
-	// }
-
-	// fmt.Printf("Result: %v\n", node)
-	// fmt.Println(reflect.TypeOf(node))
-
-	// #### TEST PARSING QUERY STRING ####
-
+// auto completion suggestions for the prompt
+func completer(in prompt.Document) []prompt.Suggest {
+	return []prompt.Suggest{{Text: "FROM", Description: "FROM"}, {Text: "TO", Description: "TO"}, {Text: "SHALLOW", Description: "SHALLOW"}, {Text: "MATCH", Description: "MATCH"}, {Text: "WHERE", Description: "WHERE"}, {Text: "RETURN", Description: "RETURN"}}
 }
