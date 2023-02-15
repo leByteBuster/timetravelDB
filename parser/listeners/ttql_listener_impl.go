@@ -2,6 +2,7 @@ package listeners
 
 import (
 	"fmt"
+	"strings"
 
 	tti "github.com/LexaTRex/timetravelDB/parser/ttql_interface"
 	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
@@ -24,23 +25,24 @@ func (treeShapeListener *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleC
 // PropertyLookupListener is a listener that collects insights about property lookup clauses
 
 type PropertyClauseInsight struct {
-	PropertyLookupClause string                              //
-	ComparisonContext    *tti.OC_ComparisonExpressionContext // if isPropertyLookup is true, the comparison string can be retrieved from this to split the Clause
-	Field                string
-	PropertyKeys         []string
-	Labels               []string
-	CompareOperator      string
+	PropertyLookupClause string // string of the lookup (of the lookup only)
+	// ComparisonContext    *tti.OC_ComparisonExpressionContext // if isPropertyLookup is true, the comparison string can be retrieved from this to split the Clause
+	Element         string   // element of the lookup (variable of node/edge)
+	PropertyKey     string   // the property key (only one is necessary because of flattening n.property1.property2 should not be necessary/possible)
+	Labels          []string // labels are not supporte yet here
+	CompareOperator string   // compariosn operator - if the Comparison expression contains a CompareOperator
 	//take care. this can be a property lookup as well. how to handle ?
 	// maybe set a bool. if true then use the next propertyClauseInsights in line as comparison value
 	// or maybe just a pointer ?
-	IsPropertyLookup          bool
-	IsComparison              bool
-	IsPartialComparison       bool
-	IsWhere                   bool
-	IsReturn                  bool
-	IsValid                   bool
-	CountPartialComparison    int
-	IsAppendixOfNullPredicate bool
+	IsPropertyLookup bool // contains this PropertyClause a property lookup ?
+	IsComparison     bool // is it part of a comparison ? (i think we can delete this because property clauses are safed in a map with the comparison object
+	// as the key for a list of Insight)
+	IsPartialComparison       bool // is it part of a partial comparison ?
+	IsWhere                   bool // part of a WHERE clause ?
+	IsReturn                  bool // part of a RETURN clause ?
+	IsValid                   bool // is Part of a RETURN or WHERE clause ? if not invalid
+	CountPartialComparison    int  // how many PartialComparisons
+	IsAppendixOfNullPredicate bool // does a NullPredicate exist as suffix ?
 }
 
 // type PropertyLookupListener struct {
@@ -91,7 +93,9 @@ type PropertyOrLabelsExpressionListener struct {
 }
 
 func NewPropertyOrLabelsExpressionListener() *PropertyOrLabelsExpressionListener {
-	return new(PropertyOrLabelsExpressionListener)
+	m := new(PropertyOrLabelsExpressionListener)
+	m.Insights = map[*tti.OC_ComparisonExpressionContext][]PropertyClauseInsight{}
+	return m
 }
 
 func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.OC_PropertyOrLabelsExpressionContext) {
@@ -109,7 +113,7 @@ func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpr
 	var partialComparison *tti.OC_PartialComparisonExpressionContext
 	var countPartialComparison int = 0
 
-	var field string = pOLE.GetChild(0).(*tti.OC_AtomContext).GetText()
+	var element string = pOLE.GetChild(0).(*tti.OC_AtomContext).GetText()
 	var propertyKey string
 	var compareOperator string // if comparisonExpression get compare operator and compare value
 
@@ -142,6 +146,7 @@ func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpr
 	// 1: property Lookup is true: run until WHERE or RETURN is found. If not found, then it is invalid
 	// 2: property Lookup is false: run and see if CompareExpression is found. If not, then it is NOT invalid
 	// Note: when Searching for WHERE or RETURN, the ComparissonExpression would be passed on the way anywas so no extra check needed
+	// Note: invalid if: property lookup true && !isReturn && !isWhere
 	for parent != nil && (!isPropertyLookup && !isComparison || isPropertyLookup && !(isReturn || isWhere)) {
 		if e, ok := parent.(*tti.OC_PartialComparisonExpressionContext); ok {
 			partialComparison = e
@@ -165,6 +170,9 @@ func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpr
 			if _, ok := ctx.(*tti.OC_PartialComparisonExpressionContext); ok {
 				countPartialComparison++
 			}
+			// NOTE: this might only work in some cases. Because PartialComparisons itself
+			//			 contain a StringListNullPredicate and therefore can contain
+			//			 a NullPredicate.
 			if sCtx, ok := ctx.(*tti.OC_StringListNullPredicateExpressionContext); ok {
 				for _, ctx2 := range sCtx.GetChildren() {
 					if _, ok := ctx2.(*tti.OC_NullPredicateExpressionContext); ok {
@@ -184,12 +192,12 @@ func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpr
 
 	listener.Insights[comparison] = append(listener.Insights[comparison], PropertyClauseInsight{
 		PropertyLookupClause:      propertyLookupClause,
-		Field:                     field,
-		PropertyKeys:              []string{propertyKey},
+		Element:                   element,
+		PropertyKey:               propertyKey,
 		Labels:                    []string{},
 		IsWhere:                   isWhere,
 		IsReturn:                  isReturn,
-		IsValid:                   isWhere || isReturn,
+		IsValid:                   (isWhere || isReturn) || !isPropertyLookup,
 		IsComparison:              isComparison,
 		CompareOperator:           compareOperator,
 		IsPropertyLookup:          isPropertyLookup,
@@ -335,7 +343,19 @@ func (listener *ElementListener) EnterOC_Variable(vC *tti.OC_VariableContext) {
 }
 
 func (listener *ElementListener) EnterOC_Match(wC *tti.OC_MatchContext) {
-	listener.MatchClause = wC.GetText()
+	var pC *tti.OC_PatternContext
+	var sb strings.Builder
+	children := wC.GetChildren()
+
+	for _, child := range children {
+		if c, ok := child.(*tti.OC_PatternContext); ok {
+			pC = c
+			break
+		}
+	}
+	sb.WriteString("Match ")
+	sb.WriteString(pC.GetText())
+	listener.MatchClause = sb.String()
 }
 
 func (listener *ElementListener) EnterOC_Where(wC *tti.OC_WhereContext) {

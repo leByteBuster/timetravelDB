@@ -11,16 +11,18 @@ import (
 )
 
 type ParseResult struct {
-	IsShallow                 bool
-	ContainsPropertyLookup    bool
-	ContainsOnlyNullPredicate bool
-	From                      string
-	To                        string
+	IsShallow                 bool   // is the query shallow
+	ContainsPropertyLookup    bool   // does it contain any property lookup
+	ContainsOnlyNullPredicate bool   // if it contains property lookups - do all of them have a NullPredicates suffix ?
+	From                      string // start time
+	To                        string // end time
 	MatchClause               string
 	WhereClause               string
 	ReturnClause              string
-	GraphElements             li.GraphElements
-	PropertyClauseInsights    map[tti.OC_ComparisonExpressionContext][]li.PropertyClauseInsight
+	GraphElements             li.GraphElements                                                   // all element variables occouring in the query
+	LookupsWhere              map[string][]string                                                // all relevant lookups in Where (lookups that are relevant for binary querying) - mapped onto their variable: n: {property1,property2} s: {property1,property4}..
+	LookupsReturn             map[string][]string                                                // all relevant lookups in Return (lookups that are relevant for binary querying)
+	PropertyClauseInsights    map[*tti.OC_ComparisonExpressionContext][]li.PropertyClauseInsight // insights of Comparison expressions / Property Clauses
 }
 
 func ParseQuery(query string) (ParseResult, error) {
@@ -86,38 +88,52 @@ func ParseQuery(query string) (ParseResult, error) {
 	fmt.Println("............................................")
 	containsPropertyLookup := false
 	containsOnlyNullPredicate := true
-	for _, subquery := range propertyClauseInsights {
-		subqueryClause := subquery.ComparisonContext.GetText() // this should be the part of the string to be cut out
-		subqueryClauseLookup := subquery.PropertyLookupClause
-		comparisonCtx := subquery.ComparisonContext
-		field := subquery.Field
-		propKeys := subquery.PropertyKeys
-		labels := subquery.Labels
-		compareOp := subquery.CompareOperator
 
-		isWhere := subquery.IsWhere
-		isReturn := subquery.IsReturn
-		isComparison := subquery.IsComparison
-		isPartialComparison := subquery.IsPartialComparison
-		isPropertyLookup := subquery.IsPropertyLookup
-		if subquery.IsPropertyLookup {
-			containsPropertyLookup = true
+	lookupsWhere := map[string][]string{}
+	lookupsReturn := map[string][]string{}
+	for comparisonCtx, listOfInsights := range propertyClauseInsights {
+		for _, insight := range listOfInsights {
+			insightClause := comparisonCtx.GetText() // this should be the part of the string to be cut out
+			insightClauseLookup := insight.PropertyLookupClause
+			field := insight.Element
+			propKeys := insight.PropertyKey
+			labels := insight.Labels
+			compareOp := insight.CompareOperator
+
+			isWhere := insight.IsWhere
+			isReturn := insight.IsReturn
+			isComparison := insight.IsComparison
+			isPartialComparison := insight.IsPartialComparison
+			isPropertyLookup := insight.IsPropertyLookup
+			isAppendixOfNullPredicate := insight.IsAppendixOfNullPredicate
+
+			if insight.IsPropertyLookup {
+				containsPropertyLookup = true
+
+				// collect property lookups that are relevant for binary databae fetching (neo4j, timescaleDB)
+				if !insight.IsAppendixOfNullPredicate {
+					containsOnlyNullPredicate = false
+					if isWhere {
+						lookupsWhere[insight.Element] = append(lookupsWhere[insight.Element], insight.PropertyKey)
+					} else if isReturn {
+						lookupsReturn[insight.Element] = append(lookupsReturn[insight.Element], insight.PropertyKey)
+					}
+				}
+			}
+
+			isValid := insight.IsValid
+
+			fmt.Printf("\nComparisonWithPropertyLookupQuery: %v\nPropertyLookupinsight: %v \ncomparisonCtx: %v \nfield: %v \npropKeys: %v \nlabels: %v \ncompareOp: %v", insightClause,
+				insightClauseLookup, comparisonCtx, field, propKeys, labels, compareOp)
+
+			// print all of the insight insights
+			fmt.Printf("\nIsWhere: %v	\nIsReturn: %v	\nIsComparison: %v	\nIsPartialComparison: %v	\nIsPropertyLookup: %v \nIsAppendixOfNullPredicate: %v	\nIsValid: %v",
+				isWhere, isReturn, isComparison, isPartialComparison, isPropertyLookup, isAppendixOfNullPredicate, isValid)
+
+			fmt.Println("")
+			fmt.Println("............................................")
+			fmt.Println("............................................")
 		}
-		if !subquery.IsAppendixOfNullPredicate {
-			containsOnlyNullPredicate = false
-		}
-		isValid := subquery.IsValid
-
-		fmt.Printf("\nComparisonWithPropertyLookupQuery: %v\nPropertyLookupSubquery: %v \ncomparisonCtx: %v \nfield: %v \npropKeys: %v \nlabels: %v \ncompareOp: %v", subqueryClause,
-			subqueryClauseLookup, comparisonCtx, field, propKeys, labels, compareOp)
-
-		// print all of the subquery insights
-		fmt.Printf("\nIsWhere: %v	\nIsReturn: %v	\nIsComparison: %v	\nIsPartialComparison: %v	\nIsPropertyLookup: %v	\nIsValid: %v",
-			isWhere, isReturn, isComparison, isPartialComparison, isPropertyLookup, isValid)
-
-		fmt.Println("")
-		fmt.Println("............................................")
-		fmt.Println("............................................")
 	}
 
 	// String cypherQuery2 = "MATCH (n) WHERE n.ping > 22.33" + " RETURN n.ping, n ";
@@ -134,6 +150,8 @@ func ParseQuery(query string) (ParseResult, error) {
 		WhereClause:               elementListener.WhereClause,
 		ReturnClause:              elementListener.ReturnClause,
 		GraphElements:             elementListener.GraphElements,
+		LookupsWhere:              lookupsWhere,
+		LookupsReturn:             lookupsReturn,
 		PropertyClauseInsights:    propertyClauseInsights,
 	}, nil
 }
