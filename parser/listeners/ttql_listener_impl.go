@@ -8,21 +8,37 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
 )
 
+type TimePeriod struct {
+	From string
+	To   string
+}
+
+type GraphElements struct {
+	MatchGraphElements  []string
+	WhereGraphElements  []string
+	ReturnGraphElements []string
+}
+
 // TreeShapeListener is a listener that enters every node in the parser tree and prints the tree shape of the parse tree
 
-type TreeShapeListener struct {
+type TtqlTreeListener struct {
 	*tti.BaseTTQLListener
+	// every comparison expression is mapped onto a list of its containing property clause insights
+	// a property clause insight is not always a property lookup
+	Insights map[*tti.OC_ComparisonExpressionContext][]PropertyClauseInsight
+	TimePeriod
+	IsShallow bool
+	GraphElements
+	MatchClause  string
+	WhereClause  string
+	ReturnClause string
 }
 
-func NewTreeShapeListener() *TreeShapeListener {
-	return new(TreeShapeListener)
+func NewTtqlTreeListener() *TtqlTreeListener {
+	tl := new(TtqlTreeListener)
+	tl.Insights = map[*tti.OC_ComparisonExpressionContext][]PropertyClauseInsight{}
+	return tl
 }
-
-func (treeShapeListener *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
-	fmt.Println(ctx.GetText())
-}
-
-// PropertyLookupListener is a listener that collects insights about property lookup clauses
 
 type PropertyClauseInsight struct {
 	PropertyLookupClause string // string of the lookup (of the lookup only)
@@ -45,60 +61,10 @@ type PropertyClauseInsight struct {
 	IsAppendixOfNullPredicate bool // does a NullPredicate exist as suffix ?
 }
 
-// type PropertyLookupListener struct {
-// 	*tti.BaseTTQLListener
-// 	Insights map[OC_ComparisonExpression][]PropertyClauseInsights
-// }
-//
-// func NewPropertyLookupListener() *PropertyLookupListener {
-// 	return new(PropertyLookupListener)
-// }
-//
-// func (pL *PropertyLookupListener) EnterOC_PropertyLookup(ctx *tti.OC_PropertyLookupContext) {
-// 	fmt.Println(ctx.GetText())
-// 	parent := ctx.GetParent()
-// 	field := parent.GetChild(0)
-// 	propertyLookupClause := ctx.GetText()
-// 	isWhere := false
-// 	isReturn := false
-// 	for parent != nil && !(isWhere || isReturn) {
-// 		if _, ok := parent.(*tti.OC_WhereContext); ok {
-// 			isWhere = true
-// 		} else if _, ok := parent.(*tti.OC_ReturnContext); ok {
-// 			isReturn = true
-// 		}
-// 		parent = parent.GetParent()
-// 	}
-// 	if pL.Insights == nil {
-// 		pL.Insights = []PropertyClauseInsights{}
-// 	}
-//
-// 	pL.Insights = append(pL.Insights, PropertyClauseInsights{
-// 		PropertyLookupClause: propertyLookupClause,
-// 		IsWhere:              isWhere,
-// 		IsReturn:             isReturn,
-// 		IsValid:              isWhere || isReturn,
-// 	})
-//
-// }
-
 // Listener For PropertyOrLabelsExpression (to get all property lookups inside the clause, with all concatenated propertylookups
 // and all concatenated labels)
 
-type PropertyOrLabelsExpressionListener struct {
-	*tti.BaseTTQLListener
-	// every comparison expression is mapped onto a list of its containing property clause insights
-	// a property clause insight is not always a property lookup
-	Insights map[*tti.OC_ComparisonExpressionContext][]PropertyClauseInsight
-}
-
-func NewPropertyOrLabelsExpressionListener() *PropertyOrLabelsExpressionListener {
-	m := new(PropertyOrLabelsExpressionListener)
-	m.Insights = map[*tti.OC_ComparisonExpressionContext][]PropertyClauseInsight{}
-	return m
-}
-
-func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.OC_PropertyOrLabelsExpressionContext) {
+func (listener *TtqlTreeListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.OC_PropertyOrLabelsExpressionContext) {
 	propertyLookupClause := pOLE.GetText()
 
 	var isWhere = false
@@ -208,24 +174,7 @@ func (listener *PropertyOrLabelsExpressionListener) EnterOC_PropertyOrLabelsExpr
 
 }
 
-// TimeClauseListener is a listener that collects insights about property lookup clauses
-
-type TimePeriod struct {
-	From string
-	To   string
-}
-
-type TimeShallowListener struct {
-	*tti.BaseTTQLListener
-	TimePeriod
-	IsShallow bool
-}
-
-func NewTimeShallowListener() *TimeShallowListener {
-	return new(TimeShallowListener)
-}
-
-func (listener *TimeShallowListener) EnterTtQL_Query(qC *tti.TtQL_QueryContext) {
+func (listener *TtqlTreeListener) EnterTtQL_Query(qC *tti.TtQL_QueryContext) {
 
 	isShallow := false
 	tC := qC.TtQL_TimeClause()
@@ -260,64 +209,7 @@ func (listener *TimeShallowListener) EnterTtQL_Query(qC *tti.TtQL_QueryContext) 
 	listener.IsShallow = isShallow
 }
 
-// type MatchListener struct {
-// 	*tti.BaseTTQLListener
-// 	GraphElements []string
-// }
-//
-// func NewMatchListener() *MatchListener {
-// 	return new(MatchListener)
-// }
-//
-// func (listener *MatchListener) EnterOC_NodePattern(nPC *tti.OC_NodePatternContext) {
-// 	var vC *tti.OC_VariableContext
-// 	for _, ctx := range nPC.GetChildren() {
-// 		if v, ok := ctx.(*tti.OC_VariableContext); ok {
-// 			vC = v
-// 			break
-// 		}
-// 	}
-// 	if vC != nil {
-// 		// add name of relationship to list of relationships
-// 		listener.GraphElements = append(listener.GraphElements, vC.GetText())
-// 	}
-// }
-//
-// func (listener *MatchListener) EnterOC_RelationshipDeatil(rDC *tti.OC_RelationshipDetailContext) {
-// 	var vC *tti.OC_VariableContext
-// 	for _, ctx := range rDC.GetChildren() {
-// 		if v, ok := ctx.(*tti.OC_VariableContext); ok {
-// 			vC = v
-// 			break
-// 		}
-// 	}
-// 	if vC != nil {
-// 		// add name of relationship to list of relationships
-// 		listener.GraphElements = append(listener.GraphElements, vC.GetText())
-// 	}
-// }
-
-// get all graph elements (nodes and edges) in the match clause, where clause and return clause
-
-type GraphElements struct {
-	MatchGraphElements  []string
-	WhereGraphElements  []string
-	ReturnGraphElements []string
-}
-
-type ElementListener struct {
-	*tti.BaseTTQLListener
-	GraphElements
-	MatchClause  string
-	WhereClause  string
-	ReturnClause string
-}
-
-func NewElementListener() *ElementListener {
-	return new(ElementListener)
-}
-
-func (listener *ElementListener) EnterOC_Variable(vC *tti.OC_VariableContext) {
+func (listener *TtqlTreeListener) EnterOC_Variable(vC *tti.OC_VariableContext) {
 	el := vC.GetText()
 	parent := vC.GetParent()
 	for parent != nil {
@@ -342,7 +234,7 @@ func (listener *ElementListener) EnterOC_Variable(vC *tti.OC_VariableContext) {
 
 }
 
-func (listener *ElementListener) EnterOC_Match(wC *tti.OC_MatchContext) {
+func (listener *TtqlTreeListener) EnterOC_Match(wC *tti.OC_MatchContext) {
 	var pC *tti.OC_PatternContext
 	var sb strings.Builder
 	children := wC.GetChildren()
@@ -358,11 +250,11 @@ func (listener *ElementListener) EnterOC_Match(wC *tti.OC_MatchContext) {
 	listener.MatchClause = sb.String()
 }
 
-func (listener *ElementListener) EnterOC_Where(wC *tti.OC_WhereContext) {
+func (listener *TtqlTreeListener) EnterOC_Where(wC *tti.OC_WhereContext) {
 	listener.WhereClause = wC.GetText()
 }
 
-func (listener *ElementListener) EnterOC_Return(rC *tti.OC_ReturnContext) {
+func (listener *TtqlTreeListener) EnterOC_Return(rC *tti.OC_ReturnContext) {
 	listener.ReturnClause = rC.GetText()
 }
 

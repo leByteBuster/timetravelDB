@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 
 	"github.com/c-bata/go-prompt"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 func Api() {
-
 	// counts only one row because the period (from,to] is exclusive for the second value
 	// val := getPropertyAggr("2022-12-22T15:33:13Z", "2022-12-29T20:24:36.311106Z", "COUNT", "ts_05318d0f_6a49_4e67_b9a5_62b46af5c209")
 
@@ -77,7 +77,8 @@ func Api() {
 	p := prompt.New(
 		executor,
 		completer,
-		prompt.OptionTitle("MyPrompt"),
+		prompt.OptionPrefix("TTQL> "),
+		prompt.OptionTitle("TTQL CLI"),
 	)
 
 	p.Run()
@@ -90,12 +91,16 @@ func executor(in string) {
 	case "hello":
 		fmt.Println("Hello world!")
 	case "quit":
+		handleExit() // note: cannot handle this with defer (probably goroutine race condition)
 		os.Exit(0)
 	case "exit":
+		handleExit()
 		os.Exit(0)
 	case "Quit":
+		handleExit()
 		os.Exit(0)
 	case "Exit":
+		handleExit()
 		os.Exit(0)
 	case "help":
 		fmt.Println("To query TimeTravelDB type in a valid TTQL query.\nTo exit the program type 'quit' or 'exit'.\nFor more infos: https://github.com/LexaTRex/timetravelDB/")
@@ -111,4 +116,12 @@ func executor(in string) {
 // auto completion suggestions for the prompt
 func completer(in prompt.Document) []prompt.Suggest {
 	return []prompt.Suggest{{Text: "FROM", Description: "FROM"}, {Text: "TO", Description: "TO"}, {Text: "SHALLOW", Description: "SHALLOW"}, {Text: "MATCH", Description: "MATCH"}, {Text: "WHERE", Description: "WHERE"}, {Text: "RETURN", Description: "RETURN"}}
+}
+
+// workaround to get the terminal back to normal after exiting the program
+func handleExit() {
+	rawModeOff := exec.Command("/bin/stty", "sane", "-raw", "echo")
+	rawModeOff.Stdin = os.Stdin
+	_ = rawModeOff.Run()
+	rawModeOff.Wait()
 }

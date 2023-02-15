@@ -28,20 +28,19 @@ type ParseResult struct {
 func ParseQuery(query string) (ParseResult, error) {
 
 	qS := antlr.NewInputStream(query)
-	fmt.Println("Lexer Tokens: ")
-
 	lexer := tti.NewTTQLLexer(qS)
 	tokens := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
 	parser := tti.NewTTQLParser(tokens)
+
+	// remove default error listener and add custom error listener which aggregates all errors
 	parser.RemoveErrorListeners()
 	errorListener := li.NewErrorListener()
 	parser.AddErrorListener(errorListener)
 
-	// interrupt parsing as soon as an error occours
-	//parser.SetErrorHandler(antlr.NewBailErIrorStrategy())
-
+	// parse ttql query
 	treectx := parser.TtQL()
 
+	// retrieve parsing errors
 	if errorListener.Errors != nil {
 		var sb strings.Builder
 		for _, error := range errorListener.Errors {
@@ -51,16 +50,8 @@ func ParseQuery(query string) (ParseResult, error) {
 		return ParseResult{}, errors.New(sb.String())
 	}
 
-	// initialize listeners
-	timeShallowListener := li.NewTimeShallowListener()
-	propertyListener := li.NewPropertyOrLabelsExpressionListener()
-	elementListener := li.NewElementListener()
+	listener := li.NewTtqlTreeListener()
 
-	// HOW TO GET THE ERRORS ?????
-	//		parser.GetErrorHandler()
-	//		parser.GetErrorListenerDispatch()
-	//		parser._SyntaxErrors
-	//
 	fmt.Println()
 	fmt.Println("............................................")
 	fmt.Println()
@@ -69,21 +60,28 @@ func ParseQuery(query string) (ParseResult, error) {
 	fmt.Println()
 	fmt.Println("............................................")
 	fmt.Println()
-	antlr.ParseTreeWalkerDefault.Walk(timeShallowListener, treectx)
-	fmt.Printf("\nTimeClauseInsights: \n from: %v\nto: %v\nisShallow: %v", timeShallowListener.TimePeriod.From,
-		timeShallowListener.TimePeriod.To, timeShallowListener.IsShallow)
+
+	antlr.ParseTreeWalkerDefault.Walk(listener, treectx)
+	parseResult := aggregateParsingInfo(listener)
+
+	return parseResult, nil
+}
+
+// this code is outsourced because its still pretty messy because of all the printin. As soon as everything is stable clean this function up
+// maybe include error checks here
+func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
+	fmt.Printf("\nTimeClauseInsights: \n from: %v\nto: %v\nisShallow: %v", listener.TimePeriod.From,
+		listener.TimePeriod.To, listener.IsShallow)
 	fmt.Println()
 	fmt.Println("............................................")
 	fmt.Println()
-	antlr.ParseTreeWalkerDefault.Walk(elementListener, treectx)
 	fmt.Printf("\nMatchClause variables: %v\nWhereClause variables: %v\nReturnClause variables: %v",
-		elementListener.GraphElements.MatchGraphElements, elementListener.GraphElements.WhereGraphElements, elementListener.GraphElements.ReturnGraphElements)
+		listener.GraphElements.MatchGraphElements, listener.GraphElements.WhereGraphElements, listener.GraphElements.ReturnGraphElements)
 	fmt.Println()
 	fmt.Println("............................................")
 	fmt.Println()
 
-	antlr.ParseTreeWalkerDefault.Walk(propertyListener, treectx)
-	propertyClauseInsights := propertyListener.Insights
+	propertyClauseInsights := listener.Insights
 
 	fmt.Println("............................................")
 	containsPropertyLookup := false
@@ -136,22 +134,18 @@ func ParseQuery(query string) (ParseResult, error) {
 		}
 	}
 
-	// String cypherQuery2 = "MATCH (n) WHERE n.ping > 22.33" + " RETURN n.ping, n ";
-	// String cypherQuery3 = "MATCH (a)-[x]->(b) " + " RETURN a.ping, b "; // should parse
-	// String cypherQuery4 = "MATCH (a)-[x]->(b) WHERE a.ping > 22" + " RETURN a.ping, b "; // should parse
-
 	return ParseResult{
-		IsShallow:                 timeShallowListener.IsShallow,
+		IsShallow:                 listener.IsShallow,
 		ContainsPropertyLookup:    containsPropertyLookup,
 		ContainsOnlyNullPredicate: containsOnlyNullPredicate,
-		From:                      timeShallowListener.TimePeriod.From,
-		To:                        timeShallowListener.TimePeriod.To,
-		MatchClause:               elementListener.MatchClause,
-		WhereClause:               elementListener.WhereClause,
-		ReturnClause:              elementListener.ReturnClause,
-		GraphElements:             elementListener.GraphElements,
+		From:                      listener.TimePeriod.From,
+		To:                        listener.TimePeriod.To,
+		MatchClause:               listener.MatchClause,
+		WhereClause:               listener.WhereClause,
+		ReturnClause:              listener.ReturnClause,
+		GraphElements:             listener.GraphElements,
 		LookupsWhere:              lookupsWhere,
 		LookupsReturn:             lookupsReturn,
 		PropertyClauseInsights:    propertyClauseInsights,
-	}, nil
+	}
 }
