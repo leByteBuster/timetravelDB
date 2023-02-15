@@ -5,7 +5,6 @@ go 1.19
 require (
 	github.com/antlr/antlr4/runtime/Go/antlr/v4 v4.0.0-20221202181307-76fa05c21b12
 	github.com/google/uuid v1.3.0
-	github.com/jackc/pgconn v1.13.0
 	github.com/jackc/pgx/v5 v5.2.0
 	github.com/neo4j/neo4j-go-driver/v5 v5.5.0
 	github.com/shopspring/decimal v1.3.1
