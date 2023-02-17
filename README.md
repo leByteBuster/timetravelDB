@@ -1,34 +1,33 @@
-# setup
+# HOW TO USE TimeTravelDB
+
+## setup
 - run the neo4j docker image: 
   `docker run --publish=7474:7474 --publish=7687:7687 --volume=$HOME/neo4j/data:/data neo4j`
-- run the timescaledb docker image: 
+- install and run the timescaledb docker image (see: https://docs.timescale.com/install/latest/installation-docker/): 
+  `docker pull timescale/timescaledb-ha:pg14-latest`
   `docker run -d --name timescaledb -p 5432:5432 -e POSTGRES_PASSWORD=password timescale/timescaledb-ha:pg14-latest`
-- install peg/leg:
-  - necessary dependency for lib 
-  - download zip: https://github.com/gpakosz/peg 
-  - follow instructions in README.txt
-- install libcypher-parser
-  - https://github.com/cleishm/libcypher-parser/issues?q=is%3Aissue+is%3Aclosed
 
 
-setup libcypher-parser:
-  - follow install instructions 
-  - ?: 
-    in ~/.bashrc add: 
-    `export LD_LIBRARY_PATH=/usr/local/lib`
-  - export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig (this is only
-    for the current shell session. If you want to make it permanent, add it to your ~/.bashrc file ?)
-  - pkg-config --libs cypher-parser
+## TTQL CLI
+  - TTQL query in the form of: FROM x TO y MATCH (n)-[r]->(s) RETURN n,r,s
+  - help: prints some help text
+  - quit/exit: quits the program
+  - note: if the program exits unexpectedly then sometimes the terminal settings are not restored correctly 
+    and the typed text is not visible anymore. To fix this issue type: `reset` in the terminal and hit enter
+    and restart the program
 
 
-# access the database manually:
-- docker exec -it timescaledb psql -U postgres  
+# additional useful intel
+ 
+## access the database manually:
+- neo4j: http://localhost:7474/browser/
+- timescaledb: docker exec -it timescaledb psql -U postgres  
 
 
 // TODO: irgendwie muss ich die Daten abbilden 
 
 
-# notes postgres
+## notes postgres
 - DONT forget the ";" for SQL commands or they wont work 
 - possible to define functions inside postgresql  
 - Grants: access rights
@@ -44,7 +43,7 @@ setup libcypher-parser:
    AND table_type='BASE TABLE'; 
     
 
-# notes neo4j 
+## notes neo4j 
 - delete all data: MATCH (n) DETACH DELETE n 
 
 
@@ -105,3 +104,4 @@ Brainstorming
       structure would be better off like:
         - (from, to, aggregations?, cypher_query?)
       The Question here is: should we even ask a cypher query from the user ? 
+

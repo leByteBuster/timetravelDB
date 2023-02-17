@@ -71,7 +71,27 @@ func Api() {
 	// ####
 	// ####
 	// ####
+
 	// ####
+	// #### QUERIES NACH CASES: siehe schaubild bzw den condition tree mit den checkpoints (prints)
+	// #### queries case 1:
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  * | should return 2 match (a)-[x]->(b) with a.properties_components_cpu = 'UGWJn'
+	//																																																																												 because the node with a.properties_components_cpu = 'UGWJn' is occouring in a pattern like this twice
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'not available' RETURN  * | should return nothing
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE "aa" = a.properties_components_cpu RETURN  * | should return nothing
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE 40 > b.properties_Risc RETURN  * | should return one pattern where node 104 is a node 105 is b and all 3 entries for the property risc on 105
+	// 																																																																			  | because two of the entries are < 40
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE 24 > b.properties_Risc RETURN  * | should return one pattern where node 104 is a node 105 is b and all 3 entries for the property risc on 105
+	// 																																																																			  | because one of the entries is < 24
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE 23 > b.properties_Risc RETURN  * | should return no pattern because no of the entries are < 23
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE 23 >= b.properties_Risc RETURN  * | same as two above and below
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE b.properties_Risc =< 23  RETURN  * | same as above and three above
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE b.properties_Risc =< 23  RETURN  * | same as above and three above
+	//    FROM 2023-01-01T14:33:00Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE b.properties_Risc <= 23  RETURN  * | should return nothing since the time range is not including the value with 23
+	//    FROM 2023-01-01T14:33:00Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE b.properties_Risc <= 33  RETURN  * | should return one match entry with all propertyies for b.properties_Risc (like above again)
+	//    FROM 2023-01-01T14:33:00Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE b.properties_Risc < 33  RETURN  * | should nothing  nothing since the time range lowest value is 33 but we ask for < 33
+
+	// THE LAST ONE IS THE ONLY ONE NOT WORKING YET
 
 	fmt.Print("Enter Query: \n")
 	p := prompt.New(
@@ -108,7 +128,7 @@ func executor(in string) {
 		fmt.Printf("Processing Query: %s\n", in)
 		err := ProcessQuery(in)
 		if err != nil {
-			log.Printf("Processing query failed: %v", err)
+			log.Printf("Failed: %v", err)
 		}
 	}
 }

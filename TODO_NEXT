@@ -1,6 +1,38 @@
 Cretaing the parser
   - 
 
+- [x] DEBUG: is working again
+      FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  *
+- [x] DEBUG: not working yet
+     FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'not available' RETURN  *
+- [ ] DEBUG: not working yet
+	   FROM 2023-01-01T14:33:00Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE b.properties_Risc <= 33  RETURN  * | should return one entry with all propertyies (like above again)
+     - it was not working because of the time boundings of the nodes / relationships 
+     - TODO: If time frame lies inside the frame of the node / relationship then filter the properties. Time Frame is not applied correctly 
+
+- [x] die gefilterten properties werden nicht in das Ergebnis gemerged
+- [x] filter die structurellen matches (nur solche in der ergebnismenge lassen die nach der WHERE clause noch werte in der Property haben)
+  - [x] done but check if it works correctly (NEXT)
+  - an error is happening because i delete out of an array which is iterated over  
+    - this was a difficulty: removing from an array while iterating over it
+- [] what about MATCH (n)-[x]->(a) WHERE n.prop > 10 RETURN  n, x.prop2  
+  - hanlde this exception. probably when removing elements from the result array
+  - my idea works for MATCH (n)-[x]->(a) WHERE n.prop > 10 RETURN * 
+- [x]  check if left and right side comparisons are handled correctly 
+  - difficulty!
+- [x] check compare operators like <=, >=
+- [] handle exceptions when removing from result in MATCH (n)-[x]->(a) WHERE n.prop > 10 RETURN  n, x.prop2
+
+- [] make checking if a property exists (filtering) in mergeTimeSeriesInProperty more efficient 
+  - [] send an aggregate function to the time series:  use count OR: 
+       SELECT EXISTS (SELECT 1 FROM my_table WHERE value > 20);
+
+
+- [] cleanup
+  - [] collect object lookupinfo in listener
+  - [] for mergetimeseriesInProperty. use lookupinfo objects for both calls
+
+
 
 -[] Rhebo Daten anschauen 
 -[] Liste von Queries überlegen die zu implementieren sind

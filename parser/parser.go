@@ -19,10 +19,11 @@ type ParseResult struct {
 	MatchClause               string
 	WhereClause               string
 	ReturnClause              string
-	GraphElements             li.GraphElements                                                   // all element variables occouring in the query
-	LookupsWhere              map[string][]string                                                // all relevant lookups in Where (lookups that are relevant for binary querying) - mapped onto their variable: n: {property1,property2} s: {property1,property4}..
-	LookupsReturn             map[string][]string                                                // all relevant lookups in Return (lookups that are relevant for binary querying)
-	PropertyClauseInsights    map[*tti.OC_ComparisonExpressionContext][]li.PropertyClauseInsight // insights of Comparison expressions / Property Clauses
+	GraphElements             li.GraphElements    // all element variables occouring in the query
+	LookupsWhere              map[string][]string // all relevant lookups in Where (lookups that are relevant for binary querying)
+	// not such that are NOT NULL appendices. lookups are onto their variable: n: {property1,property2} s: {property1,property4}..
+	LookupsReturn          map[string][]string                                                // all relevant lookups in Return (lookups that are relevant for binary querying)
+	PropertyClauseInsights map[*tti.OC_ComparisonExpressionContext][]li.PropertyClauseInsight // insights of Comparison expressions / Property Clauses
 }
 
 func ParseQuery(query string) (ParseResult, error) {

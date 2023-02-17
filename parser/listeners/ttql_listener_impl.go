@@ -41,9 +41,9 @@ func NewTtqlTreeListener() *TtqlTreeListener {
 }
 
 type PropertyClauseInsight struct {
-	PropertyLookupClause string // string of the lookup (of the lookup only)
+	PropertyLookupClause string // string of the lookup or literal value: "a.property" or "22"
 	// ComparisonContext    *tti.OC_ComparisonExpressionContext // if isPropertyLookup is true, the comparison string can be retrieved from this to split the Clause
-	Element         string   // element of the lookup (variable of node/edge)
+	Element         string   // element of the lookup (variable of node/edge) represented as string
 	PropertyKey     string   // the property key (only one is necessary because of flattening n.property1.property2 should not be necessary/possible)
 	Labels          []string // labels are not supporte yet here
 	CompareOperator string   // compariosn operator - if the Comparison expression contains a CompareOperator
@@ -86,9 +86,7 @@ func (listener *TtqlTreeListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.O
 	// get the property lookup if existing, looping is necessary for eventual white space
 	// (until now only one. but this is easy to extend for multiple property lookups)
 	for _, child := range pOLE.GetChildren() {
-		fmt.Println("in loop")
 		if t, ok := child.(*tti.OC_PropertyLookupContext); ok {
-			fmt.Println("is lookup")
 			propertyLookup = t
 			isPropertyLookup = true
 			break
@@ -113,7 +111,10 @@ func (listener *TtqlTreeListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.O
 	// 2: property Lookup is false: run and see if CompareExpression is found. If not, then it is NOT invalid
 	// Note: when Searching for WHERE or RETURN, the ComparissonExpression would be passed on the way anywas so no extra check needed
 	// Note: invalid if: property lookup true && !isReturn && !isWhere
-	for parent != nil && (!isPropertyLookup && !isComparison || isPropertyLookup && !(isReturn || isWhere)) {
+
+	// Note: this did not work because also for literals (e.g. 22) I want to know if isReturn or isWhere
+	//for parent != nil && (!isPropertyLookup && !isComparison || isPropertyLookup && !(isReturn || isWhere)) {
+	for parent != nil && !(isReturn || isWhere) {
 		if e, ok := parent.(*tti.OC_PartialComparisonExpressionContext); ok {
 			partialComparison = e
 			isPartialComparison = true
@@ -152,8 +153,8 @@ func (listener *TtqlTreeListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.O
 
 	if isPartialComparison {
 		// the first child of the PartialComparisonExpression is always a compare token
+		// this might be wrong since it maybe does not consider two character comparison operators
 		compareOperator = partialComparison.GetChild(0).GetPayload().(antlr.Token).GetText()
-		fmt.Printf("PartialComparisonExpression: %v", compareOperator)
 	}
 
 	listener.Insights[comparison] = append(listener.Insights[comparison], PropertyClauseInsight{
