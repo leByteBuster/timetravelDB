@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"strings"
+
+	"github.com/LexaTRex/timetravelDB/utils"
 )
 
 func uuidToTablename(uuid string) string {
@@ -57,11 +59,56 @@ func buildQueryString(from, to, aggr string, cmpOp string, cmpVal any, lookupLef
 			case string:
 				builder.WriteString(t) // no quotes needed because already around value (because retrieved like this from parsing tree: 'val')
 			default:
-				builder.WriteString(strings.Trim(anyToString(cmpVal), "'"))
+				builder.WriteString(strings.Trim(utils.AnyToString(cmpVal), "'"))
 			}
 		}
 	}
 	builder.WriteString(") genericAliasName;")
+	fmt.Println(builder.String())
+
+	return builder.String(), nil
+}
+
+// get properties / multiple time-series and apply aggrergation on it if not empty
+func buildQueryStringCmpExists(from, to, aggr string, cmpOp string, cmpVal any, lookupLeft bool, table string) (string, error) {
+
+	var builder strings.Builder
+	var err error
+
+	if !lookupLeft && cmpOp != "" && cmpVal != "" {
+		if cmpOp, err = invertCmpOperatro(cmpOp); err != nil {
+			return "", err
+		}
+	}
+
+	// build query string
+	// builder.WriteString(aggr) cannot do this here because then i only have one return value
+	// have to call a different subfunction aggrTimescale or something
+	builder.WriteString("SELECT EXISTS (SELECT 1 FROM ")
+	builder.WriteString(table)
+	builder.WriteString(" WHERE time >= ")
+	builder.WriteString("'")
+	builder.WriteString(from)
+	builder.WriteString("'")
+	builder.WriteString(" AND time < ")
+
+	//TODO: CHANGE THIS TO DATETIME
+	builder.WriteString("'")
+	builder.WriteString(to)
+	builder.WriteString("'")
+	if cmpOp != "" && cmpVal != "" {
+		builder.WriteString(" AND ")
+		builder.WriteString("value ")
+		builder.WriteString(cmpOp)
+		builder.WriteString(" ")
+		switch t := cmpVal.(type) {
+		case string:
+			builder.WriteString(t) // no quotes needed because already around value (because retrieved like this from parsing tree: 'val')
+		default:
+			builder.WriteString(strings.Trim(utils.AnyToString(cmpVal), "'"))
+		}
+	}
+	builder.WriteString(");")
 	fmt.Println(builder.String())
 
 	return builder.String(), nil

@@ -51,6 +51,17 @@ func getPropertyFromTableCmp(from, to, aggrOp string, cmpOp string, cmpVal any, 
 	return queryProperties(queryString, aggrOp)
 }
 
+func checkIfValueWithConditionExists(from, to, aggrOp string, cmpOp string, cmpVal any, lookupLeft bool, tablename string) (bool, error) {
+	queryString, err := buildQueryStringCmpExists(from, to, aggrOp, cmpOp, cmpVal, lookupLeft, tablename)
+	log.Println()
+	log.Printf("\n TIMESCALEDB QUERY: %v\n", queryString)
+	log.Println()
+	if err != nil {
+		return false, fmt.Errorf("error building query string: %v", err)
+	}
+	return existenceQuery(queryString)
+}
+
 // fucntionality for aggregation function not yet implemented
 func getPropertyFromTable(from, to, aggrOp, tablename string) (interface{}, []TimeSeriesRow, error) {
 	return getPropertyFromTableCmp(from, to, aggrOp, "", "", false, tablename)
@@ -70,4 +81,13 @@ func queryProperties(query, aggr string) (interface{}, []TimeSeriesRow, error) {
 	}
 
 	return nil, rows, nil
+}
+
+func existenceQuery(query string) (bool, error) {
+	exists, err := readRowExistsTimescale(query, UserTS, PassTS, PortTS, DBnameTS)
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
 }

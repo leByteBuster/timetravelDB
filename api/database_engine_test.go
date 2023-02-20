@@ -98,13 +98,14 @@ func TestManipulateWhereClauseNeo4j(t *testing.T) {
 	}
 }
 
+// TODO: move this test to Parser where it belongs
 func TestGetRelevantLookupInfoWhere(t *testing.T) {
 	validQueries := []string{
 		"FROM 2023-02-03T12:34:39Z TO 2023-02-03 SHALLOW MATCH (a)-[x]->(b) WHERE 22 > a.ping RETURN a",
 		"FROM 2023-02-03T12:34:39Z TO 2023-02-03 SHALLOW MATCH (a)-[x]->(b) WHERE a.ping > 22 RETURN a",
 		"FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.name = 'UGWJn' RETURN  *",
 	}
-	expected := []LookupInfo{{ElementVariable: "a", Property: "ping", CompareOperator: ">", CompareValue: 22, LookupLeft: false},
+	expected := []parser.LookupInfo{{ElementVariable: "a", Property: "ping", CompareOperator: ">", CompareValue: 22, LookupLeft: false},
 		{ElementVariable: "a", Property: "ping", CompareOperator: ">", CompareValue: 22, LookupLeft: true},
 		{ElementVariable: "a", Property: "name", CompareOperator: "=", CompareValue: "'UGWJn'", LookupLeft: true},
 	}
@@ -114,7 +115,7 @@ func TestGetRelevantLookupInfoWhere(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Query should be valid: %v\n", query)
 		}
-		lookups, err := getRelevantLookupInfoWhere(res)
+		lookups, err := parser.GetRelevantLookupInfoWhere(res)
 		lookup := lookups[0]
 		if err != nil {
 			t.Fatalf("Error retrieving lookup info: %v\n", query)

@@ -9,6 +9,7 @@ import (
 	"github.com/LexaTRex/timetravelDB/parser"
 	"github.com/LexaTRex/timetravelDB/parser/listeners"
 	tti "github.com/LexaTRex/timetravelDB/parser/ttql_interface"
+	"github.com/LexaTRex/timetravelDB/utils"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
@@ -16,7 +17,7 @@ import (
 func ProcessQuery(query string) error {
 
 	var queryResult neo4j.ResultWithContext
-	UNUSED(queryResult)
+	utils.UNUSED(queryResult)
 
 	queryInfo, err := parser.ParseQuery(query)
 	if err != nil {
@@ -36,7 +37,7 @@ func ProcessQuery(query string) error {
 			}
 			log.Println("checkpoint1")
 			log.Printf("QUERIED DATA: \n")
-			prettyPrintMapOfArrays(qRes)
+			utils.PrettyPrintMapOfArrays(qRes)
 			return nil
 		} else {
 
@@ -50,6 +51,7 @@ func ProcessQuery(query string) error {
 				// propertyLookupWhereReturnShallow(queryInfo)
 
 				// NOTE: I just copied the code of checkpoint 3 to test it! change it!
+				// ##### start:
 				res, err := propertyLookupWhereShallow(queryInfo)
 				if err != nil && res == nil {
 					return fmt.Errorf("error executing shallow query with lookup in RETURN: %v", err)
@@ -57,10 +59,9 @@ func ProcessQuery(query string) error {
 					log.Printf("Not all elements contained the property: %v", err)
 				}
 				log.Printf("\nto return:\n ")
-				prettyPrintMapOfArrays(res)
+				utils.PrettyPrintMapOfArrays(res)
+				// ##### end
 
-				// TODO: implement this
-				// propertyLookupWhereReturnShallow(queryInfo)
 			} else if isWhere {
 				log.Println("checkpoint3")
 				res, err := propertyLookupWhereShallow(queryInfo)
@@ -70,7 +71,7 @@ func ProcessQuery(query string) error {
 					log.Printf("Not all elements contained the property: %v", err)
 				}
 				log.Printf("\nto return:\n ")
-				prettyPrintMapOfArrays(res)
+				utils.PrettyPrintMapOfArrays(res)
 			} else if isReturn {
 				log.Println("checkpoint4")
 				res, err := propertyLookupReturnShallow(queryInfo)
@@ -80,7 +81,7 @@ func ProcessQuery(query string) error {
 					log.Printf("Not all elements contained the property: %v", err)
 				}
 				log.Printf("\nto return:\n ")
-				prettyPrintMapOfArrays(res)
+				utils.PrettyPrintMapOfArrays(res)
 				return nil
 			} else {
 				fmt.Printf("\nReturn: %v, Where: %v, Valid: %v\n", isReturn, isWhere, isValid)
@@ -175,7 +176,19 @@ func propertyLookupWhereShallow(queryInfo parser.ParseResult) (map[string][]inte
 	if err != nil {
 		return nil, fmt.Errorf("%w; error retrieving graph data", err)
 	}
-	res, err := filterResultPropertyCalc(queryInfo, graphData)
+	// relevantLookups is an array of relevant lookups in the where clause. for every lookup we have a LookupInfo struct
+	// which contains all necessarythe information about the lookup
+	// [n.name, n.age, n.address, e.name, e.age, e.address]
+	// up to now relevant lookups in the WHERE clause considers only considers lookups which are part of a comparison like (n.name = "Max")
+	relevantLookups := queryInfo.LookupsWhereRelevant
+
+	// query the data from timescaleDB according to the property lookups in the original WHERE clause
+	res, err := getPropertiesforLookupsInWhere(queryInfo, graphData, relevantLookups)
+	if err != nil {
+		return nil, fmt.Errorf("%w; error retrieving properties for lookups in WHERE", err)
+	}
+
+	// filter out all elements from the neo4j answer which do not match the original WHERE clause with
 
 	if err != nil {
 		return nil, fmt.Errorf("%w; error filtering and merging queried data", err)
@@ -223,7 +236,8 @@ func getPropertiesforLookupsInReturn(queryInfo parser.ParseResult, graphData map
 		fits := graphData[elVar]
 
 		for _, lookup := range lookups {
-			graphData, err = mergeTimeSeriesInProperty(queryInfo.From, queryInfo.To, graphData, fits, lookup, elVar)
+			graphData, err = mergeTimeSeriesLookupInReturn(queryInfo.From, queryInfo.To, graphData, fits, lookup, elVar)
+			// graphData = filterMatches(graphData, rowsToRemove, []string{})
 		}
 	}
 	return graphData, err
@@ -255,33 +269,13 @@ func getShallow(queryInfo parser.ParseResult, whereManipulated string, returnAll
 	return resultToMap(res)
 }
 
-func filterResultPropertyCalc(queryInfo parser.ParseResult, graphData map[string][]any) (map[string][]any, error) {
-
-	// relevantLookups is an array of relevant lookups in the where clause. for every lookup we have a LookupInfo struct
-	// which contains all necessarythe information about the lookup
-	// [n.name, n.age, n.address, e.name, e.age, e.address]
-	// up to now relevant lookups in the WHERE clause considers only considers lookups which are part of a comparison like (n.name = "Max")
-	relevantLookups, err := getRelevantLookupInfoWhere(queryInfo)
-	if err != nil {
-		return nil, fmt.Errorf("%w; error - failed to retrieve relevant lookups", err)
-	}
-
-	// query the data from timescaleDB according to the property lookups in the original WHERE clause
-	res, err := getPropertiesforLookupsInWhere(queryInfo, graphData, relevantLookups)
-	if err != nil {
-		return nil, fmt.Errorf("%w; error retrieving properties for lookups in WHERE", err)
-	}
-
-	// filter out all elements from the neo4j answer which do not match the original WHERE clause with
-
-	return res, nil
-}
-
-func getPropertiesforLookupsInWhere(queryInfo parser.ParseResult, graphData map[string][]interface{}, relevantLookups []LookupInfo) (map[string][]interface{}, error) {
+func getPropertiesforLookupsInWhere(queryInfo parser.ParseResult, graphData map[string][]interface{}, relevantLookups []parser.LookupInfo) (map[string][]interface{}, error) {
 
 	var err error
+	var toRemove []int
 	fmt.Printf("\nrelevantLookups: \n%+v\n", relevantLookups)
 
+	filteredData := graphData
 	// TODO: retrieve a TREE for AND, OR, XOR, NOT expressions and evaluate accordingly
 	for _, lookupInfo := range relevantLookups {
 
@@ -289,7 +283,8 @@ func getPropertiesforLookupsInWhere(queryInfo parser.ParseResult, graphData map[
 		// lookup.ElementVariable is n in this case
 		elements := graphData[lookupInfo.ElementVariable]
 
-		graphData, err = mergeTimeSeriesInPropertyCmp(queryInfo.From, queryInfo.To, graphData, elements, lookupInfo.Property, lookupInfo.ElementVariable, lookupInfo.CompareOperator, lookupInfo.CompareValue, lookupInfo.LookupLeft)
+		filteredData, toRemove, err = mergeTimeSeriesLookupCmpWhere(queryInfo.From, queryInfo.To, graphData, elements, lookupInfo.Property, lookupInfo.ElementVariable, lookupInfo.CompareOperator, lookupInfo.CompareValue, lookupInfo.LookupLeft)
+		filteredData = filterMatches(filteredData, toRemove, []string{})
 		if err != nil {
 			return nil, fmt.Errorf("%w; error - couldnt merge time series in property", err)
 		}
@@ -298,19 +293,60 @@ func getPropertiesforLookupsInWhere(queryInfo parser.ParseResult, graphData map[
 		// orClauses := strings.Split(queryInfo.WhereClause, "OR")
 
 	}
+	return filteredData, nil
+}
+
+// in comparison to mergeTimeSeriesLookupCmpWhere this function does not filter out elements at all
+func mergeTimeSeriesLookupInReturn(from string, to string, graphData map[string][]interface{}, elements []interface{}, property string, elementVar string) (map[string][]interface{}, error) {
+	for i, el := range elements {
+		switch e := el.(type) {
+		case neo4j.Entity:
+			uuid := e.GetProperties()[property]
+			if uuid == nil {
+				// property not available - do nothing
+				log.Printf("\nproperty %v not available on element with id : %v\n", property, e.GetElementId())
+			} else if s, ok := uuid.(string); ok {
+				tablename := uuidToTablename(s)
+				propertyMapOfElement := graphData[elementVar][i].(neo4j.Entity).GetProperties()
+				_, properties, err := getPropertyFromTable(from, to, "", tablename)
+				if err != nil {
+					return nil, fmt.Errorf("%w; error - couldnt fetch  properties for %v of element", err, property)
+				}
+				propertyMapOfElement[property] = properties
+			} else {
+				return nil, errors.New("error - uuid is not a string - this should not happen")
+			}
+		default:
+			panic("error - type not supportet")
+		}
+	}
+
 	return graphData, nil
 }
 
-func mergeTimeSeriesInProperty(from string, to string, graphData map[string][]interface{}, elements []interface{}, property string, elementVar string) (map[string][]interface{}, error) {
-	return mergeTimeSeriesInPropertyCmp(from, to, graphData, elements, property, elementVar, "", "", false)
-}
+// this function takes the results of all elements of one variable from the MATCH pattern. For example, if the MATCH pattern is "(n)-[e]->(s)",
+// it would take all elements of n if a lookup is happening on n. In addition, it takes a lookup property p
+// It then iterates over all elements, gets the uuid of the elements property p to fetch the time series from timescaleDB. If the property doesn't
+// exist for this element nothing happens. If the property exists, the time series is merged in the result set.
+// So if the property does not exist it is not automatically removed from the result set. This is only the case, if
+//
 
-func mergeTimeSeriesInPropertyCmp(from string, to string, graphData map[string][]interface{}, elements []interface{}, property string, elementVar string, compareOp string, compareVal any, lookupLeft bool) (map[string][]interface{}, error) {
+// THE RETURNED RESULT SET CONTAINS STILL ALL ELEMENTS FROM THE MATCH PATTERN RETAINED BY NEO4j. IF IT IS PRE-FILTERED AFTER EXISTING PROERPTIES DEPENDS
+// ON IF THERE IS A COMPARISON IN THE WHERE CLAUSE.
+func mergeTimeSeriesLookupCmpWhere(from string, to string, graphData map[string][]interface{}, elements []interface{}, property string, elementVar string, compareOp string, compareVal any, lookupLeft bool) (map[string][]interface{}, []int, error) {
 
 	// These represent the matches from the clause where the MATCH claus did not return any elements so they are removed
 	// from the map. Our implementation for comparisons only put matches in the result set if the time-series/property
 	// it is compared over still contains entries. For example "FROM x TO y Match (n) where n.name = "Max" return n" will only return
-	// n if
+	// n if ...
+	// Q: what happens for the case when we have a comparison and filter only the elements which fulfill the comparison?
+	// A:	- in this case we request the time-series (filteredProperties) based on the comparison. If it is emtpy we add the
+	//		 index of the MATCH position to the remove list to later remove it from the result set. If it it not empty we merge
+	//		 it into the result set (into the single element of the MATCH it belongs to)
+	// Q: what happens for the case when dont have a comparioson. Like a lookup inside the RETURN clause.
+	// 	 Do we still call the getPropertyFromTableCmp function? like does it really send a query to timescaleDB? this would be immense overhead
+	//   In this case we should split this up
+	// A:
 	rowsToRemove := []int{}
 
 	for i, el := range elements {
@@ -318,19 +354,22 @@ func mergeTimeSeriesInPropertyCmp(from string, to string, graphData map[string][
 		case neo4j.Entity:
 			uuid := e.GetProperties()[property]
 			if uuid == nil {
-				log.Printf("property %v not available on element", property)
+				// Q: shouldnt i add the element e to remove in the case of a lookup comparison clause in WHERE ?
+				// A: not necessary because they are filtered already by the WHERE clause because I ask x.prop IS NOT NULL. So this cannot happen (should not)
+				//    NOTE: BETTER DOUBLE CHECK THIS SOMEHOW. THEREFORE I HAVE TO SOLIT THIS..
+				// in the case of a lookup in the RETURN clause, it is not necessary to remove the element
+				log.Printf("\nproperty %v not available on element with id : %v\n", property, e.GetElementId())
 			} else if s, ok := uuid.(string); ok {
 				tablename := uuidToTablename(s)
-				_, filteredProperties, err := getPropertyFromTableCmp(from, to, "", compareOp, compareVal, lookupLeft, tablename)
+				exists, err := checkIfValueWithConditionExists(from, to, "", compareOp, compareVal, lookupLeft, tablename)
 				if err != nil {
-					return nil, fmt.Errorf("%w; error - couldnt fetch filtered properties for %v of element", err, property)
-				} else if len(filteredProperties) > 0 {
-					fmt.Println("reached 1: ", filteredProperties)
+					return nil, nil, fmt.Errorf("%w; error - check if value with condidtion exists for time-series %v of element %v", err, property, e.GetElementId())
+				} else if exists {
 					propertyMapOfElement := graphData[elementVar][i].(neo4j.Entity).GetProperties()
 					fmt.Println("reached 2")
 					_, properties, err := getPropertyFromTable(from, to, "", tablename)
 					if err != nil {
-						return nil, fmt.Errorf("%w; error - couldnt fetch  properties for %v of element", err, property)
+						return nil, nil, fmt.Errorf("%w; error - couldnt fetch  properties for %v of element", err, property)
 					}
 					fmt.Println("reached 3 - all properties should be fetched")
 					propertyMapOfElement[property] = properties
@@ -348,17 +387,20 @@ func mergeTimeSeriesInPropertyCmp(from string, to string, graphData map[string][
 				} else {
 					fmt.Printf("\nfiltered properties is nil for %v on element %v\n", property, elementVar)
 					// filtered properties is nil so we have to remove the match from the result set (be aware that the match can include multiple elements)
+
+					// NOTE: DO THIS NEXT
+					// we only want to do this if a property check has occoured in the WHERE clause
+					// if it has occoured in the RETURN CLAUSE we want ro also return the elements which have no elements in the time series
+					// if they do not have this property do not return this property
 					rowsToRemove = append(rowsToRemove, i)
 				}
 			} else {
-				return nil, errors.New("error - uuid is not a string - this should not happen")
+				return nil, nil, errors.New("error - uuid is not a string - this should not happen")
 			}
 		default:
 			panic("error - type not supportet")
 		}
 	}
-
-	graphData = removeMatchesFromGraphData(graphData, rowsToRemove, []string{})
 
 	// // remove elements which are filtered from the match
 	// // Iterate over the indices in reverse order so removing an element does not change the indices of the remaining elements
@@ -371,12 +413,12 @@ func mergeTimeSeriesInPropertyCmp(from string, to string, graphData map[string][
 
 	// returning graphData is unnecessary because maps are always passed by reference
 	// leave it like that. more readable - just a reference to the same map anyways
-	return graphData, nil
+	return graphData, rowsToRemove, nil
 }
 
 // TODO: handle exceptions (not in the sense of errors but for example if some matches should explicitely not be removed)
 // expects a valid list of indices in ascending order to remove elements from graphData arrays
-func removeMatchesFromGraphData(graphData map[string][]interface{}, rowsToRemove []int, exceptions []string) map[string][]interface{} {
+func filterMatches(graphData map[string][]interface{}, rowsToRemove []int, exceptions []string) map[string][]interface{} {
 	// remove elements which are filtered from the match
 	// note: the indices in rowsToRemove are sorted in ascending order. Iterate over the indices in reverse order so removing an element does not change the indices of the remaining elements
 	log.Printf("\nTo remove: %+v\n", rowsToRemove)
@@ -384,7 +426,7 @@ func removeMatchesFromGraphData(graphData map[string][]interface{}, rowsToRemove
 		for i := len(rowsToRemove) - 1; i >= 0; i-- {
 			log.Printf("\nElement to be removed %v: %+v\n", elVar, elements[i])
 			log.Printf("\nList before removal %+v\n", elements)
-			elements = removeIdxFromSlice(elements, rowsToRemove[i])
+			elements = utils.RemoveIdxFromSlice(elements, rowsToRemove[i])
 			graphData[elVar] = elements
 			log.Printf("\nList after removal %+v\n", graphData[elVar])
 		}
@@ -400,7 +442,7 @@ func filterPropertiesByCompareOp(properties []TimeSeriesRow, compareOp string, c
 	}
 	var filtered []TimeSeriesRow
 	for _, prop := range properties {
-		if matched, err := compareValues(prop.Value, compareVal, compareOp); err != nil {
+		if matched, err := utils.CompareValues(prop.Value, compareVal, compareOp); err != nil {
 			return nil, err
 		} else if matched {
 			fmt.Println("matched: ", prop.Value)
@@ -412,74 +454,3 @@ func filterPropertiesByCompareOp(properties []TimeSeriesRow, compareOp string, c
 }
 
 // shouldnt I be able to get a list of these in the listener??
-type LookupInfo struct {
-	ElementVariable string
-	Property        string
-	CompareOperator string
-	CompareValue    any
-	LookupLeft      bool // a.prop > 5 -> true, 5 > a.prop -> false
-}
-
-func getRelevantLookupInfoWhere(queryInfo parser.ParseResult) ([]LookupInfo, error) {
-
-	var lookupInfos []LookupInfo
-
-	for compCtx, insights := range queryInfo.PropertyClauseInsights {
-		log.Printf("\nInsights for compareContext: %v \ninsights: %+v\n", compCtx.GetText(), insights)
-
-		var elVar string
-		var property string
-		var compareOperator string // check if this is retrieved the right way in listener. Test if two symbol operators like <= are recognized correctly
-		var compareValueStr string
-		var compareValue any
-		var lookupLeft bool
-
-		switch len(insights) {
-		case 0:
-			return nil, errors.New("no insights found for comparison. should be impossible if comparison is in list")
-		case 1:
-			if !insights[0].IsAppendixOfNullPredicate && insights[0].IsWhere {
-				return nil, errors.New("single lookups withouth appendix of null predicate (IS NULL / IS NOT NULL) only alloed in return")
-			}
-			continue
-		// in this case it should be a comparison like "a.prop > 3"
-		case 2:
-			fmt.Println("Insight Left: ", insights[0])
-			fmt.Println("Insight Right: ", insights[1])
-			insightLeft := insights[0]
-			insightRight := insights[1]
-			if !insightLeft.IsWhere || !insightRight.IsWhere {
-				return nil, errors.New("comparison not in WHERE clause")
-			}
-			if insightLeft.IsPartialComparison {
-				compareOperator = insightLeft.CompareOperator
-			} else if insightRight.IsPartialComparison {
-				compareOperator = insightRight.CompareOperator
-			} else {
-				return nil, errors.New("comparison expression with two propertylabel expressions that include no partial comparison")
-			}
-			if insightLeft.IsPropertyLookup {
-				lookupLeft = true
-				elVar = insightLeft.Element
-				property = insightLeft.PropertyKey
-				compareValueStr = insightRight.Element
-			} else if insightRight.IsPropertyLookup {
-				elVar = insightRight.Element
-				property = insightRight.PropertyKey
-				compareValueStr = insightLeft.Element // if insight represents literal then Element is the CompareValue
-				lookupLeft = false
-			} else {
-				continue
-			}
-		default:
-			return nil, errors.New("chained comparisons are not allowed")
-		}
-
-		compareValue = convertString(compareValueStr)
-
-		// should only end up here if there is a comparison with a property lookup
-		lookupInfos = append(lookupInfos, LookupInfo{ElementVariable: elVar, Property: property, CompareOperator: compareOperator, CompareValue: compareValue, LookupLeft: lookupLeft})
-	}
-
-	return lookupInfos, nil
-}

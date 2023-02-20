@@ -130,7 +130,7 @@ func readRowsTimescale(query string, parameters [][]interface{}, username, passw
 
 	rows, err := conn.Query(context.Background(), query)
 	if err != nil {
-		log.Println("Query failed:", err)
+		log.Println("error querying rows from a table in timescaledb:", err)
 		return nil, err
 	}
 	defer rows.Close()
@@ -160,7 +160,7 @@ func readRowsTimescale(query string, parameters [][]interface{}, username, passw
 // single row READ queries
 //
 //lint:ignore U1000 Ignore unused function temporarily for debugging
-func readRowTimescale(query string, parameters []interface{}, username, password, port, dbname string) TimeSeriesRow {
+func readRowTimescale(query string, parameters []interface{}, username, password, port, dbname string) (TimeSeriesRow, error) {
 	// create the table according to  the data type
 	conn := connectTimescale(username, password, port, dbname)
 	defer conn.Close(context.Background())
@@ -171,10 +171,27 @@ func readRowTimescale(query string, parameters []interface{}, username, password
 
 	err := conn.QueryRow(context.Background(), query, parameters...).Scan(&timestamp, &isTimestamp, &value)
 	if err != nil {
-		fmt.Println(err)
+		return TimeSeriesRow{}, fmt.Errorf("error querying a row from a table in timescaledb: %w", err)
 	}
 
-	return TimeSeriesRow{timestamp, isTimestamp, value}
+	return TimeSeriesRow{timestamp, isTimestamp, value}, nil
+}
+
+func readRowExistsTimescale(query string, username, password, port, dbname string) (bool, error) {
+	// create the table according to  the data type
+	conn := connectTimescale(username, password, port, dbname)
+	defer conn.Close(context.Background())
+
+	var exists bool
+	err := conn.QueryRow(context.Background(), query).Scan(&exists)
+	if err != nil {
+		return false, nil
+		// TODO: reintroduce this as soon as we can be sure that for every UUID in a property in neo4j a
+		// table exists in timescaledb
+		// return false, fmt.Errorf("error executing an existence check in timescaledb: %w", err)
+	}
+
+	return exists, nil
 }
 
 // single row only return time READ queries
