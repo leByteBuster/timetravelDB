@@ -11,6 +11,40 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j/db"
 )
 
+type Set struct {
+	m map[string]struct{}
+}
+
+func NewSet() *Set {
+	return &Set{m: make(map[string]struct{})}
+}
+
+func (s *Set) Add(v string) {
+	s.m[v] = struct{}{}
+}
+
+func (s *Set) Remove(e string) {
+	delete(s.m, e)
+}
+
+func (s *Set) Contains(v string) bool {
+	_, ok := s.m[v]
+	return ok
+}
+
+func (s *Set) GetElements() []string {
+	el := make([]string, len(s.m))
+
+	i := 0
+	for k := range s.m {
+		if _, ok := s.m[k]; ok {
+			el[i] = k
+		}
+		i++
+	}
+	return el
+}
+
 func ConvertMapStr(originalMap map[string]interface{}) map[string]string {
 	convertedMap := map[string]string{}
 	for key, value := range originalMap {
@@ -43,6 +77,16 @@ func PrettyPrintMapOfArrays(s map[string][]any) {
 		fmt.Println("marshal error:", err)
 	}
 	fmt.Println(string(b))
+}
+
+func PrettyPrintMapOfArraysOrdered(m map[string][]any, keys []string) {
+	for _, key := range keys {
+		b, err := json.MarshalIndent(m[key], "", "  ")
+		if err != nil {
+			fmt.Println("marshal error:", err)
+		}
+		fmt.Println(string(b))
+	}
 }
 
 // use this for large results from neo4j when the data
