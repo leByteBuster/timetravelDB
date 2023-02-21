@@ -11,7 +11,7 @@ import (
 func queryNeo4j(query string) (neo4j.ResultWithContext, error) {
 	// TODO: maybe introduce some type handling here
 	// 			 otherwise i could as well use the lower func queryReadNeo4j
-	return queryReadNeo4j(context.Background(), query)
+	return queryReadNeo4j(query)
 }
 
 // Dont know if I even need this

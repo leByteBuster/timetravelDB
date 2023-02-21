@@ -74,13 +74,7 @@ func manipulateWhereClause(queryInfo parser.ParseResult, whereClause string) (st
 	return whereClause, nil
 }
 
-// build the WHERE clause for the timescaleDB from the WHERE clause of the original query with property lookups
-// TODO: move to file for operations for timescaleDB string building / querying
-func buildWhereClause(queryInfo parser.ParseResult) (string, error) {
-	return "", nil
-}
-
-func addTempToWhereQuery(from, to, whereClause string, matchElements []string) string {
+func buildTmpWhereClause(from, to, whereClause string, matchElements []string) string {
 
 	var sb strings.Builder
 	if strings.TrimSpace(whereClause) == "" {

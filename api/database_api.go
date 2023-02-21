@@ -32,10 +32,10 @@ type TimeSeriesRow struct {
 }
 
 // send any read query and return the results as a key value map
-func queryReadNeo4j(ctx context.Context, cypherQueryString string) (neo4j.ResultWithContext, error) {
+func queryReadNeo4j(cypherQueryString string) (neo4j.ResultWithContext, error) {
 	// Connect to the Neo4j database
 
-	res, errReq := SessionNeo.Run(ctx, cypherQueryString, map[string]interface{}{})
+	res, errReq := SessionNeo.Run(context.Background(), cypherQueryString, map[string]interface{}{})
 
 	// fmt.Printf("\nDirect print: %v\n", res)
 	// res.Next(ctx)

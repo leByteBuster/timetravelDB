@@ -40,7 +40,7 @@ func getPropertyAggr(from, to, aggr, table string) interface{} {
 
 // applies a comparison filter on the time-series entries and returns the remaining entries
 // fucntionality for aggregation function not yet implemented
-func getPropertyFromTableCmp(from, to, aggrOp string, cmpOp string, cmpVal any, lookupLeft bool, tablename string) (interface{}, []TimeSeriesRow, error) {
+func getTimeSeriesCmp(from, to, aggrOp string, cmpOp string, cmpVal any, lookupLeft bool, tablename string) (interface{}, []TimeSeriesRow, error) {
 	queryString, err := buildQueryString(from, to, aggrOp, cmpOp, cmpVal, lookupLeft, []string{tablename})
 	log.Println()
 	log.Printf("\n TIMESCALEDB QUERY: %v\n", queryString)
@@ -63,8 +63,8 @@ func checkIfValueWithConditionExists(from, to, aggrOp string, cmpOp string, cmpV
 }
 
 // fucntionality for aggregation function not yet implemented
-func getPropertyFromTable(from, to, aggrOp, tablename string) (interface{}, []TimeSeriesRow, error) {
-	return getPropertyFromTableCmp(from, to, aggrOp, "", "", false, tablename)
+func getTimeSeries(from, to, aggrOp, tablename string) (interface{}, []TimeSeriesRow, error) {
+	return getTimeSeriesCmp(from, to, aggrOp, "", "", false, tablename)
 }
 
 func queryProperties(query, aggr string) (interface{}, []TimeSeriesRow, error) {
