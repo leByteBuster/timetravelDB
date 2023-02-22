@@ -21,7 +21,22 @@ Cretaing the parser
          FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) RETURN  a.properties_components_cpu
        the properties are filtered correctly. THE RESULT SET should contain A LIST of time-series. One time-series for each nodes a.properties_components_cpu 
        if a doesnt have this property, it should return null. at this point 
-- [] filter the result set for the choosen variables. This can probably be done in one function along with filtering for properties if 
+
+- [] change properties prefix of properties to ts or timeseries
+- []  look at this case: 
+    SELECT * FROM (SELECT time, timestamps, value FROM ts_2023_01_12T15:33:13.0000005Z WHERE time >= '2021-12-22T15:33:13.0000005Z' AND time < '2024-01-12T15:33:13.0000006Z') genericAliasName;
+    - I need to make sure i only try to fetch time series for properties starting with properties
+    - think about what to do with the rest of it 
+- [] because of WHERE i should not merge anything. This would be against the modular concept and partition of MATCH, WHERE, RETURN  
+  - THIS NEEDS TO BE A NEW COMMIT 
+  - I ALREADY REMOVED THE MERGING PART OF THE PROPERTIES OF THE WHERE LOOKUP
+  - TODO NEXT: in WHERE & RETURN: QUERY THE PROPERTIES NAMED IN THE RETURN CLAUSE. MERGE THEM IN CASE OF RETURN a, a.properties_cpu
+- [x] apply RETURN a, b.properties  properly
+  - handle * case
+  - should we just return b.properties merged into b if we do RETURN b, b.properties ? I think so. Otherwis ONLY RETURN THE TIME-SERIES
+  - [x] remove elements which are not named
+  - [x] for case *: return everything
+- [x] filter the result set for the choosen variables. This can probably be done in one function along with filtering for properties if 
      something like "RETURN  n, x.prop2" is used. This would reduce the cases I need to handle 
 - [x] die gefilterten properties werden nicht in das Ergebnis gemerged
 - [x] filter die structurellen matches (nur solche in der ergebnismenge lassen die nach der WHERE clause noch werte in der Property haben)
@@ -59,8 +74,198 @@ Cretaing the parser
 
 
 
+
+
 - Difficulties: 
   - creating a parser
 
+
+
+
+TODO NEXT: 
+  - [] simple caching method for querying time-series in a single query
+    - use a map which holds the table data for the query and then check with val, ok := myMap["property"]
+      if the property was fetched already 
+  - [] maybe: only '' is allowed. add support for ""
+  - [] add any() to property lookups in WHERE clause: any(a.prop2) > 3
+    - (maybe add this to FUTURE)
+  - [] allow avg in WHERE clause ??
+    - TTQL syntax has to be maniuplated for that 
+    - but maybe i could just put sometihng like ('avg' | 'count' | .. ) in the PartialComparisonExpression
+  - [] maybe future work: safe the datatype for every property next to uuid: (uuid,type) so in a comparison we can check if it even would be valid
+      (or another calculation)
+  - [] make explicit that only one comparison is possible and not stacked a.prop1 < 23 < b.prop4
+    - disallow chaining
+    - you have to write:  a.prop1 < 23 AND 23 < b.prop4 instead
+  - [] Aggregate functions for RETURN 
+  - [] disallow grouping with "(" ")"
+  - [] MAYBE: allow one level of OR / AND
+    - IDEA: we maybe have calculation order in the parse tree already i think. So from the first OR/AND whatever node go through the
+      parse tree and collect the comparison expressions. and save them in a tree accordingly. then go through the tree and calculate
+      every expression and apply the according logical operator  
+  - [] disallow a.prop1 > b.prop2 (maybe later for values with same timestamp ?)
+  - [] disallow a.prop1 > b (should be already)
+  - [] IMPORTANT: muss ich beim property lookup nochmal die properties filtern wenn ich alle properties nachschauen will?? müsste glaube!
+      -> nur die als time-series betrachten die mit properties_ anfangen
+  - [] DO NOT ALLOW >, =, .. and comparisons like this between property lookups (prevent this in listener for parse tree)
+  - [] if a property for a value is null whern doing "..RETURN n.prop" then just return null for this property. otherwise the program always fails
+       if only a single node of the match does not have this property 
+  - [] IMPORTANT: session closing 
+      - not happening yet for neo4j
+      - use session pooling ?
+      - (maybe just handle driver and session on top level. One to rule them all)
+  - [] TODO: still print the data - even if error. Panic if error is unrecoverable
+  - [] just print errors and wait for next query
+  - [] prevent lookups like n.prop1.prop2 (not allowed because they do not exist (only flattened properties))
+  - [] property lookups in RETURN clause might not work as expected
+    - check parse tree examples for that 
+  - [] support labels for the quereis in lookups 
+    - maybe not becaues we can apply labels already in MATCH clause ? can we not achieve the same through this ?
+  - [] put all Insights of propertylookups in a map which are mapped to their parent compareExpression. So every ComparisonExpression
+       holds a list: map[compareExpression][]PropertyInsights
+  - [] MAYBE LATER: 
+    oC_ComparisonExpression:  oC_StringListNullPredicateExpression ( SP? oC_PartialComparisonExpression )* ;
+    oC_PartialComparisonExpression
+                           :  ( '=' SP? oC_StringListNullPredicateExpression )
+                               | ( '<>' SP? oC_StringListNullPredicateExpression )
+                               | ( '<' SP? oC_StringListNullPredicateExpression )
+                               | ( '>' SP? oC_StringListNullPredicateExpression )
+                               | ( '<=' SP? oC_StringListNullPredicateExpression )
+                               | ( '>=' SP? oC_StringListNullPredicateExpression )
+                               ;
+      - allow StringListNullPredicateExpression BEFORE oC_PartialComparisonExpression - not just after
+      - allow multiple PartialComparisonExpression
+      - allow more than NullPredicateExpression (of StringListNullPredicateExpression)
+  - [] MAYBE LATER: include AS operator in RETURN clause
+  - [] MAYBE LATER: deal with structure clauses in RETURN Clause: RETURN exists((n)-[:MARRIED]->()) AS is_married
+  - [] MAYBE LATER: deal with structure clauses in WHERE Clause: WHERE exists((n)-[:MARRIED]->())
+    - [x] if its only the structure then it can be passed to neo4j 
+    - [] what to do when: WHERE exists((n.prop)-[:MARRIED]->()) ? Then there has to be a split and results merged
+    - [] what to do when: WHERE exists((n)-[:MARRIED]->()) AND n.prop ? same as above  
+    - [] what to do when: WHERE exists((n)-[:MARRIED]->()) AND s.prop ? also have to be split and merged 
+  - [x] create WhereListener
+  - [x] create ReturnListener
+  - [x] create SHALLOW listener
+    - I integrated this in the TimeListener. Is now TimeShallowListener
+  - [] use the returned insights about the properties to process the query:
+    - [] 
+    - []
+  - REMEMBER: if isComparison == true bedeutet NICHT dass der wert einer comparison war
+    -> nur wenn die Adressen von comparisonCtx übereinstimmen 
+
+
+GRAPH visualization
+  - [] neo4j lists some tools here: https://neo4j.com/developer/tools-graph-visualization/
+  - [] check out gephi (see visualization.md in my project/frontend)
+  - [] Sigmajs accepts json in the format 
+    "nodes": [
+      {"id": "n1", "label": "Node 1"},
+      {"id": "n2", "label": "Node 2"},
+      ...
+    ],
+    "edges": [
+      {"id": "e1", "source": "n1", "target": "n2"},
+      {"id": "e2", "source": "n2", "target": "n3"},
+    - https://stackoverflow.com/questions/23273216/how-to-display-data-from-a-json-object-with-sigma-js
+  - according to ChatGPT there is a Gephi graph file converter which can convert to JSON (couldnt find it )
+
+    
+
+TODO EINORDNEN:
+  - TTQL CLI:
+    - return key sometimes not working
+    - when terminal is not working properly after quitting the program: reset (this is a bug of the library)
+  - limitation: was das darstellen von properties angeht sind wir bei neo4j eingeschränkt
+    - wir müssen geschachtelte properties flatten 
+    - um zu erkennen ob eine property eine time-series ist brauchen wir einen prefix
+  - I use "github.com/c-bata/go-prompt" for terminal input because:
+    - primary: navigation keys are usable
+    - nice-to-have: autocompletion
+  - [] allow multiple WHERE clauses
+  - [] allow multiple RETURN clauses
+  - [X] datetime format synchronisieren 
+    - [X] über neo4j und timescaledb
+    - [X] nicht als string einlesen sondern als datentyp (damit vergleichbar)
+  - [] ggf. komplexe datentypen erlauben 
+    - [] braucht fallbehandlung im data adapter für die TimescaleDB für den data type der value spalte 
+  - [] Funktionen für Queries implementieren
+    - Neo4j:
+      - [X] queries durchreichen
+        - [] ich glaube Neo4j muss ich nur durchreichen (noch bestätigen)
+    - Timescale:
+      - [] get data of node FROM x, TO y: (alle values aus tabelle von x bis y)
+      - [] get data of node FROM x, TO y, aggr: (alle values aus tabelle von x bis y und aggregierung anwenden)
+      - [] get data of node FROM x, TO y, aggr: (alle values aus tabelle von x bis y und aggregierung anwenden)
+  - [] Parser functionality:
+      - [] QUERY PROCESSING
+        - FIRST TAKE CARE OF THE THINGS THAT ARE ALLOWED, LESS OF THE THINGS THAT ARE NOT ALLOWED 
+        - [x] know when a property lookup happens
+        - [x] know whether in WHERE or in RETURN clause
+        - [x] if not in WHERE or RETURN clause -> unvalid
+        - [] MATCH aspects
+          - [] get the elements 
+          - [] MATCH gets (always) forwarded to Neo4j 
+           - [] disallow property access in form of (n:Label {prop: xy}) 
+        - [] WHERE aspects
+          - [] return an object with all the neccesary information about each PropertyOrLabelExpression 
+            - [x] allow one property access  
+            - [] allow one label 
+              - maybe not necessary because we can apply in MATCH clause
+            - [] allow concatenated property access 
+            - [] allow multiple labels 
+            - [] inspect the comparisonsExpression for each propertyLookup
+              -> the ComparisonExpression contains the propertyExpression (a.prop) pand the PartialComparisonExpression (> xy)
+              - [x] add comparison type to property Insights
+              - [x] add comparison value to property Insights (just simple literal value)
+                - [] extend this functionality so it can be another property lookup 
+              - [] maybe take into care that one comparisonsExpression can have multiple oC_PartialComparisonExpression
+          - [] just pass it to neo4j if first level property access 
+            - but can there even be one ? because time is handled by FROM TO. 
+          -  NEXT: if property access 
+            - [] consume the RETURN clause for neo4j access. Create a new one. Return everything that is in MATCH clause 
+                - or at least for the element with property access. check this
+        - [] RETURN aspects
+          - [] filter the calculated results 
+          - [] check if variables are in MATCH Clause - otherwise error
+          - [] RETURN *
+          - [] RETURN n
+            - [] RETURN n, e, ..
+          - [] RETURN n.property
+          - [] maybe: 
+            - [] RETURN DISTINCT
+            - [] RETURN n AS pseudonym
+            - [] RETURN a.age > 30, "I'm a literal", [p=(a)-->() | p] AS `(a)-->()` 
+              - a.age > 30  Doesnt filter the result ! gives back a boolean in the result table
+
+January: 
+- writing:
+  - [] related work
+  - [X] data model 
+- implementing
+  - [] data generator(s)
+    - [] pass structure as json
+    - [X] logic
+  - [] all data adapters 
+  - [] minimal API (query structure)
+
+February:
+- writing: 
+  - [] Methodics
+- implementing
+  - [] query functionality & parser
+  - [] benchmarks 
+  - [] projecting rhebo data onto the database to some realistic extend
+  - [] evtl date-time format auf linux variante ändern in datenbanken (nur 4byte!)
+  - [] merge READMEs
+- data evaluation
+
+
+March: 
+- [] writing rest of thesis 
+- [] Formatting
+  - [] clickable (back) references in text
+  - [] check text with deepL 
+  - [] check text with spelling checker
+  - [] let someone read it 
 
 
