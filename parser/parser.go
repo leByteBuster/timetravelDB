@@ -23,6 +23,7 @@ type ParseResult struct {
 	ReturnClause              string
 	GraphElements             li.GraphElements    // all element variables occouring in the query
 	LookupsWhere              map[string][]string // all relevant lookups in Where (lookups that are relevant for binary querying)
+	ReturnProjections         []string            // all projections in Return, is used to reorder the result set according to the order in the RETURN clause
 	LookupsWhereRelevant      []LookupInfo        // holds all relevant lookups (like above) but with additional information which is relevant for comparisons
 	// not such that are NOT NULL appendices. lookups are onto their variable: n: {property1,property2} s: {property1,property4}..
 	LookupsReturn          map[string][]string                                                // all relevant lookups in Return (lookups that are relevant for binary querying)
@@ -155,6 +156,7 @@ func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
 		MatchClause:               listener.MatchClause,
 		WhereClause:               listener.WhereClause,
 		ReturnClause:              listener.ReturnClause,
+		ReturnProjections:         listener.ReturnProjections,
 		GraphElements:             listener.GraphElements,
 		LookupsWhere:              lookupsWhere,
 		LookupsWhereRelevant:      lookupsWhereRelevant,

@@ -14,9 +14,10 @@ type TimePeriod struct {
 }
 
 type GraphElements struct {
-	MatchGraphElements  []string
-	WhereGraphElements  []string
-	ReturnGraphElements []string
+	MatchGraphElements          []string
+	WhereGraphElements          []string
+	ReturnGraphElements         []string
+	ReturnGraphElementsNoLookup []string
 }
 
 // TreeShapeListener is a listener that enters every node in the parser tree and prints the tree shape of the parse tree
@@ -29,9 +30,10 @@ type TtqlTreeListener struct {
 	TimePeriod
 	IsShallow bool
 	GraphElements
-	MatchClause  string
-	WhereClause  string
-	ReturnClause string
+	MatchClause       string
+	WhereClause       string
+	ReturnClause      string
+	ReturnProjections []string
 }
 
 func NewTtqlTreeListener() *TtqlTreeListener {
@@ -213,6 +215,7 @@ func (listener *TtqlTreeListener) EnterTtQL_Query(qC *tti.TtQL_QueryContext) {
 func (listener *TtqlTreeListener) EnterOC_Variable(vC *tti.OC_VariableContext) {
 	el := vC.GetText()
 	parent := vC.GetParent()
+	propertyLookup := false
 	for parent != nil {
 		if _, ok := parent.(*tti.OC_MatchContext); ok {
 			listener.GraphElements.MatchGraphElements = append(listener.GraphElements.MatchGraphElements, el)
@@ -222,7 +225,19 @@ func (listener *TtqlTreeListener) EnterOC_Variable(vC *tti.OC_VariableContext) {
 			break // no need to check further
 		} else if _, ok := parent.(*tti.OC_ReturnContext); ok {
 			listener.GraphElements.ReturnGraphElements = append(listener.GraphElements.ReturnGraphElements, el)
+			if propertyLookup {
+				listener.GraphElements.ReturnGraphElementsNoLookup = append(listener.GraphElements.ReturnGraphElementsNoLookup, el)
+			}
 			break // no need to check further
+		}
+		if _, ok := parent.(*tti.OC_PropertyLookupContext); ok {
+			propertyLookup = true
+		}
+		if proj, ok := parent.(*tti.OC_ProjectionItemContext); ok {
+			projection := proj.GetText()
+			if strings.Trim(projection, " ") != "*" {
+				listener.ReturnProjections = append(listener.ReturnProjections, projection)
+			}
 		}
 		parent = parent.GetParent()
 	}
