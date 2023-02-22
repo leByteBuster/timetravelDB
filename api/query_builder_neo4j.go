@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/LexaTRex/timetravelDB/parser"
+	"github.com/LexaTRex/timetravelDB/utils"
 )
 
 // manipulate the WHERE clause sent to neo4j to prefilter the result. If there are property lookups
@@ -103,17 +104,50 @@ func buildTmpWhereClause(from, to, whereClause string, matchElements []string) s
 	return sb.String()
 }
 
-// applies temporal boundaries in WHERE clause, RETURN clause is replaced by RETURN * if returnAll == true
-// add whereClause seperately because it might have been manipulated before already
-func buildFinalQuery(res parser.ParseResult, whereClause string, returnAll bool) string {
+func buildReturnClause(whereLookups []parser.LookupInfo, returnElements []string) string {
+
 	var sb strings.Builder
-	sb.WriteString(res.MatchClause)
-	sb.WriteString(whereClause)
-	if returnAll {
-		sb.WriteString(" Return *")
-	} else {
-		sb.WriteString(res.ReturnClause)
+	returnVariables := utils.NewSet()
+
+	// if there are no return elements specified, return all variables
+	if len(returnElements) == 0 {
+		return " RETURN *"
 	}
+	for _, lookup := range whereLookups {
+		// some lookupInfos do not contain an elementVar (if they represent the literal side of the lookup)
+		if strings.Trim(lookup.ElementVariable, " ") != "" {
+			returnVariables.Add(lookup.ElementVariable)
+		}
+	}
+	for _, element := range returnElements {
+		returnVariables.Add(element)
+	}
+
+	sb.WriteString("RETURN ")
+
+	varList := returnVariables.GetElements()
+	size := len(varList)
+
+	fmt.Printf("\n\n    returnElements: %+v    \n\n", returnElements)
+	fmt.Printf("\n\n    whereLookups: %+v    \n\n", whereLookups)
+	fmt.Printf("\n\n    returnVariables: %+v    \n\n", returnVariables)
+	fmt.Printf("\n\n    varList: %+v    \n\n", varList)
+
+	for i, el := range varList {
+		sb.WriteString(el)
+		if i < size-1 {
+			sb.WriteString(", ")
+		}
+	}
+	return sb.String()
+}
+
+func buildFinalQuery(matchClause, whereClause, returnClause string) string {
+	var sb strings.Builder
+	sb.WriteString(matchClause)
+	sb.WriteString(whereClause)
+	sb.WriteString(returnClause)
+
 	tmpQuery := sb.String()
 	fmt.Println(tmpQuery)
 	return tmpQuery
