@@ -1,0 +1,49 @@
+services:
+  neo4j:
+    container_name: testneo4j
+    image: neo4j:5.2.0
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes: 
+     - ./docker-test/neo4j/data:/data
+     - ./docker-test/neo4j/backups:/backups
+     - ./docker-test/neo4j/logs:/logs
+    environment:
+      - NEO4J_AUTH=neo4j/test # if this does not work try neo4j/rhebo or neo4j/neo4j 
+
+  timescaledb:
+    image: timescale/timescaledb-ha:pg14-latest
+    container_name: test_timescaledb
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: postgres 
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./docker-test/timescaledb/data:/var/lib/postgresql/data
+      - ./docker-test/timescaledb/backups:/tmp/
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-h", "localhost", "-p", "5432"]
+      interval: 5s
+      timeout: 3s
+      retries: 10 
+    # command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+
+  restore:
+    image: timescale/timescaledb-ha:pg14-latest
+    volumes:
+      - ./docker-test/timescaledb/backups:/tmp/
+    restart: "no"
+    environment:
+      PGHOST: test_timescaledb 
+      PGUSER: postgres 
+      PGPASSWORD: password 
+      PGDATABASE: postgres 
+    command: ["pg_restore", "-h", "$PGHOST", "-U", "$PGUSER", "-d", "$PGDATABASE", "/tmp/postgres.bak"]
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+
