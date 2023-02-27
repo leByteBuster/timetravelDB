@@ -1,6 +1,8 @@
 Cretaing the parser
-  - 
-
+- [] create MR 
+- [] set all the ElementId, StartElementId, EndElementId to "" in the test data
+- [] TODO NEXT: safe the current environment (the data) for a test environment. copy the neo4j data, as well as the timescale data and write a funciton 
+                or a script which loads exactly the same data into the databases. use ChatGPT for help
 
 - [x] DEBUG: is working again
       FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  *
@@ -22,6 +24,7 @@ Cretaing the parser
        the properties are filtered correctly. THE RESULT SET should contain A LIST of time-series. One time-series for each nodes a.properties_components_cpu 
        if a doesnt have this property, it should return null. at this point 
 
+- [] what if compariosn happens on properties wich are no time-series ? do I even allow them ? 
 - [] change properties prefix of properties to ts or timeseries
 - []  look at this case: 
     SELECT * FROM (SELECT time, timestamps, value FROM ts_2023_01_12T15:33:13.0000005Z WHERE time >= '2021-12-22T15:33:13.0000005Z' AND time < '2024-01-12T15:33:13.0000006Z') genericAliasName;
@@ -54,6 +57,7 @@ Cretaing the parser
 - [] make checking if a property exists (filtering) in mergeTimeSeriesInProperty more efficient 
   - [] send an aggregate function to the time series:  use count OR: 
        SELECT EXISTS (SELECT 1 FROM my_table WHERE value > 20);
+- [] longterm/future: allow alias names in RETUR clause 
 
 
 - [] cleanup
@@ -83,6 +87,7 @@ Cretaing the parser
 
 
 TODO NEXT: 
+  - [] difference in printing results if RETURN * or RETURN a,r,n (only with * a,r,n are printed)
   - [] simple caching method for querying time-series in a single query
     - use a map which holds the table data for the query and then check with val, ok := myMap["property"]
       if the property was fetched already 

@@ -67,9 +67,9 @@ create and start a new container based on the loaded backup:
 - move the test file neo4j.dump in ./test-data/neo4j-test-backup to ./docker-test/backups:
   `cp ./test-data/neo4j-test-backup/neo4j.dump ./docker-test/backups`
 - restore the database: 
-  - `docker run --interactive --tty --rm --volume=./docker-test/data:/data --volume=./docker-test/backups:/backups neo4j neo4j-admin database load neo4j --from-path=/backups --verbose`
+  - `docker run --interactive --tty --rm --volume=./docker-test/neo4j/data:/data --volume=./docker-test/neo4j/backups:/backups neo4j neo4j-admin database load neo4j --from-path=/backups --verbose`
 - run container with restored database:  
-  - `docker run --name testneo4j -p7474:7474 -p7687:7687 -d -v ./docker-test/data:/data -v ./docker-test/logs:/logs -v ./docker-test/backups:/backups --env NEO4J_AUTH=neo4j/test neo4j`
+  - `docker run --name testneo4j -p7474:7474 -p7687:7687 -d -v ./docker-test/neo4j/data:/data -v ./docker-test/neo4j/logs:/logs -v ./docker-test/neo4j/backups:/backups --env NEO4J_AUTH=neo4j/test neo4j`
 
 
 note THIS WORKS AS WELL 
