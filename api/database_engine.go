@@ -33,7 +33,7 @@ func ProcessQuery(query string) (map[string][]any, error) {
 			queryResult, err = getShallow(queryInfo, queryInfo.WhereClause)
 
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("error executing shallow query with no property lookups: %v", err)
 			}
 		} else {
 
@@ -43,32 +43,28 @@ func ProcessQuery(query string) (map[string][]any, error) {
 			} else if isWhere && isReturn {
 				log.Println("checkpoint2")
 
-				// TODO: implement this
-				// propertyLookupWhereReturnShallow(queryInfo)
-
 				queryResult, err = propertyLookupWhereReturnShallow(queryInfo)
-				if err != nil && queryResult == nil {
-					return nil, fmt.Errorf("error executing shallow query with lookup in RETURN & WHERE: %v", err)
-				} else if err != nil {
-					// this still right ?
-					log.Printf("Not all elements contained the property: %v", err)
+				if err != nil {
+					if ok, err := handleErrorOnResult(queryResult, fmt.Errorf("error executing shallow query with lookup in RETURN & WHERE: %v", err)); !ok {
+						return nil, err
+					}
 				}
 
 			} else if isWhere {
 				log.Println("checkpoint3")
 				queryResult, err = propertyLookupWhereShallow(queryInfo)
-				if err != nil && queryResult == nil {
-					return nil, fmt.Errorf("error executing shallow query with lookup in WHERE: %v", err)
-				} else if err != nil {
-					log.Printf("Not all elements contained the property: %v", err)
+				if err != nil {
+					if ok, err := handleErrorOnResult(queryResult, fmt.Errorf("error executing shallow query with lookup in WHERE: %v", err)); !ok {
+						return nil, err
+					}
 				}
 			} else if isReturn {
 				log.Println("checkpoint4")
 				queryResult, err = propertyLookupReturnShallow(queryInfo)
-				if err != nil && queryResult == nil {
-					return nil, fmt.Errorf("error executing shallow query with lookup in RETURN: %v", err)
-				} else if err != nil {
-					log.Printf("Not all elements contained the property: %v", err)
+				if err != nil {
+					if ok, err := handleErrorOnResult(queryResult, fmt.Errorf("error executing shallow query with lookup in RETURN: %v", err)); !ok {
+						return nil, err
+					}
 				}
 			} else {
 				fmt.Printf("\nReturn: %v, Where: %v, Valid: %v\n", isReturn, isWhere, isValid)
@@ -80,30 +76,12 @@ func ProcessQuery(query string) (map[string][]any, error) {
 
 			log.Println("checkpoint5")
 
-			// tmpWhere := buildTmpWhereClause(queryInfo.From, queryInfo.To, queryInfo.WhereClause, queryInfo.GraphElements.MatchGraphElements)
-			// query := buildFinalQuery(queryInfo.MatchClause, tmpWhere, queryInfo.ReturnClause)
-
-			returnVariables := queryInfo.GraphElements.ReturnGraphElements
-
-			queryResult, err = getShallow(queryInfo, queryInfo.WhereClause)
+			queryResult, err = noPropertyLookup(queryInfo)
 			if err != nil {
-				return nil, fmt.Errorf("%w; error retrieving graph data", err)
+				if ok, err := handleErrorOnResult(queryResult, fmt.Errorf("error executing non-shallow query with no property lookups: %v", err)); !ok {
+					return nil, err
+				}
 			}
-
-			fmt.Printf("\n\n  Query Result:\n  %+v", queryResult)
-
-			if len(returnVariables) == 0 {
-				returnVariables = queryInfo.GraphElements.MatchGraphElements
-			}
-
-			queryResult, err = getAllProperties(queryInfo, queryInfo.LookupsReturn, returnVariables, queryResult)
-			if err != nil {
-				return nil, fmt.Errorf("%w; query retrieving time-series data", err)
-			}
-
-			// TODO: get all properties for variables in return clause:
-			//getPropertyUUIDS of elements
-			//queryTimeScale()
 		} else {
 
 			isValid, isWhere, isReturn := getPropertyLookupParentClause(queryInfo.PropertyClauseInsights)
@@ -111,7 +89,12 @@ func ProcessQuery(query string) (map[string][]any, error) {
 				return nil, errors.New("invalid query, property lookup only allowed in WHERE or RETURN clause")
 			} else if isWhere && isReturn {
 				log.Println("checkpoint6")
-				propertyLookupWhereReturn(queryInfo)
+				queryResult, err = propertyLookupWhereReturn(queryInfo)
+				if err != nil {
+					if ok, err := handleErrorOnResult(queryResult, fmt.Errorf("error executing non-shallow query with lookup in RETURN & WHERE: %v", err)); !ok {
+						return nil, err
+					}
+				}
 			} else if isWhere {
 				log.Println("checkpoint7")
 				propertyLookupWhere(queryInfo)
@@ -124,13 +107,49 @@ func ProcessQuery(query string) (map[string][]any, error) {
 		}
 	}
 
+	fmt.Printf("\n\n\n                      QUERY RESULT                         \n%+v\n\n\n", queryResult)
 	if len(queryInfo.ReturnProjections) > 0 {
-		utils.PrettyPrintMapOfArraysOrdered(queryResult, queryInfo.ReturnProjections)
+		fmt.Printf("\n\n\n                      Printed ordered                         \n\n\n\n")
+		fmt.Println(utils.JsonStringFromMapOrdered(queryResult, queryInfo.ReturnProjections))
 	} else {
-		utils.PrettyPrintMapOfArrays(queryResult)
+		fmt.Printf("\n\n\n                      Printed unordered                         \n\n\n\n")
+		fmt.Println(utils.JsonStringFromMap(queryResult))
 	}
 
 	// return errors.New("no option choosen, this should not occour")
+	return queryResult, nil
+}
+
+func noPropertyLookup(queryInfo parser.ParseResult) (map[string][]any, error) {
+	queryResult, err := getShallow(queryInfo, queryInfo.WhereClause)
+	if err != nil {
+		return nil, fmt.Errorf("%w; error retrieving graph data", err)
+	}
+
+	fmt.Printf("\n\n  Query Result:\n  %+v", queryResult)
+
+	returnVariables := queryInfo.GraphElements.ReturnGraphElements
+
+	// ############################
+	// ############### TODO: delete if this error does not occur
+	// ############################
+	// if !reflect.DeepEqual(returnVariables, queryInfo.GraphElements.ReturnGraphElementsNoLookup) {
+	// 	fmt.Println(returnVariables)
+	// 	fmt.Println(queryInfo.GraphElements.ReturnGraphElementsNoLookup)
+	// 	return nil, errors.New("in this case the return variables should be the same as the ones without lookups")
+	// }
+
+	// this can be changed to "if len(queryInfo.ReturnProjections) == 0" in case we merge this funciton with propertyLookupWhereReturn
+	// here we can use GraphElements.ReturnGraphElements because in this case no lookups are occuring
+	if len(returnVariables) == 0 {
+		returnVariables = queryInfo.GraphElements.MatchGraphElements
+	}
+
+	queryResult, err = getAllProperties(queryInfo, returnVariables, queryResult)
+	if err != nil {
+		return nil, fmt.Errorf("%w; error retrieving time-series data", err)
+	}
+
 	return queryResult, nil
 }
 
@@ -166,8 +185,43 @@ func propertyLookupReturn(res parser.ParseResult) {
 	panic("unimplemented")
 }
 
-func propertyLookupWhereReturn(res parser.ParseResult) {
-	panic("unimplemented")
+func propertyLookupWhereReturn(queryInfo parser.ParseResult) (map[string][]any, error) {
+	where, err := manipulateWhereClause(queryInfo, queryInfo.WhereClause)
+	if err != nil {
+		return nil, fmt.Errorf("%w; error manipulating WHERE query for neo4j", err)
+	}
+	queryResult, err := getShallow(queryInfo, where)
+	if err != nil {
+		return nil, fmt.Errorf("%w; error retrieving graph data", err)
+	}
+
+	fmt.Printf("\n\n  Query Result:\n  %+v", queryResult)
+
+	// relevantLookups is an array of relevant lookups in the where clause.
+	relevantLookups := queryInfo.LookupsWhereRelevant
+
+	// query the data from timescaleDB according to the property lookups in the original WHERE clause
+	queryResult, err = filterForCondLookupsInWhere(queryInfo, queryResult, relevantLookups)
+
+	if err != nil {
+		return nil, fmt.Errorf("%w; error filtering query result on WHERE conditions", err)
+	}
+
+	fmt.Printf("\n\n  Query Result after filtering:\n  %+v", queryResult)
+
+	returnVariables := queryInfo.GraphElements.ReturnGraphElements
+
+	// if return clause is empty then return all variables from match clause
+	if len(returnVariables) == 0 {
+		returnVariables = queryInfo.GraphElements.MatchGraphElements
+	}
+
+	queryResult, err = getAllPropertiesLookupsReturn(queryInfo, queryInfo.LookupsReturn, returnVariables, queryResult)
+	if err != nil {
+		return nil, fmt.Errorf("%w; error retrieving time-series data", err)
+	}
+
+	return queryResult, nil
 }
 
 // functions for shallow queries with lookup that requires double database access
@@ -222,8 +276,7 @@ func propertyLookupReturnShallow(queryInfo parser.ParseResult) (map[string][]int
 		return nil, fmt.Errorf("%w; error retrieving graph data", err)
 	}
 
-	returnVariables := queryInfo.GraphElements.ReturnGraphElementsNoLookup
-	mergedRes, err := getPropertiesforLookupsInReturn(queryInfo, queryInfo.LookupsReturn, returnVariables, graphData)
+	mergedRes, err := getPropertiesforLookupsInReturn(queryInfo, queryInfo.LookupsReturn, queryInfo.ReturnProjections, graphData)
 	if err != nil {
 		return mergedRes, fmt.Errorf("%w; Not all properties could be fetched", err)
 	}
@@ -234,7 +287,7 @@ func propertyLookupReturnShallow(queryInfo parser.ParseResult) (map[string][]int
 
 // lookupsMap: map of element variables (n, s, e) to the lookups which are happening on them in RETURN clause (n: [name, age, address] for n.name, n.age, n.address)
 // returnVariables: array of all element variables which are returned plain (no lookup) in the RETURN clause: RETURN  n, s, e, e.name -> [n, s, e]
-func getPropertiesforLookupsInReturn(queryInfo parser.ParseResult, lookupsMap map[string][]string, returnVariables []string, graphData map[string][]interface{}) (map[string][]interface{}, error) {
+func getPropertiesforLookupsInReturn(queryInfo parser.ParseResult, lookupsMap map[string][]string, returnProjections []string, graphData map[string][]interface{}) (map[string][]interface{}, error) {
 
 	var err error
 
@@ -247,7 +300,11 @@ func getPropertiesforLookupsInReturn(queryInfo parser.ParseResult, lookupsMap ma
 
 		mergeVariables := false
 
-		if utils.Contains(returnVariables, elVar) {
+		// note: i cannot just check if graphData[elVar] exists because if there is a property lookup the element is fetched form neo4j
+		// 	 	   even if it is not returned plain
+		// solution: check if the variable of the lookup is occuring in returnProjections
+		// 	         returnProjections contains all RETURN projections: RETURN n, r, s.prop -> [n, r, s, s.prop]
+		if utils.Contains(returnProjections, elVar) {
 			mergeVariables = true
 		}
 
@@ -259,18 +316,12 @@ func getPropertiesforLookupsInReturn(queryInfo parser.ParseResult, lookupsMap ma
 	return graphData, err
 }
 
-func getAllProperties(queryInfo parser.ParseResult, lookupsMap map[string][]string, returnVariables []string, graphData map[string][]interface{}) (map[string][]interface{}, error) {
+func getAllProperties(queryInfo parser.ParseResult, returnVariables []string, graphData map[string][]interface{}) (map[string][]interface{}, error) {
 
 	var err error
 	// lookups represents all the lookups which are happening on the element variable elVar (i.e. n.name, n.age, n.address)
 	for _, n := range returnVariables {
 		elements := graphData[n]
-
-		// if the element variable the lookup is happening on also occours plain then we merge the properties into the element
-		// mergeVariables := false
-		// if utils.Contains(returnVariables, elVar) {
-		// 	mergeVariables = true
-		// }
 
 		graphData, err = fetchTimeSeriesAll(queryInfo.From, queryInfo.To, graphData, elements, n)
 		// graphData = filterMatches(graphData, rowsToRemove, []string{})
@@ -278,26 +329,177 @@ func getAllProperties(queryInfo parser.ParseResult, lookupsMap map[string][]stri
 	return graphData, err
 }
 
-func fetchTimeSeriesAll(from string, to string, graphData map[string][]interface{}, elements []interface{}, elementVar string) (map[string][]interface{}, error) {
+// lookupsMap: map of element variables (n, s, e) to the lookups which are happening on them in RETURN clause (n: [name, age, address] for n.name, n.age, n.address)
+// returnProjections: all the projections in the RETURN clause (i.e. "RETURN n, s, e, e.name" -> [n, s, e, e.name])
+// note: we can retrieve plain elements through filtering returnProjections with lookupsMap:
+//
+//			   to retrieve [n,s,e] 	from [n,s,e,e.name]:
+//	       if  _, ok := lookupsMap["foo"]; !ok { remove element from list }
+//			THIS ONLY WORKS IF I ADD THE ELEMENTS TO THE LOOKUPS MAP IF THEY ARE RETURNED PLAIN WITH EMPTY LIST
+//			- which it shold now
+//
+// returnVariables: contains all variables which occur in WHERE, does not say anything about if in a lookup context or plain
+func getAllPropertiesLookupsReturn(queryInfo parser.ParseResult, lookupsMap map[string][]string, returnVariables []string, graphData map[string][]interface{}) (map[string][]interface{}, error) {
+
+	var err error
+
+	fmt.Printf("\n    return variables: %+v", returnVariables)
+
+	// TODO NEXT: find a way to check which lookups are happening in the RETURN clause and fetch those properties
+	// advanded: if it's parent variable occours in WHERE: get the time-series from the parent node/edge to avoid
+	// 					 fetching twice
+
+	// possibility 1:
+	//   - fetch all the elements first: a,e,n
+	//   - then for every lookup: check if parent has been fetched. retrieve the result from result map
+
+	plainReturnVariables := []string{}
+	projections := queryInfo.ReturnProjections
+	for _, projection := range projections {
+		if !strings.Contains(projection, ".") {
+			plainReturnVariables = append(plainReturnVariables, projection)
+		}
+	}
+
+	fmt.Printf("\n\n    lookups map: %+v      \n\n", lookupsMap)
+	fmt.Printf("\n\n    plain return variables: %+v      \n\n", lookupsMap)
+	for _, el := range returnVariables {
+		fmt.Printf("\n\n    return variable: %+v      \n\n", el)
+
+		// if the returnVariable is not a key of the lookupMap then it is a plain return variable
+		if lookups, ok := lookupsMap[el]; !ok {
+			if len(lookups) == 0 {
+				plainReturnVariables = append(plainReturnVariables, el)
+			}
+		}
+	}
+
+	fmt.Printf("\n\n    plain return variables: %+v      \n\n", plainReturnVariables)
+
+	// for every plain return variable: for every graph element related to it merge all time-series into its properties
+	for _, n := range plainReturnVariables {
+		elements := graphData[n]
+
+		graphData, err = fetchTimeSeriesAll(queryInfo.From, queryInfo.To, graphData, elements, n)
+		// graphData = filterMatches(graphData, rowsToRemove, []string{})
+	}
+
+	for elVar, lookups := range lookupsMap {
+
+		alreadyFetched := utils.Contains(plainReturnVariables, elVar)
+
+		fmt.Printf("\n\n	    already fetched?: %v      \n\n", alreadyFetched)
+
+		for _, lookup := range lookups {
+			graphData, err = getTimeSeriesSingleLookup(queryInfo, graphData, elVar, lookup, alreadyFetched)
+		}
+	}
+
+	return graphData, err
+}
+
+func getTimeSeriesSingleLookup(queryInfo parser.ParseResult, graphData map[string][]interface{}, elementVar, property string, alreadyFetched bool) (map[string][]interface{}, error) {
+
+	var sb strings.Builder
+	sb.WriteString(elementVar)
+	sb.WriteString(".")
+	sb.WriteString(property)
+	lookup := sb.String()
+	elements := graphData[elementVar]
+	graphData[lookup] = make([]any, len(elements))
+
+	if alreadyFetched {
+		// get time-series from parent
+		for i, el := range elements {
+
+			fmt.Printf("\n\n	    already fetched:       \n\n")
+
+			if e, ok := el.(neo4j.Entity); ok {
+				properties := e.GetProperties()
+				graphData[lookup][i] = properties[property]
+				fmt.Printf("\n\n	    merged time-series: %v      \n\n", e.GetProperties()[property])
+			} else {
+				return nil, fmt.Errorf("error fetching time-series for lookup %v: element is not neo4j.Entity", lookup)
+			}
+		}
+	} else {
+		graphData, err := fetchSinglePropTimeSeries(queryInfo, graphData, elementVar, property)
+		if err != nil {
+			return graphData, fmt.Errorf("error fetching time-series for lookup %v: %v", lookup, err)
+		}
+	}
+	return graphData, nil
+}
+
+func fetchSinglePropTimeSeries(queryInfo parser.ParseResult, graphData map[string][]interface{}, elementVar, property string) (map[string][]any, error) {
+
+	var sb strings.Builder
+	sb.WriteString(elementVar)
+	sb.WriteString(".")
+	sb.WriteString(property)
+	lookup := sb.String()
+	elements := graphData[elementVar]
+	graphData[lookup] = make([]any, len(elements))
+
 	for i, el := range elements {
+		if e, ok := el.(neo4j.Entity); ok {
+			properties := e.GetProperties()
+			uuid := properties[property]
+			if uuid == nil {
+				// property not available - do nothing
+				log.Printf("\nproperty %v not available on element with id : %v\n", property, e.GetElementId())
+			} else if s, ok := uuid.(string); ok {
+				tablename := uuidToTablename(s)
+				_, timeseries, err := getTimeSeries(queryInfo.From, queryInfo.To, "", tablename)
+
+				fmt.Printf("\n\n	    fetched time-series: %v      \n\n", timeseries)
+
+				graphData[lookup][i] = timeseries
+
+				if err != nil {
+					return graphData, fmt.Errorf("%w; error - couldnt fetch  properties for %v of element", err, property)
+				}
+			} else {
+				return graphData, errors.New("error - uuid is not a string - this should not happen")
+			}
+		} else {
+			return graphData, fmt.Errorf("unknown type of object %v", el)
+		}
+	}
+
+	return graphData, nil
+}
+
+func fetchTimeSeriesAll(from string, to string, graphData map[string][]interface{}, elements []interface{}, elementVar string) (map[string][]interface{}, error) {
+	for _, el := range elements {
+		fmt.Printf("\n\n	    el: %+v      \n\n", el)
 		switch e := el.(type) {
 		case neo4j.Entity:
 			properties := e.GetProperties()
-			for prop := range properties {
+			for prop, uuid := range properties {
 				// skip if not a timeseries property
+				fmt.Printf("\n\n	    prop: %+v      \n\n", prop)
+				fmt.Printf("\n\n	    uuid: %+v      \n\n", uuid)
+				fmt.Printf("\n\n	    e: %+v      \n\n", e)
 				if !strings.HasPrefix(prop, "properties") {
 					continue
 				}
-				uuid := e.GetProperties()[prop]
 				if uuid == nil {
 					// property not available - do nothing
 					log.Printf("\nproperty %v not available on element with id : %v\n", prop, e.GetElementId())
 				} else if s, ok := uuid.(string); ok {
+
+					fmt.Printf("\n\n	    ERREISCHT:      \n\n")
 					tablename := uuidToTablename(s)
-					propertyMapOfElement := graphData[elementVar][i].(neo4j.Entity).GetProperties()
+
+					// IF properties[prop] = timeseries later is same behaviour delete this !
+					// propertyMapOfElement := graphData[elementVar][i].(neo4j.Entity).GetProperties()
+
 					_, timeseries, err := getTimeSeries(from, to, "", tablename)
+
+					fmt.Printf("\n\n	    fetched time-series: %v      \n\n", timeseries)
 					if err != nil {
-						return nil, fmt.Errorf("%w; error - couldnt fetch  properties for %v of element", err, prop)
+						return graphData, fmt.Errorf("%w; error - couldnt fetch  properties for %v of element", err, prop)
 					}
 					// new element for the add property/time-series list
 					// var sb strings.Builder
@@ -310,10 +512,11 @@ func fetchTimeSeriesAll(from string, to string, graphData map[string][]interface
 					// merge it into the element if it's part of the RETURN clause
 
 					// if mergeVariables {
-					propertyMapOfElement[prop] = timeseries
+					properties[prop] = timeseries
+					fmt.Printf("\n\n	    merged time-series: %v      \n\n", properties[prop])
 					// }
 				} else {
-					return nil, errors.New("error - uuid is not a string - this should not happen")
+					return graphData, errors.New("error - uuid is not a string - this should not happen")
 				}
 			}
 		default:
@@ -337,20 +540,17 @@ func propertyLookupWhereReturnShallow(queryInfo parser.ParseResult) (map[string]
 	// relevantLookups is an array of relevant lookups in the where clause.
 	relevantLookups := queryInfo.LookupsWhereRelevant
 
-	if err != nil {
-		return nil, fmt.Errorf("%w; error - failed to retrieve relevant lookups", err)
-	}
-
 	// query the data from timescaleDB according to the property lookups in the original WHERE clause
 	graphData, err = filterForCondLookupsInWhere(queryInfo, graphData, relevantLookups)
 
 	if err != nil {
-		return nil, fmt.Errorf("%w; error retrieving properties for lookups in WHERE", err)
+		return nil, fmt.Errorf("%w; error filtering query result on WHERE conditions", err)
 	}
 
-	returnVariables := queryInfo.GraphElements.ReturnGraphElementsNoLookup
+	returnVariables := queryInfo.ReturnProjections
+	lookupsReturn := queryInfo.LookupsReturn
 
-	graphData, err = getPropertiesforLookupsInReturn(queryInfo, queryInfo.LookupsReturn, returnVariables, graphData)
+	graphData, err = getPropertiesforLookupsInReturn(queryInfo, lookupsReturn, returnVariables, graphData)
 
 	// filter out all elements from the neo4j answer which do not match the original WHERE clause with
 
@@ -358,12 +558,6 @@ func propertyLookupWhereReturnShallow(queryInfo parser.ParseResult) (map[string]
 		return nil, fmt.Errorf("%w; error filtering and merging queried data", err)
 	}
 
-	// TODO NEXT: process res
-	// iterate over the keys of the records and apply the original RETURN Clause
-	// with  record.Get("movieTitle") it should be possible to get the "columns"
-	// PROBLEM: if movieTitle is an alias - how to get the real name which was used in MATCH so we can merge
-	// the results of both queries ? But here it doesnt matter because we Return *
-	// but for the saved RETRUN clause (the original) it matters. Think about it.
 	return graphData, nil
 }
 
@@ -419,7 +613,6 @@ func filterForCondLookupsInWhere(queryInfo parser.ParseResult, graphData map[str
 	return filteredData, nil
 }
 
-// in comparison to mergeTimeSeriesLookupCmpWhere this function does not filter out elements at all
 func fetchTimeSeries(from string, to string, graphData map[string][]interface{}, elements []interface{}, property string, elementVar string, mergeVariables bool) (map[string][]interface{}, error) {
 	for i, el := range elements {
 		switch e := el.(type) {
@@ -441,6 +634,8 @@ func fetchTimeSeries(from string, to string, graphData map[string][]interface{},
 				sb.WriteString(".")
 				sb.WriteString(property)
 				lookup := sb.String()
+
+				// todo: assign pre sized array, add via index instead of append
 				graphData[lookup] = append(graphData[lookup], properties)
 
 				// merge it into the element if it's part of the RETURN clause
@@ -573,3 +768,13 @@ func filterMatches(graphData map[string][]interface{}, rowsToRemove []int, excep
 // }
 
 // shouldnt I be able to get a list of these in the listener??
+
+func handleErrorOnResult(res map[string][]any, err error) (bool, error) {
+	if err != nil && res == nil {
+		return false, err
+	} else if err != nil {
+		// this still right ?
+		log.Printf("Not all elements contained the property: %v", err)
+	}
+	return true, nil
+}

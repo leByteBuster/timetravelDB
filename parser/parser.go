@@ -21,12 +21,12 @@ type ParseResult struct {
 	MatchClause               string
 	WhereClause               string
 	ReturnClause              string
-	GraphElements             li.GraphElements    // all element variables occouring in the query
-	LookupsWhere              map[string][]string // all relevant lookups in Where (lookups that are relevant for binary querying)
-	ReturnProjections         []string            // all projections in Return, is used to reorder the result set according to the order in the RETURN clause
-	LookupsWhereRelevant      []LookupInfo        // holds all relevant lookups (like above) but with additional information which is relevant for comparisons
+	GraphElements             li.GraphElements // all element variables occouring in the query
+	// LookupsWhere              map[string][]string // all relevant lookups in Where (lookups that are relevant for binary querying)
+	ReturnProjections    []string     // all projections in Return, is used to reorder the result set according to the order in the RETURN clause
+	LookupsWhereRelevant []LookupInfo // holds all relevant lookups (like above) but with additional information which is relevant for comparisons
 	// not such that are NOT NULL appendices. lookups are onto their variable: n: {property1,property2} s: {property1,property4}..
-	LookupsReturn          map[string][]string                                                // all relevant lookups in Return (lookups that are relevant for binary querying)
+	LookupsReturn          map[string][]string                                                // contains all relevant lookups in Return (lookups that do not have a NullPredicate appendix - but we don't allow this in the RETURN clause yet anyways)
 	PropertyClauseInsights map[*tti.OC_ComparisonExpressionContext][]li.PropertyClauseInsight // insights of Comparison expressions / Property Clauses
 }
 
@@ -147,6 +147,12 @@ func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
 		}
 	}
 
+	for _, v := range listener.GraphElements.MatchGraphElements {
+		if _, ok := lookupsWhere[v]; !ok {
+			lookupsWhere[v] = []string{}
+		}
+	}
+
 	return ParseResult{
 		IsShallow:                 listener.IsShallow,
 		ContainsPropertyLookup:    containsPropertyLookup,
@@ -158,10 +164,10 @@ func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
 		ReturnClause:              listener.ReturnClause,
 		ReturnProjections:         listener.ReturnProjections,
 		GraphElements:             listener.GraphElements,
-		LookupsWhere:              lookupsWhere,
-		LookupsWhereRelevant:      lookupsWhereRelevant,
-		LookupsReturn:             lookupsReturn,
-		PropertyClauseInsights:    propertyClauseInsights,
+		// LookupsWhere:              lookupsWhere,
+		LookupsWhereRelevant:   lookupsWhereRelevant,
+		LookupsReturn:          lookupsReturn,
+		PropertyClauseInsights: propertyClauseInsights,
 	}
 }
 

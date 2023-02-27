@@ -71,22 +71,56 @@ func PrettyPrintArray(arr []any) {
 	fmt.Print(string(b))
 }
 
-func PrettyPrintMapOfArrays(s map[string][]any) {
+func JsonStringFromMap(s map[string][]any) string {
 	b, err := json.MarshalIndent(s, "", "  ")
 	if err != nil {
 		fmt.Println("marshal error:", err)
 	}
-	fmt.Println(string(b))
+	return string(b)
 }
 
-func PrettyPrintMapOfArraysOrdered(m map[string][]any, keys []string) {
-	for _, key := range keys {
-		b, err := json.MarshalIndent(m[key], "", "  ")
+func JsonStringFromMapOrdered(m map[string][]any, keys []string) string {
+	var sb strings.Builder
+	sb.WriteString("{\n")
+	for i, key := range keys {
+		sb.WriteString("  \"")
+		sb.WriteString(key)
+		sb.WriteString("\"  ")
+		sb.WriteString(": ")
+		b, err := json.MarshalIndent(m[key], "   ", "   ")
 		if err != nil {
 			fmt.Println("marshal error:", err)
 		}
-		fmt.Println(string(b))
+		sb.WriteString(string(b))
+		if i < len(keys)-1 {
+			sb.WriteString(",\n")
+		}
 	}
+	sb.WriteString("\n")
+	sb.WriteString("}")
+
+	return sb.String()
+}
+
+func PrettyPrintMapOfArraysOrdered2(m map[string][]interface{}, keys []string) {
+	out := "{\n"
+	for i, key := range keys {
+		out += "  \"" + key + "\": [\n"
+		b, err := json.MarshalIndent(m[key], "    ", "  ")
+		if err != nil {
+			fmt.Println("marshal error:", err)
+			return
+		}
+		out += string(b)
+		if i < len(keys)-1 {
+			out += ",\n"
+		} else {
+			out += "\n"
+		}
+		out += "  ]"
+	}
+	out += "\n}"
+	fmt.Println(out)
 }
 
 // use this for large results from neo4j when the data

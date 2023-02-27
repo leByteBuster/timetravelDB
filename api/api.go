@@ -95,12 +95,15 @@ func Api() {
 	//    FROM 2023-01-01T14:34:00Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE b.properties_Risc <= 33  RETURN  * | should return one match because in the time range there is only one entry with 33
 	//    FROM 2023-01-01T14:33:00Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE b.properties_Risc < 33  RETURN  * | should nothing  nothing since the time range lowest value is 33 but we ask for < 33
 
-	// THE LAST ONE IS THE ONLY ONE NOT WORKING YET
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b)  RETURN  b, b.properties_Risc | should return 2 values for b. one with b.propties_Risc set to a time-series, one set to null
+	//    FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b)  WHERE b.properties_Risc > 0 RETURN  b, b.properties_Risc | should return 1 value for b  with b.propties_Risc set to a time-series
 
 	// QUERIES NON SHALLOW
 	// FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN  *
+	// FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN  a,x,b
 	// FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  *
 	// FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  *
+	// FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE b.properties_Risc > 0 RETURN  b, b.properties_Risc
 
 	fmt.Print("Enter Query: \n")
 	p := prompt.New(
@@ -122,7 +125,7 @@ func Api() {
 func executor(in string) {
 	switch in {
 	case "hello":
-		fmt.Println("Hello world!")
+		fmt.Println("Hello, welcome to TTDB CLI !")
 	case "quit":
 		handleExit() // note: cannot handle this with defer (probably goroutine race condition)
 		os.Exit(0)
@@ -136,7 +139,7 @@ func executor(in string) {
 		handleExit()
 		os.Exit(0)
 	case "help":
-		fmt.Println("To query TimeTravelDB type in a valid TTQL query.\nTo exit the program type 'quit' or 'exit'.\nFor more infos: https://github.com/LexaTRex/timetravelDB/")
+		fmt.Println("To query TimeTravelDB type in a valid TTQL query.\nTo exit the program type 'quit' 'q' or 'exit' and hit enter.\nFor more infos: https://github.com/LexaTRex/timetravelDB/")
 	default:
 		fmt.Printf("Processing Query: %s\n", in)
 		in = cleanQuery(in)
