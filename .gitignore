@@ -1,2 +1,12 @@
 .vscode/
 .vscode/settings.json
+
+# Ignore all files in the shared volumes which are created
+# for testing purposes any might be too large to be commited.
+# For storing test data make a backup !  
+
+docker-test/neo4j/data/*
+docker-test/neo4j/backups/*
+
+docker-test/timescaledb/data/*
+docker-test/timescaledb/backups/*

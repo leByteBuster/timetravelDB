@@ -1,8 +1,20 @@
-Cretaing the parser
-- [] create MR 
-- [] set all the ElementId, StartElementId, EndElementId to "" in the test data
-- [] TODO NEXT: safe the current environment (the data) for a test environment. copy the neo4j data, as well as the timescale data and write a funciton 
+
+- [] fix empty results when expected. for elements empty result is emtpy: {} for only property its prop: null, null, null (depending on the number of nodes that match)
+- [] why is no data created in docker-test/timescaledb/data ?
+- [x] check permission problem on the timesclaedb container of the testing environment
+- [] what if compariosn happens on properties wich are no time-series ? do I even allow them ? 
+  - filter for properties which start with properties_ (or ts_ if we change this - see below)
+- [] rename time-series properties to timeseries_level1_level2_level3
+    - we have to change our test data for this as well :(
+    - [] but we can just use a functioning system, generate the new data, run the queries and use the results as expected results and make a new dump
+
+
+
+- [x] create MR 
+- [x] set all the ElementId, StartElementId, EndElementId to "" in the test data
+- [x] TODO NEXT: safe the current environment (the data) for a test environment. copy the neo4j data, as well as the timescale data and write a funciton 
                 or a script which loads exactly the same data into the databases. use ChatGPT for help
+ 
 
 - [x] DEBUG: is working again
       FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  *
@@ -24,7 +36,6 @@ Cretaing the parser
        the properties are filtered correctly. THE RESULT SET should contain A LIST of time-series. One time-series for each nodes a.properties_components_cpu 
        if a doesnt have this property, it should return null. at this point 
 
-- [] what if compariosn happens on properties wich are no time-series ? do I even allow them ? 
 - [] change properties prefix of properties to ts or timeseries
 - []  look at this case: 
     SELECT * FROM (SELECT time, timestamps, value FROM ts_2023_01_12T15:33:13.0000005Z WHERE time >= '2021-12-22T15:33:13.0000005Z' AND time < '2024-01-12T15:33:13.0000006Z') genericAliasName;

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"reflect"
 	"testing"
 
 	"github.com/LexaTRex/timetravelDB/utils"
@@ -83,6 +82,13 @@ func TestNonShallowQueries(t *testing.T) {
 // TODO
 func TestShallowQueries(t *testing.T) {
 
+	PassNeo = "test"
+	UserNeo = "neo4j"
+
+	UserTS = "postgres"
+	PassTS = "password"
+	DBnameTS = "postgres"
+
 	var err error
 
 	DriverNeo, err = neo4j.NewDriverWithContext(UriNeo, neo4j.BasicAuth(UserNeo, PassNeo, ""))
@@ -104,9 +110,9 @@ func TestShallowQueries(t *testing.T) {
 	query7 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE b.properties_Risc > 0 RETURN  b.properties_Risc"
 	query8 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  a, a.properties_components_cpu"
 	query9 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) RETURN  *"
-	expecteds := []string{expectedShallow1, expectedShallow2, expectedShallow3, expectedShallow4}
+	expecteds := []string{expectedShallow1, expectedShallow2, expectedShallow3, expectedShallow4, expectedShallow5, expectedShallow6, expectedShallow7, expectedShallow8, expectedShallow9}
 	queries := []string{query1, query2, query3, query4, query5, query6, query7, query8, query9}
-	keys := [][]string{{"a", "x", "b"}, {"b", "b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}}
+	keys := [][]string{{"a", "b", "x"}, {"a.properties_components_cpu"}, {"a", "b", "x"}, {"b", "b.properties_Risc"}, {"b", "b.properties_Risc"}, {"a", "x", "b"}, {"b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}}
 
 	for i, query := range queries {
 		res, err := ProcessQuery(query)
@@ -129,7 +135,7 @@ func TestShallowQueries(t *testing.T) {
 		}
 
 		if bufferEx.String() != bufferRes.String() {
-			t.Fatalf("\nExpected\n  %v\nGot:\n  %v", bufferEx.String(), bufferRes.String())
+			t.Fatalf("\nQuery: %v\nExpected\n  %v\nGot:\n  %v", query, bufferEx.String(), bufferRes.String())
 		}
 	}
 }
@@ -137,12 +143,8 @@ func TestShallowQueries(t *testing.T) {
 func removeElementIDs(graphData interface{}) {
 	switch value := graphData.(type) {
 	default:
-		fmt.Printf("\nPRINT VALUE: %v\n", value)
-		fmt.Printf("PRINT TYPE: %v\n", reflect.TypeOf(value))
 	case map[string]interface{}:
-		fmt.Print("\n RECURSIVE MAP OF INTERFACE\n")
 		for key, val := range value {
-			fmt.Print("\n ITERATE OVER ELEMENTS OK\n")
 			if key == "ElementId" {
 				delete(value, key) // Remove the "ElementId" field from the map
 			} else {
@@ -150,23 +152,18 @@ func removeElementIDs(graphData interface{}) {
 			}
 		}
 	case map[string][]interface{}:
-		fmt.Printf("\n RECURSIVE MAP OF SLICES")
 		for _, val := range value {
 			removeElementIDs(val)
 		}
 	case []interface{}:
-		fmt.Printf("\n RECURSIVE SLICES")
 		for i, val := range value {
 			removeElementIDs(val)
-			fmt.Printf("\n ARRAY VALUE: %+v", val)
 			switch el := val.(type) {
 			default:
 			case neo4j.Node:
-				fmt.Print("\n RECURSIVE NODE\n")
 				el.ElementId = ""
 				value[i] = el
 			case neo4j.Relationship:
-				fmt.Print("\n RECURSIVE RELATIONSHIP\n")
 				el.ElementId = ""
 				el.EndElementId = ""
 				el.StartElementId = ""
