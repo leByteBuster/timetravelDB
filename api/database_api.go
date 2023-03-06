@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -17,31 +18,22 @@ var UserTS = "postgres"
 var PassTS = "password"
 var PortTS = "5432"
 var DBnameTS = "postgres"
+var SessionTS *pgx.Conn
 
 // AUTH neo4j
 var UriNeo = "neo4j://localhost:7687"
 var UserNeo = "neo4j"
-var PassNeo = "rhebo"
+
+// var PassNeo = "rhebo"
+var PassNeo = "test"
 var DriverNeo neo4j.DriverWithContext
 var SessionNeo neo4j.SessionWithContext
-
-type TimeSeriesRow struct {
-	Timestamp   time.Time
-	IsTimestamp bool
-	Value       interface{}
-}
 
 // send any read query and return the results as a key value map
 func queryReadNeo4j(cypherQueryString string) (neo4j.ResultWithContext, error) {
 	// Connect to the Neo4j database
 
 	res, errReq := SessionNeo.Run(context.Background(), cypherQueryString, map[string]interface{}{})
-
-	// fmt.Printf("\nDirect print: %v\n", res)
-	// res.Next(ctx)
-	// fmt.Printf("\nKeys: %v", res.Record().Keys)
-	// data, _ := res.Record().Get("n")
-	// fmt.Printf("\nn: %v", data)
 
 	if errReq != nil {
 		log.Printf("Query failed")
@@ -82,22 +74,27 @@ func queryWriteMultipleNeo4j(ctx context.Context, uri, username, password string
 	}
 }
 
-func connectTimescale(username, password, port, dbname string) *pgx.Conn {
-	connStr := fmt.Sprintf("postgresql://%s:%s@localhost:%s/%s", username, password, port, dbname)
-	// conn, err := pgxpool.Connect(context.Background(), connStr)
-	conn, err := pgx.Connect(context.Background(), connStr)
-	if err != nil {
-		fmt.Println("\nUnable to establish connection:", err)
-	}
-	return conn
+func connectTimescale(username, password, port, dbname string) (*pgx.Conn, error) {
+
+	var sb strings.Builder
+	sb.WriteString("postgresql://")
+	sb.WriteString(username)
+	sb.WriteString(":")
+	sb.WriteString(password)
+	sb.WriteString("@localhost:")
+	sb.WriteString(port)
+	sb.WriteString("/")
+	sb.WriteString(dbname)
+
+	// conn, err := pgxpool.Connect(context.Background(), connStr) // use pgxpool for managing multiple connections
+	conn, err := pgx.Connect(context.Background(), sb.String())
+	return conn, err
 }
 
 // send any query string to the database
 // this is just for executing, CommandTag only contains status
 func TimeScale(query string) pgconn.CommandTag {
-	conn := connectTimescale(UserTS, PassTS, PortTS, DBnameTS)
-	defer conn.Close(context.Background())
-	res, err := conn.Exec(context.Background(), query)
+	res, err := SessionTS.Exec(context.Background(), query)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -107,13 +104,11 @@ func TimeScale(query string) pgconn.CommandTag {
 // send a list of query strings to the database. not sure if CommandTag contains a result or just status though
 //
 //lint:ignore U1000 Ignore unused function temporarily for debugging
-func queryMultipleTimeScale(queries []string, parameters [][]interface{}, username, password, port, dbname string) []pgconn.CommandTag {
+func queryMultipleTimeScale(queries []string, parameters [][]interface{}) []pgconn.CommandTag {
 	// create the table according to  the data type
-	conn := connectTimescale(username, password, port, dbname)
 	results := make([]pgconn.CommandTag, 0)
-	defer conn.Close(context.Background())
 	for i, query := range queries {
-		_, err := conn.Exec(context.Background(), query, parameters[i]...)
+		_, err := SessionTS.Exec(context.Background(), query, parameters[i]...)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -123,12 +118,10 @@ func queryMultipleTimeScale(queries []string, parameters [][]interface{}, userna
 }
 
 // multiple row READ queries
-func readRowsTimescale(query string, parameters [][]interface{}, username, password, port, dbname string) ([]TimeSeriesRow, error) {
+func readRowsTimescale(query string, parameters [][]interface{}) ([]TimeSeriesRow, error) {
 	// create the table according to  the data type
-	conn := connectTimescale(username, password, port, dbname)
-	defer conn.Close(context.Background())
 
-	rows, err := conn.Query(context.Background(), query)
+	rows, err := SessionTS.Query(context.Background(), query)
 	if err != nil {
 		log.Println("error querying rows from a table in timescaledb:", err)
 		return nil, err
@@ -160,16 +153,13 @@ func readRowsTimescale(query string, parameters [][]interface{}, username, passw
 // single row READ queries
 //
 //lint:ignore U1000 Ignore unused function temporarily for debugging
-func readRowTimescale(query string, parameters []interface{}, username, password, port, dbname string) (TimeSeriesRow, error) {
-	// create the table according to  the data type
-	conn := connectTimescale(username, password, port, dbname)
-	defer conn.Close(context.Background())
+func readRowTimescale(query string, parameters []interface{}) (TimeSeriesRow, error) {
 
 	var timestamp time.Time
 	var isTimestamp bool
 	var value interface{}
 
-	err := conn.QueryRow(context.Background(), query, parameters...).Scan(&timestamp, &isTimestamp, &value)
+	err := SessionTS.QueryRow(context.Background(), query, parameters...).Scan(&timestamp, &isTimestamp, &value)
 	if err != nil {
 		return TimeSeriesRow{}, fmt.Errorf("error querying a row from a table in timescaledb: %w", err)
 	}
@@ -177,13 +167,11 @@ func readRowTimescale(query string, parameters []interface{}, username, password
 	return TimeSeriesRow{timestamp, isTimestamp, value}, nil
 }
 
-func readRowExistsTimescale(query string, username, password, port, dbname string) (bool, error) {
+func readRowExistsTimescale(query string) (bool, error) {
 	// create the table according to  the data type
-	conn := connectTimescale(username, password, port, dbname)
-	defer conn.Close(context.Background())
 
 	var exists bool
-	err := conn.QueryRow(context.Background(), query).Scan(&exists)
+	err := SessionTS.QueryRow(context.Background(), query).Scan(&exists)
 	if err != nil {
 		return false, nil
 		// TODO: reintroduce this as soon as we can be sure that for every UUID in a property in neo4j a
@@ -199,12 +187,10 @@ func readRowExistsTimescale(query string, username, password, port, dbname strin
 //lint:ignore U1000 Ignore unused function temporarily for debugging
 func readRowTimestampTimescale(query string, parameters []interface{}, username, password, port, dbname string) (interface{}, error) {
 	// create the table according to  the data type
-	conn := connectTimescale(username, password, port, dbname)
-	defer conn.Close(context.Background())
 
 	var timestamp time.Time
 
-	err := conn.QueryRow(context.Background(), query, parameters...).Scan(&timestamp)
+	err := SessionTS.QueryRow(context.Background(), query, parameters...).Scan(&timestamp)
 	if err != nil {
 		return nil, err
 	}
@@ -217,33 +203,13 @@ func readRowTimestampTimescale(query string, parameters []interface{}, username,
 
 func readRowValueTimescale(query string, parameters []interface{}, username, password, port, dbname string) (interface{}, error) {
 	// create the table according to  the data type
-	conn := connectTimescale(username, password, port, dbname)
-	defer conn.Close(context.Background())
 
 	var value interface{}
 
-	err := conn.QueryRow(context.Background(), query, parameters...).Scan(&value)
+	err := SessionTS.QueryRow(context.Background(), query, parameters...).Scan(&value)
 	if err != nil {
 		return nil, err
 	}
 
 	return value, nil
-}
-
-// single row only return time READ queries
-//
-//lint:ignore U1000 Ignore unused function temporarily for debugging
-func readRowIsTimestampTimescale(query string, parameters []interface{}, username, password, port, dbname string) (interface{}, error) {
-	// create the table according to  the data type
-	conn := connectTimescale(username, password, port, dbname)
-	defer conn.Close(context.Background())
-
-	var isTimestamp bool
-
-	err := conn.QueryRow(context.Background(), query, parameters...).Scan(&isTimestamp)
-	if err != nil {
-		return nil, err
-	}
-
-	return isTimestamp, nil
 }

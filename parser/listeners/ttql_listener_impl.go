@@ -55,11 +55,12 @@ type PropertyClauseInsight struct {
 	IsPropertyLookup bool // contains this PropertyClause a property lookup ?
 	IsComparison     bool // is it part of a comparison ? (i think we can delete this because property clauses are safed in a map with the comparison object
 	// as the key for a list of Insight)
-	IsPartialComparison       bool // is it part of a partial comparison ?
-	IsWhere                   bool // part of a WHERE clause ?
-	IsReturn                  bool // part of a RETURN clause ?
-	IsValid                   bool // is Part of a RETURN or WHERE clause ? if not invalid
-	CountPartialComparison    int  // how many PartialComparisons
+	IsPartialComparison      bool // is it part of a partial comparison ? (so either a Comparison or its counter-part)
+	IsPartOfActualComparison bool // is it part of an actual comparison ? (so either a PartialComparison or its counter-part)
+	IsWhere                  bool // part of a WHERE clause ?
+	IsReturn                 bool // part of a RETURN clause ?
+	IsValid                  bool // is Part of a RETURN or WHERE clause ? if not invalid
+	// CountPartialComparison    int  // how many PartialComparisons
 	IsAppendixOfNullPredicate bool // does a NullPredicate exist as suffix ?
 }
 
@@ -73,13 +74,14 @@ func (listener *TtqlTreeListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.O
 	var isReturn = false
 	var isPropertyLookup = false
 	var isComparison = false
+	var isPartOfActualComparison = false
 	var isPartialComparison = false
 	var isAppendixOfNullPredicate = false
 
 	var comparison *tti.OC_ComparisonExpressionContext
 	var propertyLookup *tti.OC_PropertyLookupContext
 	var partialComparison *tti.OC_PartialComparisonExpressionContext
-	var countPartialComparison int = 0
+	// var countPartialComparison int = 0
 
 	var element string = pOLE.GetChild(0).(*tti.OC_AtomContext).GetText()
 	var propertyKey string
@@ -109,13 +111,6 @@ func (listener *TtqlTreeListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.O
 
 	// get the comparison expression & check if WHERE or RETURN clause. If not, then it is invalid
 
-	// 1: property Lookup is true: run until WHERE or RETURN is found. If not found, then it is invalid
-	// 2: property Lookup is false: run and see if CompareExpression is found. If not, then it is NOT invalid
-	// Note: when Searching for WHERE or RETURN, the ComparissonExpression would be passed on the way anywas so no extra check needed
-	// Note: invalid if: property lookup true && !isReturn && !isWhere
-
-	// Note: this did not work because also for literals (e.g. 22) I want to know if isReturn or isWhere
-	//for parent != nil && (!isPropertyLookup && !isComparison || isPropertyLookup && !(isReturn || isWhere)) {
 	for parent != nil && !(isReturn || isWhere) {
 		if e, ok := parent.(*tti.OC_PartialComparisonExpressionContext); ok {
 			partialComparison = e
@@ -137,9 +132,11 @@ func (listener *TtqlTreeListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.O
 	if isComparison {
 		for _, ctx := range comparison.GetChildren() {
 			if _, ok := ctx.(*tti.OC_PartialComparisonExpressionContext); ok {
-				countPartialComparison++
+				// NOTE: later counting the number of partial comparisons might be necessary
+				// countPartialComparison++
+				isPartOfActualComparison = true
 			}
-			// NOTE: this might only work in some cases. Because PartialComparisons itself
+			// NOTE: this will only work in some cases. Because PartialComparisons itself
 			//			 contain a StringListNullPredicate and therefore can contain
 			//			 a NullPredicate.
 			if sCtx, ok := ctx.(*tti.OC_StringListNullPredicateExpressionContext); ok {
@@ -160,18 +157,19 @@ func (listener *TtqlTreeListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.O
 	}
 
 	listener.Insights[comparison] = append(listener.Insights[comparison], PropertyClauseInsight{
-		PropertyLookupClause:      propertyLookupClause,
-		Element:                   element,
-		PropertyKey:               propertyKey,
-		Labels:                    []string{},
-		IsWhere:                   isWhere,
-		IsReturn:                  isReturn,
-		IsValid:                   (isWhere || isReturn) || !isPropertyLookup,
-		IsComparison:              isComparison,
-		CompareOperator:           compareOperator,
-		IsPropertyLookup:          isPropertyLookup,
-		IsPartialComparison:       isPartialComparison,
-		CountPartialComparison:    countPartialComparison,
+		PropertyLookupClause:     propertyLookupClause,
+		Element:                  element,
+		PropertyKey:              propertyKey,
+		Labels:                   []string{},
+		IsWhere:                  isWhere,
+		IsReturn:                 isReturn,
+		IsValid:                  (isWhere || isReturn) || !isPropertyLookup,
+		IsComparison:             isComparison,
+		CompareOperator:          compareOperator,
+		IsPropertyLookup:         isPropertyLookup,
+		IsPartOfActualComparison: isPartOfActualComparison,
+		IsPartialComparison:      isPartialComparison,
+		// CountPartialComparison:    countPartialComparison,
 		IsAppendixOfNullPredicate: isAppendixOfNullPredicate,
 	})
 

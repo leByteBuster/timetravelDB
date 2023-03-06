@@ -12,15 +12,16 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr/v4"
 )
 
+// ParseResult holds all the information about a parsed query to build queries for Neo4j and TimescaleDB
 type ParseResult struct {
-	IsShallow                 bool   // is the query shallow
-	ContainsPropertyLookup    bool   // does it contain any property lookup
-	ContainsOnlyNullPredicate bool   // if it contains property lookups - do all of them have a NullPredicates suffix ?
-	From                      string // start time
-	To                        string // end time
-	MatchClause               string
-	WhereClause               string
-	ReturnClause              string
+	IsShallow                 bool             // is the query shallow?
+	ContainsPropertyLookup    bool             // contains any property lookup?
+	ContainsOnlyNullPredicate bool             // if property lookups - do any of them have a NullPredicates suffix ?
+	From                      string           // start time
+	To                        string           // end time
+	MatchClause               string           // MATCH clause as string
+	WhereClause               string           // WHERE clause as string
+	ReturnClause              string           // WHERE clause
 	GraphElements             li.GraphElements // all element variables occouring in the query
 	// LookupsWhere              map[string][]string // all relevant lookups in Where (lookups that are relevant for binary querying)
 	ReturnProjections    []string     // all projections in Return, is used to reorder the result set according to the order in the RETURN clause
@@ -30,6 +31,7 @@ type ParseResult struct {
 	PropertyClauseInsights map[*tti.OC_ComparisonExpressionContext][]li.PropertyClauseInsight // insights of Comparison expressions / Property Clauses
 }
 
+// ParseQuery parses a ttql query and returns a ParseResult which contains the relevant information to build Neo4j and TimecaleDB queries
 func ParseQuery(query string) (ParseResult, error) {
 
 	qS := antlr.NewInputStream(query)
@@ -57,14 +59,14 @@ func ParseQuery(query string) (ParseResult, error) {
 
 	listener := li.NewTtqlTreeListener()
 
-	fmt.Println()
-	fmt.Println("............................................")
-	fmt.Println()
-	fmt.Printf("Tree: %v", treectx.GetText())
-	fmt.Println("Query is valid.")
-	fmt.Println()
-	fmt.Println("............................................")
-	fmt.Println()
+	utils.Debug()
+	utils.Debug("............................................")
+	utils.Debug()
+	utils.Debugf("Tree: %v", treectx.GetText())
+	utils.Debug("Query is valid.")
+	utils.Debug()
+	utils.Debug("............................................")
+	utils.Debug()
 
 	antlr.ParseTreeWalkerDefault.Walk(listener, treectx)
 	parseResult := aggregateParsingInfo(listener)
@@ -77,18 +79,20 @@ func ParseQuery(query string) (ParseResult, error) {
 func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
 	fmt.Printf("\nTimeClauseInsights: \n from: %v\nto: %v\nisShallow: %v", listener.TimePeriod.From,
 		listener.TimePeriod.To, listener.IsShallow)
-	fmt.Println()
-	fmt.Println("............................................")
-	fmt.Println()
-	fmt.Printf("\nMatchClause variables: %v\nWhereClause variables: %v\nReturnClause variables: %v",
+
+	utils.Debug()
+	utils.Debug("............................................")
+	utils.Debug()
+	utils.Debugf("\nMatchClause variables: %v\nWhereClause variables: %v\nReturnClause variables: %v",
 		listener.GraphElements.MatchGraphElements, listener.GraphElements.WhereGraphElements, listener.GraphElements.ReturnGraphElements)
-	fmt.Println()
-	fmt.Println("............................................")
-	fmt.Println()
+	utils.Debug()
+	utils.Debug("............................................")
+	utils.Debug()
 
 	propertyClauseInsights := listener.Insights
 
-	fmt.Println("............................................")
+	utils.Debug("............................................")
+
 	containsPropertyLookup := false
 	containsOnlyNullPredicate := true
 
@@ -115,6 +119,7 @@ func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
 			isReturn := insight.IsReturn
 			isComparison := insight.IsComparison
 			isPartialComparison := insight.IsPartialComparison
+			isPartOfActualComparison := insight.IsPartOfActualComparison
 			isPropertyLookup := insight.IsPropertyLookup
 			isAppendixOfNullPredicate := insight.IsAppendixOfNullPredicate
 
@@ -134,16 +139,16 @@ func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
 
 			isValid := insight.IsValid
 
-			fmt.Printf("\nComparisonWithPropertyLookupQuery: %v\nPropertyLookupinsight: %v \ncomparisonCtx: %v \nfield: %v \npropKeys: %v \nlabels: %v \ncompareOp: %v", insightClause,
+			utils.Debugf("\nComparisonWithPropertyLookupQuery: %v\nPropertyLookupinsight: %v \ncomparisonCtx: %v \nfield: %v \npropKeys: %v \nlabels: %v \ncompareOp: %v", insightClause,
 				insightClauseLookup, comparisonCtx, field, propKeys, labels, compareOp)
 
 			// print all of the insight insights
-			fmt.Printf("\nIsWhere: %v	\nIsReturn: %v	\nIsComparison: %v	\nIsPartialComparison: %v	\nIsPropertyLookup: %v \nIsAppendixOfNullPredicate: %v	\nIsValid: %v",
-				isWhere, isReturn, isComparison, isPartialComparison, isPropertyLookup, isAppendixOfNullPredicate, isValid)
+			utils.Debugf("\nIsWhere: %v	\nIsReturn: %v	\nIsComparison: %v	\nIsPartialComparison: %v	\nIsPartOfActualComparison: %v	\nIsPropertyLookup: %v \nIsAppendixOfNullPredicate: %v	\nIsValid: %v",
+				isWhere, isReturn, isComparison, isPartialComparison, isPartOfActualComparison, isPropertyLookup, isAppendixOfNullPredicate, isValid)
 
-			fmt.Println("")
-			fmt.Println("............................................")
-			fmt.Println("............................................")
+			utils.Debug("")
+			utils.Debug("............................................")
+			utils.Debug("............................................")
 		}
 	}
 
@@ -171,8 +176,8 @@ func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
 	}
 }
 
-// this is a construct describing relevant lookups in the WHERE clause of a query
-// (until now this is only the case when comparisons are happening)
+// LookupInfo is a construct describing relevant lookups in the WHERE clause of a query
+// (until now: only the case when comparisons are happening)
 type LookupInfo struct {
 	ElementVariable string
 	Property        string
@@ -181,68 +186,8 @@ type LookupInfo struct {
 	LookupLeft      bool // a.prop > 5 -> true, 5 > a.prop -> false
 }
 
-// func GetRelevantLookupInfoWhere(queryInfo ParseResult) ([]LookupInfo, error) {
-//
-// 	var lookupInfos []LookupInfo
-//
-// 	for _, insights := range queryInfo.PropertyClauseInsights {
-//
-// 		var elVar string
-// 		var property string
-// 		var compareOperator string // check if this is retrieved the right way in listener. Test if two symbol operators like <= are recognized correctly
-// 		var compareValueStr string
-// 		var compareValue any
-// 		var lookupLeft bool
-//
-// 		switch len(insights) {
-// 		case 0:
-// 			return nil, errors.New("no insights found for comparison. should be impossible if comparison is in list")
-// 		case 1:
-// 			if !insights[0].IsAppendixOfNullPredicate && insights[0].IsWhere {
-// 				return nil, errors.New("single lookups withouth appendix of null predicate (IS NULL / IS NOT NULL) only alloed in return")
-// 			}
-// 			continue
-// 		// in this case it should be a comparison like "a.prop > 3"
-// 		case 2:
-// 			insightLeft := insights[0]
-// 			insightRight := insights[1]
-// 			if !insightLeft.IsWhere || !insightRight.IsWhere {
-// 				return nil, errors.New("comparison not in WHERE clause")
-// 			}
-// 			if insightLeft.IsPartialComparison {
-// 				compareOperator = insightLeft.CompareOperator
-// 			} else if insightRight.IsPartialComparison {
-// 				compareOperator = insightRight.CompareOperator
-// 			} else {
-// 				return nil, errors.New("comparison expression with two propertylabel expressions that include no partial comparison")
-// 			}
-// 			if insightLeft.IsPropertyLookup {
-// 				lookupLeft = true
-// 				elVar = insightLeft.Element
-// 				property = insightLeft.PropertyKey
-// 				compareValueStr = insightRight.Element
-// 			} else if insightRight.IsPropertyLookup {
-// 				elVar = insightRight.Element
-// 				property = insightRight.PropertyKey
-// 				compareValueStr = insightLeft.Element // if insight represents literal then Element is the CompareValue
-// 				lookupLeft = false
-// 			} else {
-// 				continue
-// 			}
-// 		default:
-// 			return nil, errors.New("chained comparisons are not allowed")
-// 		}
-//
-// 		compareValue = utils.ConvertString(compareValueStr)
-//
-// 		// should only end up here if there is a comparison with a property lookup
-// 		lookupInfos = append(lookupInfos, LookupInfo{ElementVariable: elVar, Property: property, CompareOperator: compareOperator, CompareValue: compareValue, LookupLeft: lookupLeft})
-// 	}
-//
-// 	return lookupInfos, nil
-// }
-
-// TODO: try to integrate this logic into the listener - i think this aggregation is unnecessary complicated here
+// GetRelevantLookupInfoWhere returns the relevant lookup info of a where clause
+// TODO: try to integrate this logic into the listener - this aggregation might be unnecessary complicated here
 func GetRelevantLookupInfoWhere(insights []li.PropertyClauseInsight) (LookupInfo, error) {
 	var elVar string
 	var property string
@@ -266,9 +211,9 @@ func GetRelevantLookupInfoWhere(insights []li.PropertyClauseInsight) (LookupInfo
 		if !insightLeft.IsWhere || !insightRight.IsWhere {
 			return LookupInfo{}, errors.New("comparison not in WHERE clause")
 		}
-		if insightLeft.IsPartialComparison {
+		if insightLeft.IsPartOfActualComparison {
 			compareOperator = insightLeft.CompareOperator
-		} else if insightRight.IsPartialComparison {
+		} else if insightRight.IsPartOfActualComparison {
 			compareOperator = insightRight.CompareOperator
 		} else {
 			return LookupInfo{}, errors.New("comparison expression with two propertylabel expressions that include no partial comparison")

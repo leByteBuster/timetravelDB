@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j/db"
 )
+
+var DEBUG = false
 
 type Set struct {
 	m map[string]struct{}
@@ -80,26 +83,36 @@ func JsonStringFromMap(s map[string][]any) string {
 }
 
 func JsonStringFromMapOrdered(m map[string][]any, keys []string) string {
-	var sb strings.Builder
-	sb.WriteString("{\n")
-	for i, key := range keys {
-		sb.WriteString("  \"")
-		sb.WriteString(key)
-		sb.WriteString("\"  ")
-		sb.WriteString(": ")
-		b, err := json.MarshalIndent(m[key], "   ", "   ")
-		if err != nil {
-			fmt.Println("marshal error:", err)
-		}
-		sb.WriteString(string(b))
-		if i < len(keys)-1 {
-			sb.WriteString(",\n")
+	anyEntries := false
+	for _, key := range keys {
+		if len(m[key]) > 0 {
+			anyEntries = true
+			break
 		}
 	}
-	sb.WriteString("\n")
-	sb.WriteString("}")
+	if anyEntries {
+		var sb strings.Builder
+		sb.WriteString("{\n")
+		for i, key := range keys {
+			sb.WriteString("  \"")
+			sb.WriteString(key)
+			sb.WriteString("\"  ")
+			sb.WriteString(": ")
+			b, err := json.MarshalIndent(m[key], "   ", "   ")
+			if err != nil {
+				fmt.Println("marshal error:", err)
+			}
+			sb.WriteString(string(b))
+			if i < len(keys)-1 {
+				sb.WriteString(",\n")
+			}
+		}
+		sb.WriteString("\n")
+		sb.WriteString("}")
 
-	return sb.String()
+		return sb.String()
+	}
+	return "{}"
 }
 
 func PrettyPrintMapOfArraysOrdered2(m map[string][]interface{}, keys []string) {
@@ -298,4 +311,27 @@ func Contains(s []string, str string) bool {
 	}
 
 	return false
+}
+
+func Debug(str ...interface{}) {
+	if DEBUG {
+		log.Println(str...)
+		return
+	}
+}
+
+func Debugf(s string, v ...interface{}) {
+	if DEBUG {
+		log.Printf(s, v...)
+		return
+	}
+}
+
+func DebugInline(str ...interface{}) {
+	if DEBUG {
+		for _, v := range str {
+			log.Println("    ", v)
+		}
+		return
+	}
 }

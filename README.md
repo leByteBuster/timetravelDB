@@ -105,3 +105,14 @@ Brainstorming
         - (from, to, aggregations?, cypher_query?)
       The Question here is: should we even ask a cypher query from the user ? 
 
+
+# Developer Info
+
+## Testing
+
+
+### Run Integration Tests
+
+- be aware that running tests including a database setup expect a clean setup with a restore of the test databases. If the tests
+  are run manually make sure to clean up the shared volumes of the docker volumes before running the tests. This can be omitted 
+  when running go test TestIntegration which will trigger a cleanup and starup of the containers with freshly restored test-databases.

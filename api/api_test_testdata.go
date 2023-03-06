@@ -981,7 +981,7 @@ var expectedShallow9 string = `{
       "StartId": 104,
       "StartElementId": "",
       "EndId": 105,
-      "EndElementId": "4",
+      "EndElementId": "",
       "Type": "Relation",
       "Props": {
         "end": "2023-01-12T15:33:13.0000005Z",

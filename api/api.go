@@ -23,8 +23,9 @@ func Api() {
 	// fmt.Printf("Aggr: %v", val2)
 
 	ctx := context.Background()
-
 	var err error
+
+	// initialize Neo4j
 	DriverNeo, err = neo4j.NewDriverWithContext(UriNeo, neo4j.BasicAuth(UserNeo, PassNeo, ""))
 	if err != nil {
 		log.Printf("Creating driver failed: %v", err)
@@ -34,6 +35,14 @@ func Api() {
 
 	SessionNeo = DriverNeo.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer SessionNeo.Close(ctx)
+
+	// initialize TimescaleDB
+	SessionTS, err = connectTimescale(UserTS, PassTS, PortTS, DBnameTS)
+	if err != nil {
+		log.Printf("Creating driver failed: %v", err)
+		os.Exit(1)
+	}
+	defer SessionTS.Close(context.Background())
 
 	// TEST QUERIES
 	//String ttQuery2 = "FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ping > 22.33" + "RETURN n.ping, n ";

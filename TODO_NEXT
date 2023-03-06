@@ -1,4 +1,3 @@
-
 - [] fix empty results when expected. for elements empty result is emtpy: {} for only property its prop: null, null, null (depending on the number of nodes that match)
 - [] why is no data created in docker-test/timescaledb/data ?
 - [x] check permission problem on the timesclaedb container of the testing environment

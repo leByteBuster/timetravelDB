@@ -4,7 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 )
+
+type TimeSeriesRow struct {
+	Timestamp   time.Time
+	IsTimestamp bool
+	Value       interface{}
+}
 
 // get single property without aggregation
 func getProperty(from, to, table string) interface{} {
@@ -42,9 +49,7 @@ func getPropertyAggr(from, to, aggr, table string) interface{} {
 // fucntionality for aggregation function not yet implemented
 func getTimeSeriesCmp(from, to, aggrOp string, cmpOp string, cmpVal any, lookupLeft bool, tablename string) (interface{}, []TimeSeriesRow, error) {
 	queryString, err := buildQueryString(from, to, aggrOp, cmpOp, cmpVal, lookupLeft, []string{tablename})
-	log.Println()
 	log.Printf("\n TIMESCALEDB QUERY: %v\n", queryString)
-	log.Println()
 	if err != nil {
 		return nil, nil, fmt.Errorf("error building query string: %v", err)
 	}
@@ -53,9 +58,7 @@ func getTimeSeriesCmp(from, to, aggrOp string, cmpOp string, cmpVal any, lookupL
 
 func checkIfValueWithConditionExists(from, to, aggrOp string, cmpOp string, cmpVal any, lookupLeft bool, tablename string) (bool, error) {
 	queryString, err := buildQueryStringCmpExists(from, to, aggrOp, cmpOp, cmpVal, lookupLeft, tablename)
-	log.Println()
 	log.Printf("\n TIMESCALEDB QUERY: %v\n", queryString)
-	log.Println()
 	if err != nil {
 		return false, fmt.Errorf("error building query string: %v", err)
 	}
@@ -68,7 +71,7 @@ func getTimeSeries(from, to, aggrOp, tablename string) (interface{}, []TimeSerie
 }
 
 func queryProperties(query, aggr string) (interface{}, []TimeSeriesRow, error) {
-	rows, err := readRowsTimescale(query, nil, UserTS, PassTS, PortTS, DBnameTS)
+	rows, err := readRowsTimescale(query, nil)
 
 	if err != nil {
 		log.Println(err)
@@ -84,7 +87,7 @@ func queryProperties(query, aggr string) (interface{}, []TimeSeriesRow, error) {
 }
 
 func existenceQuery(query string) (bool, error) {
-	exists, err := readRowExistsTimescale(query, UserTS, PassTS, PortTS, DBnameTS)
+	exists, err := readRowExistsTimescale(query)
 	if err != nil {
 		return false, err
 	}

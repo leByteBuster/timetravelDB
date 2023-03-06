@@ -14,28 +14,6 @@ func queryNeo4j(query string) (neo4j.ResultWithContext, error) {
 	return queryReadNeo4j(query)
 }
 
-// Dont know if I even need this
-func queryNodeNeo4j(id int) (neo4j.Node, error) {
-	// res, err := queryReadNeo4j(context.Background(), "MATCH (n) WHERE n.nodeid = "+strconv.Itoa(id)+" RETURN n")
-	//TODO: check if res contains a single node. if yes return
-	return neo4j.Node{}, nil
-}
-
-func queryNodesNeo4j(id []int) (neo4j.Node, error) {
-	// TODO
-	return neo4j.Node{}, nil
-}
-
-// func queryPropsNodeNeo4j(id int) (map[string]string, error) {
-// 	qval, err := queryReadNeo4j(context.Background(), "MATCH (n) WHERE n.nodeid = "+strconv.Itoa(id)+" RETURN n")
-// 	return convertMapStr(qval.(neo4j.Node).Props), err
-// }
-
-func queryPropsNodesNeo4j(id []int) (neo4j.Node, error) {
-	// TODO
-	return neo4j.Node{}, nil
-}
-
 // format the result of a neo4j query to a map of arrays
 // every entry in the map represents a column in the result (a variable of the match clause)
 

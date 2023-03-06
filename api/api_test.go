@@ -32,6 +32,7 @@ func TestNonShallowQueries(t *testing.T) {
 
 	var err error
 
+	// initialize Neo4j
 	DriverNeo, err = neo4j.NewDriverWithContext(UriNeo, neo4j.BasicAuth(UserNeo, PassNeo, ""))
 	if err != nil {
 		log.Printf("Creating driver failed: %v", err)
@@ -42,6 +43,14 @@ func TestNonShallowQueries(t *testing.T) {
 	SessionNeo = DriverNeo.NewSession(context.Background(), neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer SessionNeo.Close(context.Background())
 
+	// initialize TimescaleDB
+	SessionTS, err = connectTimescale(UserTS, PassTS, PortTS, DBnameTS)
+	if err != nil {
+		log.Printf("Creating driver failed: %v", err)
+		os.Exit(1)
+	}
+	defer SessionTS.Close(context.Background())
+
 	query1 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN  a,x,b"
 	query2 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE b.properties_Risc > 0 RETURN  b, b.properties_Risc"
 	query3 := " FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  a, a.properties_components_cpu"
@@ -51,7 +60,7 @@ func TestNonShallowQueries(t *testing.T) {
 	keys := [][]string{{"a", "x", "b"}, {"b", "b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}}
 
 	for i, query := range queries {
-		res, err := ProcessQuery(query)
+		res, err := ProcessQuery(cleanQuery(query))
 		fmt.Printf("res before removing: %+v", res)
 		removeElementIDs(res)
 		jsonRes := utils.JsonStringFromMapOrdered(res, keys[i])
@@ -74,7 +83,7 @@ func TestNonShallowQueries(t *testing.T) {
 		}
 
 		if bufferEx.String() != bufferRes.String() {
-			t.Fatalf("\nExpected\n  %v\nGot:\n  %v", bufferEx.String(), bufferRes.String())
+			t.Fatalf("\nQuery: %v\nExpected\n  %v\nGot:\n  %v", query, bufferEx.String(), bufferRes.String())
 		}
 	}
 }
@@ -91,6 +100,7 @@ func TestShallowQueries(t *testing.T) {
 
 	var err error
 
+	// initialize Neo4j
 	DriverNeo, err = neo4j.NewDriverWithContext(UriNeo, neo4j.BasicAuth(UserNeo, PassNeo, ""))
 	if err != nil {
 		log.Printf("Creating driver failed: %v", err)
@@ -100,6 +110,14 @@ func TestShallowQueries(t *testing.T) {
 
 	SessionNeo = DriverNeo.NewSession(context.Background(), neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer SessionNeo.Close(context.Background())
+
+	// initialize TimescaleDB
+	SessionTS, err = connectTimescale(UserTS, PassTS, PortTS, DBnameTS)
+	if err != nil {
+		log.Printf("Creating driver failed: %v", err)
+		os.Exit(1)
+	}
+	defer SessionTS.Close(context.Background())
 
 	query1 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NOT NULL RETURN *"
 	query2 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NOT NULL RETURN  a.properties_components_cpu"
@@ -115,7 +133,7 @@ func TestShallowQueries(t *testing.T) {
 	keys := [][]string{{"a", "b", "x"}, {"a.properties_components_cpu"}, {"a", "b", "x"}, {"b", "b.properties_Risc"}, {"b", "b.properties_Risc"}, {"a", "x", "b"}, {"b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}}
 
 	for i, query := range queries {
-		res, err := ProcessQuery(query)
+		res, err := ProcessQuery(cleanQuery(query))
 		removeElementIDs(res)
 		jsonRes := utils.JsonStringFromMapOrdered(res, keys[i])
 		if err != nil {

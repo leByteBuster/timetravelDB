@@ -39,6 +39,7 @@ func manipulateWhereClause(queryInfo parser.ParseResult, whereClause string) (st
 		}
 		for i, insight := range insights {
 			log.Printf("\ni: %v \ninsight: %+v\n", i, insight)
+
 			isRelevant = !insight.IsAppendixOfNullPredicate && insight.IsWhere && insight.IsPartialComparison
 			if isRelevant {
 				if insight.IsPropertyLookup {
