@@ -53,11 +53,14 @@ func TestNonShallowQueries(t *testing.T) {
 
 	query1 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN  a,x,b"
 	query2 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE b.properties_Risc > 0 RETURN  b, b.properties_Risc"
-	query3 := " FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  a, a.properties_components_cpu"
-	query4 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN  *"
-	expecteds := []string{expected1, expected2, expected3, expected4}
-	queries := []string{query1, query2, query3, query4}
-	keys := [][]string{{"a", "x", "b"}, {"b", "b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}}
+	query3 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  a, a.properties_components_cpu"
+	query4 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN *"
+	query5 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN a.properties_components_cpu"
+	query6 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN a, b"
+
+	expecteds := []string{expected1, expected2, expected3, expected4, expected5, expected6}
+	queries := []string{query1, query2, query3, query4, query5, query6}
+	keys := [][]string{{"a", "x", "b"}, {"b", "b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}, {"a.properties_components_cpu"}, {"a", "b"}}
 
 	for i, query := range queries {
 		res, err := ProcessQuery(cleanQuery(query))

@@ -1,4 +1,10 @@
-- [] fix empty results when expected. for elements empty result is emtpy: {} for only property its prop: null, null, null (depending on the number of nodes that match)
+- [] FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b)  RETURN  a.properties_components_cpu 
+  - does not work yet
+  - as soon as it works: integrate in test
+- [] When doing something like: 
+  FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NULL = 'UGWJn' RETURN  a.properties_components_cpu
+  then the ContainsNullPredicate value does not work the right way in database_engine 
+- [x] fix empty results when expected. for elements empty result is emtpy: {} for only property its prop: null, null, null (depending on the number of nodes that match)
 - [] why is no data created in docker-test/timescaledb/data ?
 - [x] check permission problem on the timesclaedb container of the testing environment
 - [] what if compariosn happens on properties wich are no time-series ? do I even allow them ? 

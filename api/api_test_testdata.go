@@ -428,6 +428,136 @@ var expected4 string = `{
     ]
   }`
 
+var expected5 string = `{
+  "a.properties_components_cpu"  : [
+      [
+         {
+            "Timestamp": "2022-12-22T16:33:13+01:00",
+            "IsTimestamp": false,
+            "Value": "UGWJn"
+         }
+      ],
+      [
+         {
+            "Timestamp": "2022-12-22T16:33:13+01:00",
+            "IsTimestamp": false,
+            "Value": "UGWJn"
+         }
+      ]
+   ]
+}`
+
+var expected6 string = `{
+ "a"  : [
+      {
+         "Id": 104,
+         "ElementId": "",
+         "Labels": [
+            "Server"
+         ],
+         "Props": {
+            "end": "2023-01-12T15:33:13.0000005Z",
+            "nodeid": 0,
+            "properties_IP": null,
+            "properties_Risc": null,
+            "properties_components_cpu": [
+               {
+                  "Timestamp": "2022-12-22T16:33:13+01:00",
+                  "IsTimestamp": false,
+                  "Value": "UGWJn"
+               }
+            ],
+            "properties_components_ram": null,
+            "properties_firewall": null,
+            "properties_root": null,
+            "start": "2022-12-22T15:33:13.0000005Z"
+         }
+      },
+      {
+         "Id": 104,
+         "ElementId": "",
+         "Labels": [
+            "Server"
+         ],
+         "Props": {
+            "end": "2023-01-12T15:33:13.0000005Z",
+            "nodeid": 0,
+            "properties_IP": null,
+            "properties_Risc": null,
+            "properties_components_cpu": [
+               {
+                  "Timestamp": "2022-12-22T16:33:13+01:00",
+                  "IsTimestamp": false,
+                  "Value": "UGWJn"
+               }
+            ],
+            "properties_components_ram": null,
+            "properties_firewall": null,
+            "properties_root": null,
+            "start": "2022-12-22T15:33:13.0000005Z"
+         }
+      }
+   ],
+  "b"  : [
+      {
+         "Id": 104,
+         "ElementId": "",
+         "Labels": [
+            "Server"
+         ],
+         "Props": {
+            "end": "2023-01-12T15:33:13.0000005Z",
+            "nodeid": 0,
+            "properties_IP": null,
+            "properties_Risc": null,
+            "properties_components_cpu": [
+               {
+                  "Timestamp": "2022-12-22T16:33:13+01:00",
+                  "IsTimestamp": false,
+                  "Value": "UGWJn"
+               }
+            ],
+            "properties_components_ram": null,
+            "properties_firewall": null,
+            "properties_root": null,
+            "start": "2022-12-22T15:33:13.0000005Z"
+         }
+      },
+      {
+         "Id": 105,
+         "ElementId": "",
+         "Labels": [
+            "Server"
+         ],
+         "Props": {
+            "end": "2023-01-12T15:33:13.0000005Z",
+            "nodeid": 1,
+            "properties_IP": null,
+            "properties_Risc": [
+               {
+                  "Timestamp": "2023-01-01T15:30:00+01:00",
+                  "IsTimestamp": true,
+                  "Value": 23
+               },
+               {
+                  "Timestamp": "2023-01-01T15:33:00+01:00",
+                  "IsTimestamp": true,
+                  "Value": 40
+               },
+               {
+                  "Timestamp": "2023-01-01T15:34:00+01:00",
+                  "IsTimestamp": true,
+                  "Value": 33
+               }
+            ],
+            "properties_components_wifi": null,
+            "properties_root": null,
+            "start": "2022-12-22T15:33:13.0000005Z"
+         }
+      }
+   ]
+}`
+
 var expectedShallow1 string = `{
   "a": [
     {

@@ -1,9 +1,7 @@
 package api
 
 import (
-	"errors"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/LexaTRex/timetravelDB/parser"
@@ -17,56 +15,64 @@ import (
 func manipulateWhereClause(queryInfo parser.ParseResult, whereClause string) (string, error) {
 	// note: all Lookups in LookupsWhere are property lookups that are not of the type IS NULL / IS NOT NULL
 
-	for compCtx, insights := range queryInfo.PropertyClauseInsights {
-		log.Printf("\nInsights for compareContext: %v \ninsights: %+v\n", compCtx.GetText(), insights)
-		// iterate over the insights of eache ComparisonExpressions. Each insight contains information about one
-		// PropertyOrLabelExpressions (x.prop/x) inside the ComparisonExpression. If one insight isPartialComparison==true
-		// then this PropertyOrLabelExpression is part of a comparison with a value (even though the other insight
-		// won't be isPartialComparison==true). We do not alloed chained comparisons (yet).
-		// I need to find out which of the PropertyLabelExpressions (insights) contains the property lookup
-		// because i need the variable and the lookup property for manipulating the WHERE clause.
-		// example:
-		// allowed: WHERE a.prop1 > 1 AND a.prop2 < 2
-		// not allowed: WHERE a.prop1 > 1 > a.prop3
-		// not allowed: WHERE a.prop1 >  a.prop3      (this does not make sense because properties are time-series)
+	// 	for compCtx, insights := range queryInfo.PropertyClauseInsights {
+	// log.Printf("\nInsights for compareContext: %v \ninsights: %+v\n", compCtx.GetText(), insights)
+	// // iterate over the insights of eache ComparisonExpressions. Each insight contains information about one
+	// // PropertyOrLabelExpressions (x.prop/x) inside the ComparisonExpression. If one insight isPartialComparison==true
+	// // then this PropertyOrLabelExpression is part of a comparison with a value (even though the other insight
+	// // won't be isPartialComparison==true). We do not alloed chained comparisons (yet).
+	// // I need to find out which of the PropertyLabelExpressions (insights) contains the property lookup
+	// // because i need the variable and the lookup property for manipulating the WHERE clause.
+	// // example:
+	// // allowed: WHERE a.prop1 > 1 AND a.prop2 < 2
+	// // not allowed: WHERE a.prop1 > 1 > a.prop3
+	// // not allowed: WHERE a.prop1 >  a.prop3      (this does not make sense because properties are time-series)
 
-		var isRelevant = false
-		var el string
-		var lookup string
+	// var isRelevant = false
+	// var el string
+	// var lookup string
+	// var isAppendix bool
+	// var appendix string
 
-		if len(insights) > 2 {
-			return "", errors.New("chained comparisons are not allowed")
-		}
-		for i, insight := range insights {
-			log.Printf("\ni: %v \ninsight: %+v\n", i, insight)
+	// if len(insights) > 2 {
+	// return "", errors.New("chained comparisons are not allowed")
+	// }
+	// for i, insight := range insights {
+	// // log.Printf("\ni: %v \ninsight: %+v\n", i, insight)
 
-			isRelevant = !insight.IsAppendixOfNullPredicate && insight.IsWhere && insight.IsPartialComparison
-			if isRelevant {
-				if insight.IsPropertyLookup {
-					el = insight.Element
-					lookup = insight.PropertyKey
-					break
-				} else {
-					idx := (i + 1) % 2
-					// attention ! this is error prone ! only works if if there are only two Insights which are
-					// PartialComparisons. Make this more robust when extending the functionality
-					if !insights[idx].IsPropertyLookup {
-						return "", errors.New("error partial comparison: one of both must be a property lookup")
-					}
-					el = insights[idx].Element
-					lookup = insights[idx].PropertyKey
-					break
-				}
-			}
-		}
-		if isRelevant {
-			log.Println("isRelevant!")
-			orig := compCtx.GetText()
-			var repl strings.Builder
-			repl.WriteString(el)
-			repl.WriteString(".")
-			repl.WriteString(lookup)
-			repl.WriteString(" IS NOT NULL")
+	// isRelevant = !insight.IsAppendixOfNullPredicate && insight.IsWhere && insight.IsPartialComparison
+	// if isRelevant {
+	// if insight.IsPropertyLookup {
+	// el = insight.Element
+	// lookup = insight.PropertyKey
+	// break
+	// } else {
+	// idx := (i + 1) % 2
+	// // attention ! this is error prone ! only works if if there are only two Insights which are
+	// // PartialComparisons. Make this more robust when extending the functionality
+	// if !insights[idx].IsPropertyLookup {
+	// return "", errors.New("error partial comparison: one of both must be a property lookup")
+	// }
+	// el = insights[idx].Element
+	// lookup = insights[idx].PropertyKey
+	// break
+	// }
+	// }
+	// }
+
+	for _, lookup := range queryInfo.LookupsWhereRelevant {
+
+		orig := lookup.CompareClause
+		var repl strings.Builder
+		repl.WriteString(lookup.ElementVariable)
+		repl.WriteString(".")
+		repl.WriteString(lookup.Property)
+		if lookup.IsAppendixOfNullPredicate {
+			repl.WriteString(" ")
+			repl.WriteString(lookup.AppendixOfNullPredicate)
+			repl.WriteString(" ")
+		} else {
+			repl.WriteString(" IS NOT NULL ")
 			whereClause = strings.ReplaceAll(whereClause, orig, repl.String())
 		}
 	}

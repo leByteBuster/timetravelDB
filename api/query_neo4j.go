@@ -5,12 +5,15 @@ import (
 	"errors"
 	"log"
 
+	"github.com/LexaTRex/timetravelDB/utils"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 func queryNeo4j(query string) (neo4j.ResultWithContext, error) {
 	// TODO: maybe introduce some type handling here
 	// 			 otherwise i could as well use the lower func queryReadNeo4j
+
+	utils.DebugIn("NEO4J QUERY: ", query)
 	return queryReadNeo4j(query)
 }
 

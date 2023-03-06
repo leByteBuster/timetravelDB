@@ -24,9 +24,9 @@ type ParseResult struct {
 	ReturnClause              string           // WHERE clause
 	GraphElements             li.GraphElements // all element variables occouring in the query
 	// LookupsWhere              map[string][]string // all relevant lookups in Where (lookups that are relevant for binary querying)
-	ReturnProjections    []string     // all projections in Return, is used to reorder the result set according to the order in the RETURN clause
-	LookupsWhereRelevant []LookupInfo // holds all relevant lookups (like above) but with additional information which is relevant for comparisons
-	// not such that are NOT NULL appendices. lookups are onto their variable: n: {property1,property2} s: {property1,property4}..
+	ReturnProjections    []string     // all projections in Return, used for ordering and time-series fetching
+	LookupsWhereRelevant []LookupInfo // holds all relevant lookups (like above) but with additional information which is relevant for comparisons and information about NullPredicates. relevant: relevant for binary querying
+	// Null Predicate lookups are only relevant if they occur in actual comparisons (a.prop IS NOT NULL > 20)
 	LookupsReturn          map[string][]string                                                // contains all relevant lookups in Return (lookups that do not have a NullPredicate appendix - but we don't allow this in the RETURN clause yet anyways)
 	PropertyClauseInsights map[*tti.OC_ComparisonExpressionContext][]li.PropertyClauseInsight // insights of Comparison expressions / Property Clauses
 }
@@ -101,11 +101,14 @@ func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
 	lookupsReturn := map[string][]string{}
 	for comparisonCtx, listOfInsights := range propertyClauseInsights {
 
-		lookupInfo, err := GetRelevantLookupInfoWhere(listOfInsights)
+		lookupInfo, err := GetRelevantLookupInfoWhere(comparisonCtx.GetText(), listOfInsights)
 		if err != nil {
 			log.Printf("error - retrieving relevant lookup info: %v", err)
 		}
-		lookupsWhereRelevant = append(lookupsWhereRelevant, lookupInfo)
+
+		if lookupInfo != (LookupInfo{}) {
+			lookupsWhereRelevant = append(lookupsWhereRelevant, lookupInfo)
+		}
 
 		for _, insight := range listOfInsights {
 			insightClause := comparisonCtx.GetText() // this should be the part of the string to be cut out
@@ -179,29 +182,35 @@ func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
 // LookupInfo is a construct describing relevant lookups in the WHERE clause of a query
 // (until now: only the case when comparisons are happening)
 type LookupInfo struct {
-	ElementVariable string
-	Property        string
-	CompareOperator string
-	CompareValue    any
-	LookupLeft      bool // a.prop > 5 -> true, 5 > a.prop -> false
+	CompareClause             string
+	ElementVariable           string
+	Property                  string
+	CompareOperator           string
+	CompareValue              any
+	LookupLeft                bool // a.prop > 5 -> true, 5 > a.prop -> false
+	IsAppendixOfNullPredicate bool
+	AppendixOfNullPredicate   string
 }
 
 // GetRelevantLookupInfoWhere returns the relevant lookup info of a where clause
+// relevant: cannot be passed to Neo4j as it is, but needs to be transformed for binary database querying
 // TODO: try to integrate this logic into the listener - this aggregation might be unnecessary complicated here
-func GetRelevantLookupInfoWhere(insights []li.PropertyClauseInsight) (LookupInfo, error) {
+func GetRelevantLookupInfoWhere(compareClause string, insights []li.PropertyClauseInsight) (LookupInfo, error) {
 	var elVar string
 	var property string
 	var compareOperator string // check if this is retrieved the right way in listener. Test if two symbol operators like <= are recognized correctly
 	var compareValueStr string
 	var compareValue any
 	var lookupLeft bool
+	var isAppendixOfNullPredicate bool
+	var appendixOfNullPredicate string
 
 	switch len(insights) {
 	case 0:
 		return LookupInfo{}, errors.New("no insights found for comparison. should be impossible if comparison is in list")
 	case 1:
 		if !insights[0].IsAppendixOfNullPredicate && insights[0].IsWhere {
-			return LookupInfo{}, errors.New("single lookups withouth appendix of null predicate (IS NULL / IS NOT NULL) only alloed in return")
+			return LookupInfo{}, errors.New("single lookups withouth appendix of null predicate (IS NULL / IS NOT NULL) only allowed in return")
 		}
 		return LookupInfo{}, nil
 	// in this case it should be a comparison like "a.prop > 3"
@@ -218,16 +227,21 @@ func GetRelevantLookupInfoWhere(insights []li.PropertyClauseInsight) (LookupInfo
 		} else {
 			return LookupInfo{}, errors.New("comparison expression with two propertylabel expressions that include no partial comparison")
 		}
+
 		if insightLeft.IsPropertyLookup {
 			lookupLeft = true
 			elVar = insightLeft.Element
 			property = insightLeft.PropertyKey
 			compareValueStr = insightRight.Element
+			isAppendixOfNullPredicate = insightLeft.IsAppendixOfNullPredicate
+			appendixOfNullPredicate = insightLeft.AppendixOfNullPredicate
 		} else if insightRight.IsPropertyLookup {
 			elVar = insightRight.Element
 			property = insightRight.PropertyKey
 			compareValueStr = insightLeft.Element // if insight represents literal then Element is the CompareValue
 			lookupLeft = false
+			isAppendixOfNullPredicate = insightRight.IsAppendixOfNullPredicate
+			appendixOfNullPredicate = insightRight.AppendixOfNullPredicate
 		} else {
 			return LookupInfo{}, nil
 		}
@@ -238,5 +252,5 @@ func GetRelevantLookupInfoWhere(insights []li.PropertyClauseInsight) (LookupInfo
 	compareValue = utils.ConvertString(compareValueStr)
 
 	// should only end up here if there is a comparison with a property lookup
-	return LookupInfo{ElementVariable: elVar, Property: property, CompareOperator: compareOperator, CompareValue: compareValue, LookupLeft: lookupLeft}, nil
+	return LookupInfo{CompareClause: compareClause, ElementVariable: elVar, Property: property, CompareOperator: compareOperator, CompareValue: compareValue, LookupLeft: lookupLeft, IsAppendixOfNullPredicate: isAppendixOfNullPredicate, AppendixOfNullPredicate: appendixOfNullPredicate}, nil
 }

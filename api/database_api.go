@@ -31,7 +31,6 @@ var SessionNeo neo4j.SessionWithContext
 
 // send any read query and return the results as a key value map
 func queryReadNeo4j(cypherQueryString string) (neo4j.ResultWithContext, error) {
-	// Connect to the Neo4j database
 
 	res, errReq := SessionNeo.Run(context.Background(), cypherQueryString, map[string]interface{}{})
 

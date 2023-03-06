@@ -321,14 +321,16 @@ func Debug(str ...interface{}) {
 }
 
 func Debugf(s string, v ...interface{}) {
+	log.Println()
 	if DEBUG {
 		log.Printf(s, v...)
 		return
 	}
 }
 
-func DebugInline(str ...interface{}) {
+func DebugIn(str ...interface{}) {
 	if DEBUG {
+		log.Println()
 		for _, v := range str {
 			log.Println("    ", v)
 		}

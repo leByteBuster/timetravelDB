@@ -61,7 +61,8 @@ type PropertyClauseInsight struct {
 	IsReturn                 bool // part of a RETURN clause ?
 	IsValid                  bool // is Part of a RETURN or WHERE clause ? if not invalid
 	// CountPartialComparison    int  // how many PartialComparisons
-	IsAppendixOfNullPredicate bool // does a NullPredicate exist as suffix ?
+	IsAppendixOfNullPredicate bool   // does a NullPredicate exist as suffix ?
+	AppendixOfNullPredicate   string // "IS NULL" or "IS NOT NULL or ""
 }
 
 // Listener For PropertyOrLabelsExpression (to get all property lookups inside the clause, with all concatenated propertylookups
@@ -77,6 +78,7 @@ func (listener *TtqlTreeListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.O
 	var isPartOfActualComparison = false
 	var isPartialComparison = false
 	var isAppendixOfNullPredicate = false
+	var appendixOfNullPredicate = ""
 
 	var comparison *tti.OC_ComparisonExpressionContext
 	var propertyLookup *tti.OC_PropertyLookupContext
@@ -141,8 +143,9 @@ func (listener *TtqlTreeListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.O
 			//			 a NullPredicate.
 			if sCtx, ok := ctx.(*tti.OC_StringListNullPredicateExpressionContext); ok {
 				for _, ctx2 := range sCtx.GetChildren() {
-					if _, ok := ctx2.(*tti.OC_NullPredicateExpressionContext); ok {
+					if nullPredCtx, ok := ctx2.(*tti.OC_NullPredicateExpressionContext); ok {
 						isAppendixOfNullPredicate = true
+						appendixOfNullPredicate = nullPredCtx.GetText()
 					}
 				}
 			}
@@ -171,6 +174,7 @@ func (listener *TtqlTreeListener) EnterOC_PropertyOrLabelsExpression(pOLE *tti.O
 		IsPartialComparison:      isPartialComparison,
 		// CountPartialComparison:    countPartialComparison,
 		IsAppendixOfNullPredicate: isAppendixOfNullPredicate,
+		AppendixOfNullPredicate:   appendixOfNullPredicate,
 	})
 
 }
