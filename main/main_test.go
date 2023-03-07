@@ -18,7 +18,7 @@ import (
 // }
 
 func TestIntegration(t *testing.T) {
-	cmd := exec.Command("/bin/bash", "../run_integration_test.sh")
+	cmd := exec.Command("/bin/bash", "../scripts/run_integration_test.sh")
 	var stdout, stderr bytes.Buffer
 	cmd.Stdout = io.MultiWriter(&stdout, os.Stdout)
 	cmd.Stderr = io.MultiWriter(&stderr, os.Stderr)
