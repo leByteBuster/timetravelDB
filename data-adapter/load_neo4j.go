@@ -3,14 +3,9 @@ package dataadapter
 import (
 	"fmt"
 
+	"github.com/LexaTRex/timetravelDB/utils"
 	"github.com/google/uuid"
 )
-
-type comp struct {
-	id        int16
-	some_data string
-	is_ts     bool
-}
 
 type TmpPropVal[T any] struct {
 	Start string
@@ -111,7 +106,7 @@ func generateNeo4jFlatProperties(property map[string]interface{}) ([]string, map
 			}
 
 		case []interface{}:
-			valueList := ConvertMaps(propertyValue)
+			valueList := utils.ConvertMaps(propertyValue)
 
 			id := uuid.New()
 			valueFragmentUuid := key + `: "` + id.String() + `", `

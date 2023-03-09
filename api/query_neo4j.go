@@ -15,7 +15,7 @@ func queryNeo4j(query string) (neo4j.ResultWithContext, error) {
 	// 			 otherwise i could as well use the lower func queryReadNeo4j
 
 	utils.DebugIn("NEO4J QUERY: ", query)
-	return databaseapi.QueryReadNeo4j(query)
+	return databaseapi.ReadQueryNeo4j(query)
 }
 
 // format the result of a neo4j query to a map of arrays
