@@ -5,27 +5,29 @@ import (
 	"fmt"
 	"log"
 
+	databaseapi "github.com/LexaTRex/timetravelDB/database-api"
+	"github.com/LexaTRex/timetravelDB/utils"
 	"github.com/google/uuid"
 )
 
 func LoadData() {
 
-	graph_nodes, err := LoadJsonData("graph_nodes.json")
+	graph_nodes, err := utils.LoadJsonData("data-adapter/graph_nodes.json")
 	if err != nil {
 		log.Printf("Error loading nodes from json: %v", err)
 	}
-	graph_edges, err := LoadJsonData("graph_edges.json")
+	graph_edges, err := utils.LoadJsonData("data-adapter/graph_edges.json")
 	if err != nil {
 		log.Printf("Error loading edges from json: %v", err)
 	}
-	log.Printf("\n Number nodes: %v", len(graph_nodes))
-	log.Printf("\n Number edges: %v", len(graph_edges))
+	//log.Printf("\n Number nodes: %v", len(graph_nodes))
+	//log.Printf("\n Number edges: %v", len(graph_edges))
 
 	nodeQuereis, timeSeriesNodes := getQueryStringsNodes(graph_nodes)
 	edgeQueries, timeSeriesEdges := getQueryStringsEdges(graph_edges)
 
-	queryMultipleNeo4j(context.Background(), "neo4j://localhost:7687", "neo4j", "rhebo", nodeQuereis)
-	queryMultipleNeo4j(context.Background(), "neo4j://localhost:7687", "neo4j", "rhebo", edgeQueries)
+	databaseapi.WriteQueryMultipleNeo4j(context.Background(), nodeQuereis)
+	databaseapi.WriteQueryMultipleNeo4j(context.Background(), edgeQueries)
 
 	// log.Printf("\n Number time-series map nodes: %v", len(timeSeriesNodes))
 	// log.Printf("\n Number time-series map edges: %v", len(timeSeriesEdges))

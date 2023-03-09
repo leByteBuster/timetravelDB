@@ -42,12 +42,12 @@ var adjacency_list []map[int]int
 func GenerateData() {
 	rand.Seed(time.Now().UnixNano())
 	var client_interface map[string]interface{} = map[string]interface{}{
-		// "IP":       PropFeatures{"string", 5},
-		"IP":       PropFeatures{"string", 2},
-		"firewall": PropFeatures{"boolean", 1},
+		"IP": PropFeatures{"string", 5},
+		// "IP":       PropFeatures{"string", 2},
+		"firewall": PropFeatures{"boolean", 30},
 		"root":     PropFeatures{"string", 2},
-		//"Risc":     PropFeatures{"int", 300},
-		"Risc": PropFeatures{"int", 3},
+		"Risc":     PropFeatures{"int", 300},
+		// "Risc": PropFeatures{"int", 3},
 		"components": map[string]interface{}{
 			"gpu": PropFeatures{"string", 1},
 			"cpu": PropFeatures{"string", 1},
@@ -57,10 +57,10 @@ func GenerateData() {
 
 	var server_interface map[string]interface{} = map[string]interface{}{
 		"IP":       PropFeatures{"string", 1},
-		"firewall": PropFeatures{"boolean", 1},
-		"root":     PropFeatures{"string", 2},
+		"firewall": PropFeatures{"boolean", 3},
+		"root":     PropFeatures{"string", 10},
 		// "Risc": PropFeatures{"int", 800},
-		"Risc": PropFeatures{"int", 4},
+		"Risc": PropFeatures{"int", 20},
 		"components": map[string]interface{}{
 			"cpu": PropFeatures{"string", 1},
 			"ram": PropFeatures{"string", 1},
@@ -70,47 +70,51 @@ func GenerateData() {
 	var printer_interface map[string]interface{} = map[string]interface{}{
 		"IP":   PropFeatures{"string", 1},
 		"root": PropFeatures{"string", 1},
-		//"Risc": PropFeatures{"int", 100},
-		"Risc": PropFeatures{"int", 2},
+		"Risc": PropFeatures{"int", 100},
+		//"Risc": PropFeatures{"int", 2},
 		"components": map[string]interface{}{
 			"wifi": PropFeatures{"string", 1},
 		},
 	}
 
 	var generic_traffic_interface map[string]interface{} = map[string]interface{}{
-		//"TCPUDP":   PropFeatures{"string", 200},
-		"TCPUDP": PropFeatures{"string", 2},
-		//"IPv4IPv6": PropFeatures{"string", 200},
-		"IPv4IPv6": PropFeatures{"string", 2},
-		//"Risc":      PropFeatures{"int", 1000},
-		"Risc": PropFeatures{"int", 1},
-		//"Count":     PropFeatures{"int", 10000},
-		"Count": PropFeatures{"int", 1},
+		"TCPUDP": PropFeatures{"string", 200},
+		//"TCPUDP": PropFeatures{"string", 2},
+		"IPv4IPv6": PropFeatures{"string", 200},
+		//"IPv4IPv6": PropFeatures{"string", 2},
+		"Risc": PropFeatures{"int", 1000},
+		//"Risc": PropFeatures{"int", 1},
+		"Count": PropFeatures{"int", 10000},
+		//"Count": PropFeatures{"int", 1},
 	}
 
 	// TODO: parse correctly
 	begin, err := time.Parse("2006-01-02 15:04:05.0000000 -0700 MST", "2022-12-22 15:33:13.0000005 +0000 UTC")
+	if err != nil {
+		fmt.Printf("couldn't parse time: %v", err)
+	}
 	end, err := time.Parse("2006-01-02 15:04:05.0000000 -0700 MST", "2023-01-12 15:33:13.0000005 +0000 UTC")
-
 	if err != nil {
 		fmt.Printf("couldn't parse time: %v", err)
 	}
 
-	server_nodes := generatePropertyNodes(1, "Server", server_interface, begin, end)
-	printer_nodes := generatePropertyNodes(3, "Server", printer_interface, begin, end)
-	client_nodes := generatePropertyNodes(3, "Server", client_interface, begin, end)
+	server_nodes := generatePropertyNodes(5, "Server", server_interface, begin, end)
+	printer_nodes := generatePropertyNodes(10, "Server", printer_interface, begin, end)
+	client_nodes := generatePropertyNodes(50, "Server", client_interface, begin, end)
 
 	graph_nodes = append(server_nodes, printer_nodes...)
 	graph_nodes = append(graph_nodes, client_nodes...)
 
-	fmt.Printf("Servers: %v\n, Printers: %v\n, Clients: %v\n", server_nodes, printer_nodes, client_nodes)
+	// fmt.Printf("Servers: %v\n, Printers: %v\n, Clients: %v\n", server_nodes, printer_nodes, client_nodes)
 
 	// generate 10 "Traffic" relations between server nodes. Generate properties from traffic_property_struct for each
-	server_relation_objects := generateIntraRelations(2, "Traffic", server_nodes, generic_traffic_interface)
+	server_relation_objects := generateIntraRelations(10, "Traffic", server_nodes, generic_traffic_interface)
+
 	// generate 10 "Traffic" relations between server nodes and client_nodes. Generate properties from traffic_property_struct for each
-	server_client_relation_objects := generateInterRelations(3, "Traffic", server_nodes, client_nodes, generic_traffic_interface)
+	server_client_relation_objects := generateInterRelations(10, "Traffic", server_nodes, client_nodes, generic_traffic_interface)
+
 	// generate 10 "Traffic" relations between server nodes and printer_nodes. Generate properties from traffic_property_struct for each
-	server_printer_relation_objects := generateInterRelations(3, "Traffic", server_nodes, printer_nodes, generic_traffic_interface)
+	server_printer_relation_objects := generateInterRelations(10, "Traffic", server_nodes, printer_nodes, generic_traffic_interface)
 
 	graph_edges = append(server_relation_objects, server_client_relation_objects...)
 	graph_edges = append(graph_edges, server_printer_relation_objects...)
@@ -121,49 +125,28 @@ func GenerateData() {
 	//fmt.Printf("Adjacency List: %v\n", adjacency_list)
 
 	//exportGraphAsJson(graph_nodes, graph_edges, "")
-	exportGraphAsJson(graph_nodes, graph_edges, "../../data-adapter/src/")
-	exportGraphAsJson(graph_nodes, graph_edges, "../../data-adapter-neo4j-only/src/")
+	exportGraphAsJson(graph_nodes, graph_edges, "data-adapter/")
+	exportGraphAsJson(graph_nodes, graph_edges, "data-adapter-neo4j-only/")
 }
 
 func exportGraphAsJson(graph_nodes []map[string]interface{}, graph_edges []map[string]interface{}, file_path string) {
 
-	//// ### I'm using the method below because it's faster ###
-
-	// node_bytes, err := json.Marshal(graph_nodes)
-	// fmt.Printf("Error: %v\n", err)
-	// fmt.Printf("Marshalled nodes: %v\n", string(node_bytes))
-
-	// edge_bytes, err := json.Marshal(graph_edges)
-	// fmt.Printf("Error: %v\n", err)
-	// fmt.Printf("Marshalled edges: %v\n", string(edge_bytes))
-
-	// err = ioutil.WriteFile(file_path+"graph_edges", edge_bytes, 0644)
-	// if err != nil {
-	// 	fmt.Printf("Error: %v\n", err)
-	// }
-
-	// err = ioutil.WriteFile(file_path+"graph_nodes", node_bytes, 0644)
-	// if err != nil {
-	// 	fmt.Printf("Error: %v\n", err)
-	// }
-
 	edgeFile, err := os.OpenFile(file_path+"graph_edges.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0664)
+	if err != nil {
+		fmt.Printf("error open edge file: %v\n", err)
+	}
 	defer edgeFile.Close()
 	encoderEdges := json.NewEncoder(edgeFile)
 	encoderEdges.Encode(graph_edges)
 
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
-
 	nodeFile, err := os.OpenFile(file_path+"graph_nodes.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0664)
+	if err != nil {
+		fmt.Printf("error open node file: %v\n", err)
+	}
 	defer nodeFile.Close()
 	encoderNodes := json.NewEncoder(nodeFile)
 	encoderNodes.Encode(graph_nodes)
 
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-	}
 }
 
 func generatePropertyNodes(numberNodes int, nodelabel string, property_fields map[string]interface{}, begin time.Time, end time.Time) []map[string]interface{} {
@@ -178,7 +161,7 @@ func generatePropertyNodes(numberNodes int, nodelabel string, property_fields ma
 		for key, value := range property_fields {
 			properties = setProperty(key, value, properties, begin, end)
 		}
-		node["properties"] = properties
+		node["ts"] = properties
 		nodes = append(nodes, node)
 
 		// create adjacency entry for the newly generated node (if missing also for nodes before - should not happen)
@@ -298,13 +281,13 @@ func generateInterRelations(numberRelations int, relation_label string, from_nod
 	return relations
 }
 
-func randomTimestamp() time.Time {
-	randomTime := rand.Int63n(time.Now().Unix()-94608000) + 94608000
-
-	randomNow := time.Unix(randomTime, 500)
-
-	return randomNow
-}
+// func randomTimestamp() time.Time {
+// 	randomTime := rand.Int63n(time.Now().Unix()-94608000) + 94608000
+//
+// 	randomNow := time.Unix(randomTime, 500)
+//
+// 	return randomNow
+// }
 
 func randSeq(n int) string {
 	b := make([]rune, n)
@@ -388,12 +371,12 @@ func generateTimeseriesTimestamp(lastTimestampEnd, parentBegin, parentEnd time.T
 	}
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	duration := (parentEnd.Sub(parentBegin)) / time.Duration(numberTimestamps)
-	fmt.Printf("Max duration: %v", duration)
+	//fmt.Printf("Max duration: %v", duration)
 	randDuration := time.Duration(r.Int63n(int64(duration)))
 	if randDuration == time.Duration(0) {
 		randDuration = time.Duration(int64(time.Millisecond))
 	}
-	fmt.Printf("Rand duration: %v", duration)
+	//fmt.Printf("Rand duration: %v", duration)
 	end = start.Add(randDuration)
 	if end.After(parentEnd) {
 		end = parentEnd
@@ -417,46 +400,14 @@ func setProperty(key string, val interface{}, nested_properties map[string]inter
 		} else {
 			switch x := nested_properties[key].(type) {
 			case []interface{}:
-				fmt.Printf("\narr_val: %v\n", array_val)
-				fmt.Printf("\nnested_properties: %v\n", nested_properties)
+				//fmt.Printf("\narr_val: %v\n", array_val)
+				//fmt.Printf("\nnested_properties: %v\n", nested_properties)
 				nested_properties[key] = append(x, array_val...)
 			default:
-				err := fmt.Errorf("Unexpected type of value")
+				err := fmt.Errorf("unexpected type of value")
 				panic(err)
 			}
 		}
 	}
 	return nested_properties
 }
-
-func exportToJson() {
-
-}
-
-//		// fill property_fields struct with random values and time values
-//		// time values need to be smaller than parent time vaues
-//		// merge the structure in the form of
-//		{
-//		  nodeid:
-//			start:
-//			end:
-//			nodelabel:
-//			properties:
-//				{
-//					property_name_1: {
-// 						values: [(startval,endval,value),
-//              (startval,endval,{
-//                 property_name_1_1: {
-// 										values: [(startval,endval,value), .., (startval,endval,value)]
-//                 }
-// 							})
-//							(startval,endval,value), (startval,endval,value),(startval,endval,value)]
-// 				  }
-//					property_name_2: {
-// 						values: [(startval,endval,value), (startval,endval,value), (startval,endval,value),(startval,endval,value)]
-// 					 }
-//					property_name_3: {
-// 						values: [(startval,endval,value), (startval,endval,value), (startval,endval,value),(startval,endval,value)]
-//				}
-//  	}
-//

@@ -14,7 +14,6 @@ import (
 	"github.com/LexaTRex/timetravelDB/parser"
 	"github.com/LexaTRex/timetravelDB/utils"
 	"github.com/c-bata/go-prompt"
-	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 var NeoErr error
@@ -38,17 +37,18 @@ func Api() {
 
 	ctx := context.Background()
 
-	// initialize Neo4j
-	databaseapi.DriverNeo, NeoErr = neo4j.NewDriverWithContext("neo4j://"+databaseapi.ConfigNeo.Host+":"+databaseapi.ConfigNeo.Port, neo4j.BasicAuth(databaseapi.ConfigNeo.Username, databaseapi.ConfigNeo.Password, ""))
+	// connect to Neo4j database
+
+	databaseapi.DriverNeo, NeoErr = databaseapi.ConnectNeo4j()
 	if NeoErr != nil {
 		log.Fatalf("creating neo4j connection failed: %v", NeoErr)
+	} else {
+		defer databaseapi.DriverNeo.Close(ctx)
+		databaseapi.SessionNeo = databaseapi.SessionNeo4j(ctx, databaseapi.DriverNeo)
+		defer databaseapi.SessionNeo.Close(ctx)
 	}
-	defer databaseapi.DriverNeo.Close(ctx)
 
-	databaseapi.SessionNeo = databaseapi.DriverNeo.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
-	defer databaseapi.SessionNeo.Close(ctx)
-
-	// initialize TimescaleDB
+	// connect to TimescaleDB database
 	databaseapi.SessionTS, TsErr = databaseapi.ConnectTimescale(databaseapi.ConfigTS.Username, databaseapi.ConfigTS.Password, databaseapi.ConfigTS.Port, databaseapi.ConfigTS.Database)
 	if TsErr != nil {
 		log.Fatalf("creating ts connection failed: %v", TsErr)

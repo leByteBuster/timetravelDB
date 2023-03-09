@@ -1,4 +1,13 @@
-- [] FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b)  RETURN  a.properties_components_cpu 
+- [] check data-adapter-neo4j-only 
+  - think about to which setup we will load this. maybe create an extra neo4j database for that ? for that we need an extra docker container 
+- [] running the integration test via go test -v main/main_test.go or the script doesnt seem to work. 
+    - as far as it seems the docker-compose restore is not finished
+    - check: is the restore service really waiting until timescaledb is up
+    - check: is th restore finished when the script goes on and the testing starts ? 
+    - Problems: the initial database is the same name as the restore, port reachability does not seem to be enough to ensure 
+      database up and running
+- [] logging to console via running go test -v main/_test.go doesnt work
+- [x] FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b)  RETURN  a.properties_components_cpu 
   - does not work yet
   - as soon as it works: integrate in test
 - [] When doing something like: 
