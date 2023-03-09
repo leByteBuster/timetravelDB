@@ -4,27 +4,27 @@
 # simplistic testing data 
 
 SCRIPT=$(realpath "$0")
-TTDB_HOME=$(dirname "$SCRIPT")
+TTDB_SCRIPTS=$(dirname "$SCRIPT")
 
 # stop all running docker containers to avoid conflicts 
 docker stop $(docker ps -aq)
 
 # cleanup before (if docker-compose was run in other ways than this script there might be some leftovers)
-sudo rm -rf $TTDB_HOME/../docker-test/neo4j/backups/*
-sudo rm -rf $TTDB_HOME/../docker-test/neo4j/data/*
-sudo rm -rf $TTDB_HOME/../docker-test/timescaledb/backups/*
-sudo rm -rf $TTDB_HOME/../docker-test/timescaledb/data/*
+sudo rm -rf $TTDB_SCRIPTS/../docker-test/neo4j/backups/*
+sudo rm -rf $TTDB_SCRIPTS/../docker-test/neo4j/data/*
+sudo rm -rf $TTDB_SCRIPTS/../docker-test/timescaledb/backups/*
+sudo rm -rf $TTDB_SCRIPTS/../docker-test/timescaledb/data/*
 
 
 # prepare testing data 
-cp $TTDB_HOME/../test-data/neo4j_test_backup/neo4j.dump $TTDB_HOME/../docker-test/neo4j/backups/
-cp $TTDB_HOME/../test-data/timescaledb_test_backup/postgres.bak $TTDB_HOME/../docker-test/timescaledb/backups/
+cp $TTDB_SCRIPTS/../test-data/neo4j_test_backup/neo4j.dump $TTDB_SCRIPTS/../docker-test/neo4j/backups/
+cp $TTDB_SCRIPTS/../test-data/timescaledb_test_backup/postgres.bak $TTDB_SCRIPTS/../docker-test/timescaledb/backups/
 
 # restore neo4j data (was not able to get this to work with docker-compose yet)
-docker run --interactive --tty --rm --volume=$TTDB_HOME/../docker-test/neo4j/data:/data --volume=$TTDB_HOME/../docker-test/neo4j/backups:/backups neo4j neo4j-admin database load neo4j --from-path=/backups --verbose
+docker run --interactive --tty --rm --volume=$TTDB_SCRIPTS/../docker-test/neo4j/data:/data --volume=$TTDB_SCRIPTS/../docker-test/neo4j/backups:/backups neo4j neo4j-admin database load neo4j --from-path=/backups --verbose
 
 # prepare testing envionment 
-docker-compose up -d
+docker-compose -f $TTDB_SCRIPTS/../docker-compose.yml up -d
 
 # wait for testing envionment to be ready 
 dockerize -wait tcp://127.0.0.1:7687 -timeout 10s
