@@ -1,4 +1,4 @@
-package api
+package databaseapi
 
 import (
 	"context"
@@ -12,25 +12,21 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-// TODO: change this so it isnt hard coded anymore. Should be read from config or so
-// AUTH timescaleDB
-var UserTS = "postgres"
-var PassTS = "password"
-var PortTS = "5432"
-var DBnameTS = "postgres"
+var ConfigTS = TimescaleConfig{}
+var ConfigNeo = Neo4jConfig{}
 var SessionTS *pgx.Conn
 
-// AUTH neo4j
-var UriNeo = "neo4j://localhost:7687"
-var UserNeo = "neo4j"
-
-// var PassNeo = "rhebo"
-var PassNeo = "test"
 var DriverNeo neo4j.DriverWithContext
 var SessionNeo neo4j.SessionWithContext
 
+type TimeSeriesRow struct {
+	Timestamp   time.Time
+	IsTimestamp bool
+	Value       interface{}
+}
+
 // send any read query and return the results as a key value map
-func queryReadNeo4j(cypherQueryString string) (neo4j.ResultWithContext, error) {
+func QueryReadNeo4j(cypherQueryString string) (neo4j.ResultWithContext, error) {
 
 	res, errReq := SessionNeo.Run(context.Background(), cypherQueryString, map[string]interface{}{})
 
@@ -44,21 +40,20 @@ func queryReadNeo4j(cypherQueryString string) (neo4j.ResultWithContext, error) {
 
 //lint:ignore U1000 Ignore unused function temporarily for debugging
 
-func queryWriteNeo4j(ctx context.Context, uri, username, password, cypherQueryString string) {
+func QueryWriteNeo4j(ctx context.Context, uri, username, password, cypherQueryString string) {
 
 	session := DriverNeo.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
-	defer session.Close(ctx)
 
-	_, errReq := session.Run(ctx, cypherQueryString, map[string]interface{}{})
-	if errReq != nil {
-		fmt.Println(errReq)
+	_, err := session.Run(ctx, cypherQueryString, map[string]interface{}{})
+	if err != nil {
+		fmt.Println(err)
 		return
 	}
 }
 
 //lint:ignore U1000 Ignore unused function temporarily for debugging
 
-func queryWriteMultipleNeo4j(ctx context.Context, uri, username, password string, cypherQueryStrings []string) {
+func QueryWriteMultipleNeo4j(ctx context.Context, uri, username, password string, cypherQueryStrings []string) {
 	// Connect to the Neo4j database
 
 	session := DriverNeo.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
@@ -73,7 +68,7 @@ func queryWriteMultipleNeo4j(ctx context.Context, uri, username, password string
 	}
 }
 
-func connectTimescale(username, password, port, dbname string) (*pgx.Conn, error) {
+func ConnectTimescale(username, password, port, dbname string) (*pgx.Conn, error) {
 
 	var sb strings.Builder
 	sb.WriteString("postgresql://")
@@ -92,7 +87,7 @@ func connectTimescale(username, password, port, dbname string) (*pgx.Conn, error
 
 // send any query string to the database
 // this is just for executing, CommandTag only contains status
-func TimeScale(query string) pgconn.CommandTag {
+func ExecTimescale(query string) pgconn.CommandTag {
 	res, err := SessionTS.Exec(context.Background(), query)
 	if err != nil {
 		fmt.Println(err)
@@ -103,7 +98,7 @@ func TimeScale(query string) pgconn.CommandTag {
 // send a list of query strings to the database. not sure if CommandTag contains a result or just status though
 //
 //lint:ignore U1000 Ignore unused function temporarily for debugging
-func queryMultipleTimeScale(queries []string, parameters [][]interface{}) []pgconn.CommandTag {
+func QueryMultipleTimecale(queries []string, parameters [][]interface{}) []pgconn.CommandTag {
 	// create the table according to  the data type
 	results := make([]pgconn.CommandTag, 0)
 	for i, query := range queries {
@@ -117,7 +112,7 @@ func queryMultipleTimeScale(queries []string, parameters [][]interface{}) []pgco
 }
 
 // multiple row READ queries
-func readRowsTimescale(query string, parameters [][]interface{}) ([]TimeSeriesRow, error) {
+func ReadRowsTimescale(query string, parameters [][]interface{}) ([]TimeSeriesRow, error) {
 	// create the table according to  the data type
 
 	rows, err := SessionTS.Query(context.Background(), query)
@@ -138,7 +133,7 @@ func readRowsTimescale(query string, parameters [][]interface{}) ([]TimeSeriesRo
 			log.Println("Scan failed:", err)
 			return nil, err
 		}
-		res = append(res, TimeSeriesRow{timestamp, isTimestamp, value})
+		res = append(res, TimeSeriesRow{Timestamp: timestamp, IsTimestamp: isTimestamp, Value: value})
 	}
 
 	if err := rows.Err(); err != nil {
@@ -152,7 +147,7 @@ func readRowsTimescale(query string, parameters [][]interface{}) ([]TimeSeriesRo
 // single row READ queries
 //
 //lint:ignore U1000 Ignore unused function temporarily for debugging
-func readRowTimescale(query string, parameters []interface{}) (TimeSeriesRow, error) {
+func ReadRowTimescale(query string, parameters []interface{}) (TimeSeriesRow, error) {
 
 	var timestamp time.Time
 	var isTimestamp bool
@@ -163,10 +158,10 @@ func readRowTimescale(query string, parameters []interface{}) (TimeSeriesRow, er
 		return TimeSeriesRow{}, fmt.Errorf("error querying a row from a table in timescaledb: %w", err)
 	}
 
-	return TimeSeriesRow{timestamp, isTimestamp, value}, nil
+	return TimeSeriesRow{Timestamp: timestamp, IsTimestamp: isTimestamp, Value: value}, nil
 }
 
-func readRowExistsTimescale(query string) (bool, error) {
+func ReadRowExistsTimescale(query string) (bool, error) {
 	// create the table according to  the data type
 
 	var exists bool
@@ -184,7 +179,7 @@ func readRowExistsTimescale(query string) (bool, error) {
 // single row only return time READ queries
 //
 //lint:ignore U1000 Ignore unused function temporarily for debugging
-func readRowTimestampTimescale(query string, parameters []interface{}, username, password, port, dbname string) (interface{}, error) {
+func ReadRowTimestampTimescale(query string, parameters []interface{}) (interface{}, error) {
 	// create the table according to  the data type
 
 	var timestamp time.Time
@@ -200,7 +195,7 @@ func readRowTimestampTimescale(query string, parameters []interface{}, username,
 // single row only return time READ queries
 //lint:ignore U1000 Ignore unused function temporarily for debugging
 
-func readRowValueTimescale(query string, parameters []interface{}, username, password, port, dbname string) (interface{}, error) {
+func ReadRowValueTimescale(query string, parameters []interface{}) (interface{}, error) {
 	// create the table according to  the data type
 
 	var value interface{}

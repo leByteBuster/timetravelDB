@@ -12,55 +12,8 @@ import (
 // that compare to a value in the form of "a.prop > 2" then for performance inhancement
 // it is replaced by "a.prop IS NOT NULL". So if it does not excist we do not get a pattern back where
 // we have to try tro retrieve the non existing property values for which we want to compare to 2 (in the example)
-func manipulateWhereClause(queryInfo parser.ParseResult, whereClause string) (string, error) {
-	// note: all Lookups in LookupsWhere are property lookups that are not of the type IS NULL / IS NOT NULL
-
-	// 	for compCtx, insights := range queryInfo.PropertyClauseInsights {
-	// log.Printf("\nInsights for compareContext: %v \ninsights: %+v\n", compCtx.GetText(), insights)
-	// // iterate over the insights of eache ComparisonExpressions. Each insight contains information about one
-	// // PropertyOrLabelExpressions (x.prop/x) inside the ComparisonExpression. If one insight isPartialComparison==true
-	// // then this PropertyOrLabelExpression is part of a comparison with a value (even though the other insight
-	// // won't be isPartialComparison==true). We do not alloed chained comparisons (yet).
-	// // I need to find out which of the PropertyLabelExpressions (insights) contains the property lookup
-	// // because i need the variable and the lookup property for manipulating the WHERE clause.
-	// // example:
-	// // allowed: WHERE a.prop1 > 1 AND a.prop2 < 2
-	// // not allowed: WHERE a.prop1 > 1 > a.prop3
-	// // not allowed: WHERE a.prop1 >  a.prop3      (this does not make sense because properties are time-series)
-
-	// var isRelevant = false
-	// var el string
-	// var lookup string
-	// var isAppendix bool
-	// var appendix string
-
-	// if len(insights) > 2 {
-	// return "", errors.New("chained comparisons are not allowed")
-	// }
-	// for i, insight := range insights {
-	// // log.Printf("\ni: %v \ninsight: %+v\n", i, insight)
-
-	// isRelevant = !insight.IsAppendixOfNullPredicate && insight.IsWhere && insight.IsPartialComparison
-	// if isRelevant {
-	// if insight.IsPropertyLookup {
-	// el = insight.Element
-	// lookup = insight.PropertyKey
-	// break
-	// } else {
-	// idx := (i + 1) % 2
-	// // attention ! this is error prone ! only works if if there are only two Insights which are
-	// // PartialComparisons. Make this more robust when extending the functionality
-	// if !insights[idx].IsPropertyLookup {
-	// return "", errors.New("error partial comparison: one of both must be a property lookup")
-	// }
-	// el = insights[idx].Element
-	// lookup = insights[idx].PropertyKey
-	// break
-	// }
-	// }
-	// }
-
-	for _, lookup := range queryInfo.LookupsWhereRelevant {
+func manipulateWhereClause(lookupsWhereRelevant []parser.LookupInfo, whereClause string) (string, error) {
+	for _, lookup := range lookupsWhereRelevant {
 
 		orig := lookup.CompareClause
 		var repl strings.Builder
@@ -70,9 +23,8 @@ func manipulateWhereClause(queryInfo parser.ParseResult, whereClause string) (st
 		if lookup.IsAppendixOfNullPredicate {
 			repl.WriteString(" ")
 			repl.WriteString(lookup.AppendixOfNullPredicate)
-			repl.WriteString(" ")
 		} else {
-			repl.WriteString(" IS NOT NULL ")
+			repl.WriteString(" IS NOT NULL")
 			whereClause = strings.ReplaceAll(whereClause, orig, repl.String())
 		}
 	}
@@ -96,7 +48,7 @@ func buildTmpWhereClause(from, to, whereClause string, matchElements []string) s
 		sb.WriteString(" ")
 		sb.WriteString(el)
 		sb.WriteString(".")
-		sb.WriteString("end >= '") // TODO
+		sb.WriteString("end >= '")
 		sb.WriteString(from)
 		sb.WriteString("' AND ")
 		sb.WriteString(el)
@@ -135,10 +87,10 @@ func buildReturnClause(whereLookups []parser.LookupInfo, returnElements []string
 	varList := returnVariables.GetElements()
 	size := len(varList)
 
-	fmt.Printf("\n\n    returnElements: %+v    \n\n", returnElements)
-	fmt.Printf("\n\n    whereLookups: %+v    \n\n", whereLookups)
-	fmt.Printf("\n\n    returnVariables: %+v    \n\n", returnVariables)
-	fmt.Printf("\n\n    varList: %+v    \n\n", varList)
+	utils.Debugf("\n\n    returnElements: %+v    \n\n", returnElements)
+	utils.Debugf("\n\n    whereLookups: %+v    \n\n", whereLookups)
+	utils.Debugf("\n\n    returnVariables: %+v    \n\n", returnVariables)
+	utils.Debugf("\n\n    varList: %+v    \n\n", varList)
 
 	for i, el := range varList {
 		sb.WriteString(el)

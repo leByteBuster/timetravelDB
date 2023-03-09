@@ -13,25 +13,19 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func getPropertyLookupParentClause(insights map[*tti.OC_ComparisonExpressionContext][]listeners.PropertyClauseInsight) (isValid bool, isWhere bool, isReturn bool) {
+func isValidPropertyLookups(insights map[*tti.OC_ComparisonExpressionContext][]listeners.PropertyClauseInsight) (isValid bool) {
 	isValid = true
 	for _, listOfInsights := range insights {
 		for _, insight := range listOfInsights {
 			if !insight.IsValid {
 				isValid = false
 			}
-			if insight.IsWhere && insight.IsPropertyLookup && !insight.IsAppendixOfNullPredicate {
-				isWhere = true
-			}
-			if insight.IsReturn && insight.IsPropertyLookup && !insight.IsAppendixOfNullPredicate {
-				isReturn = true
-			}
 		}
 	}
-	return isValid, isWhere, isReturn
+	return isValid
 }
 
-func getPropertiesforLookupsInReturn(queryInfo parser.ParseResult, lookupsMap map[string][]string, returnProjections []string, graphData map[string][]interface{}) (map[string][]interface{}, error) {
+func getSelectedTimeSeries(queryInfo parser.ParseResult, lookupsMap map[string][]string, returnProjections []string, graphData map[string][]interface{}) (map[string][]interface{}, error) {
 	var err error
 	for elVar, lookups := range lookupsMap {
 		elements := graphData[elVar]
@@ -46,22 +40,19 @@ func getPropertiesforLookupsInReturn(queryInfo parser.ParseResult, lookupsMap ma
 	return graphData, err
 }
 
-func getAllProperties(queryInfo parser.ParseResult, returnVariables []string, graphData map[string][]interface{}) (map[string][]interface{}, error) {
-	var err error
-	for _, n := range returnVariables {
-		elements := graphData[n]
-		graphData, err = fetchTimeSeriesAll(queryInfo.From, queryInfo.To, graphData, elements, n)
-	}
-	return graphData, err
-}
-
-func getAllPropertiesLookupsReturn(queryInfo parser.ParseResult, lookupsMap map[string][]string, returnVariables []string, graphData map[string][]interface{}) (map[string][]interface{}, error) {
+func getAllTimeseries(queryInfo parser.ParseResult, lookupsMap map[string][]string, returnVariables []string, graphData map[string][]interface{}) (map[string][]interface{}, error) {
 	var err error
 	plainReturnVariables := []string{}
 	projections := queryInfo.ReturnProjections
-	for _, projection := range projections {
-		if !strings.Contains(projection, ".") {
-			plainReturnVariables = append(plainReturnVariables, projection)
+
+	// if RETURN *
+	if len(projections) == 0 {
+		plainReturnVariables = returnVariables
+	} else {
+		for _, projection := range projections {
+			if !strings.Contains(projection, ".") {
+				plainReturnVariables = append(plainReturnVariables, projection)
+			}
 		}
 	}
 
@@ -91,7 +82,7 @@ func getTimeSeriesSingleLookup(queryInfo parser.ParseResult, graphData map[strin
 			if e, ok := el.(neo4j.Entity); ok {
 				properties := e.GetProperties()
 				graphData[lookup][i] = properties[property]
-				fmt.Printf("\n\n	    merged time-series: %v      \n\n", e.GetProperties()[property])
+				utils.Debugf("\n\n	    merged time-series: %v      \n\n", e.GetProperties()[property])
 			} else {
 				return nil, fmt.Errorf("error fetching time-series for lookup %v: element is not neo4j.Entity", lookup)
 			}
@@ -107,11 +98,7 @@ func getTimeSeriesSingleLookup(queryInfo parser.ParseResult, graphData map[strin
 
 func fetchSinglePropTimeSeries(queryInfo parser.ParseResult, graphData map[string][]interface{}, elementVar, property string) (map[string][]any, error) {
 
-	var sb strings.Builder
-	sb.WriteString(elementVar)
-	sb.WriteString(".")
-	sb.WriteString(property)
-	lookup := sb.String()
+	lookup := getLookupString(elementVar, property)
 	elements := graphData[elementVar]
 	graphData[lookup] = make([]any, len(elements))
 
@@ -121,7 +108,7 @@ func fetchSinglePropTimeSeries(queryInfo parser.ParseResult, graphData map[strin
 			uuid := properties[property]
 			if uuid == nil {
 				// property not available - do nothing
-				log.Printf("\nproperty %v not available on element with id : %v\n", property, e.GetElementId())
+				utils.Debugf("\nproperty %v not available on element with id : %v\n", property, e.GetElementId())
 			} else if s, ok := uuid.(string); ok {
 				tablename := uuidToTablename(s)
 				_, timeseries, err := getTimeSeries(queryInfo.From, queryInfo.To, "", tablename)
@@ -145,11 +132,11 @@ func fetchTimeSeriesAll(from string, to string, graphData map[string][]interface
 		case neo4j.Entity:
 			properties := e.GetProperties()
 			for prop, uuid := range properties {
-				if !strings.HasPrefix(prop, "properties") {
+				if !strings.HasPrefix(prop, "ts") || !strings.HasPrefix(prop, "properties") {
 					continue
 				}
 				if uuid == nil {
-					log.Printf("\nproperty %v not available on element with id : %v\n", prop, e.GetElementId())
+					utils.Debugf("\nproperty %v not available on element with id : %v\n", prop, e.GetElementId())
 				} else if s, ok := uuid.(string); ok {
 
 					tablename := uuidToTablename(s)
@@ -172,8 +159,11 @@ func fetchTimeSeriesAll(from string, to string, graphData map[string][]interface
 	return graphData, nil
 }
 
-func getShallow(queryInfo parser.ParseResult, whereManipulated string) (map[string][]interface{}, error) {
-
+func getShallow(queryInfo parser.ParseResult) (map[string][]interface{}, error) {
+	whereManipulated, err := manipulateWhereClause(queryInfo.LookupsWhereRelevant, queryInfo.WhereClause)
+	if err != nil {
+		return nil, fmt.Errorf("%w; error manipulating WHERE query for neo4j", err)
+	}
 	tmpWhere := buildTmpWhereClause(queryInfo.From, queryInfo.To, whereManipulated, queryInfo.GraphElements.MatchGraphElements)
 	returnClause := buildReturnClause(queryInfo.LookupsWhereRelevant, queryInfo.GraphElements.ReturnGraphElements)
 	query := buildFinalQuery(queryInfo.MatchClause, tmpWhere, returnClause)
@@ -191,13 +181,13 @@ func getShallow(queryInfo parser.ParseResult, whereManipulated string) (map[stri
 	return resMap, err
 }
 
-func filterForCondLookupsInWhere(queryInfo parser.ParseResult, graphData map[string][]interface{}, relevantLookups []parser.LookupInfo) (map[string][]interface{}, error) {
+func filterForCondLookupsInWhere(from string, to string, relevantLookups []parser.LookupInfo, graphData map[string][]interface{}) (map[string][]interface{}, error) {
 	var err error
 	var toRemove []int
 	filteredData := graphData
 	for _, lookupInfo := range relevantLookups {
 		elements := graphData[lookupInfo.ElementVariable]
-		toRemove, err = checkIfValueForConditionExists(queryInfo.From, queryInfo.To, graphData, elements, lookupInfo.Property, lookupInfo.ElementVariable, lookupInfo.CompareOperator, lookupInfo.CompareValue, lookupInfo.LookupLeft)
+		toRemove, err = checkIfValueForConditionExists(from, to, graphData, elements, lookupInfo.Property, lookupInfo.ElementVariable, lookupInfo.CompareOperator, lookupInfo.CompareValue, lookupInfo.LookupLeft)
 		filteredData = filterMatches(filteredData, toRemove, []string{})
 		if err != nil {
 			return nil, fmt.Errorf("%w; error - couldnt merge time series in property", err)
@@ -244,7 +234,7 @@ func checkIfValueForConditionExists(from string, to string, graphData map[string
 			if uuid == nil {
 			} else if s, ok := uuid.(string); ok {
 				tablename := uuidToTablename(s)
-				exists, err := checkIfValueWithConditionExists(from, to, "", compareOp, compareVal, lookupLeft, tablename)
+				exists, err := checkCondInTimeseries(from, to, "", compareOp, compareVal, lookupLeft, tablename)
 				if err != nil {
 					return nil, fmt.Errorf("%w; error - check if value with condidtion exists for time-series %v of element %v", err, property, e.GetElementId())
 				} else if exists {
@@ -280,7 +270,7 @@ func handleErrorOnResult(res map[string][]any, err error) (bool, error) {
 	if err != nil && res == nil {
 		return false, err
 	} else if err != nil {
-		log.Printf("Not all elements contained the property: %v", err)
+		log.Fatalf("Not all elements contained the property: %v", err)
 	}
 	return true, nil
 }

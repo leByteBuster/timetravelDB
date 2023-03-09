@@ -8,12 +8,21 @@ import (
 	"os/exec"
 	"strings"
 
+	dataadapter "github.com/LexaTRex/timetravelDB/data-adapter"
+	datagenerator "github.com/LexaTRex/timetravelDB/data-generator"
+	databaseapi "github.com/LexaTRex/timetravelDB/database-api"
+	"github.com/LexaTRex/timetravelDB/parser"
 	"github.com/LexaTRex/timetravelDB/utils"
 	"github.com/c-bata/go-prompt"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
+var NeoErr error
+var TsErr error
+var ConfigErr error
+
 func Api() {
+
 	// counts only one row because the period (from,to] is exclusive for the second value
 	// val := getPropertyAggr("2022-12-22T15:33:13Z", "2022-12-29T20:24:36.311106Z", "COUNT", "ts_05318d0f_6a49_4e67_b9a5_62b46af5c209")
 
@@ -22,27 +31,29 @@ func Api() {
 	// fmt.Printf("Aggr: %v\n", val)
 	// fmt.Printf("Aggr: %v", val2)
 
+	databaseapi.ConfigNeo, databaseapi.ConfigTS, ConfigErr = databaseapi.LoadConfig()
+	if ConfigErr != nil {
+		log.Fatalf("Error loading config: %v", ConfigErr)
+	}
+
 	ctx := context.Background()
-	var err error
 
 	// initialize Neo4j
-	DriverNeo, err = neo4j.NewDriverWithContext(UriNeo, neo4j.BasicAuth(UserNeo, PassNeo, ""))
-	if err != nil {
-		log.Printf("Creating driver failed: %v", err)
-		os.Exit(1)
+	databaseapi.DriverNeo, NeoErr = neo4j.NewDriverWithContext("neo4j://"+databaseapi.ConfigNeo.Host+":"+databaseapi.ConfigNeo.Port, neo4j.BasicAuth(databaseapi.ConfigNeo.Username, databaseapi.ConfigNeo.Password, ""))
+	if NeoErr != nil {
+		log.Fatalf("creating neo4j connection failed: %v", NeoErr)
 	}
-	defer DriverNeo.Close(ctx)
+	defer databaseapi.DriverNeo.Close(ctx)
 
-	SessionNeo = DriverNeo.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
-	defer SessionNeo.Close(ctx)
+	databaseapi.SessionNeo = databaseapi.DriverNeo.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
+	defer databaseapi.SessionNeo.Close(ctx)
 
 	// initialize TimescaleDB
-	SessionTS, err = connectTimescale(UserTS, PassTS, PortTS, DBnameTS)
-	if err != nil {
-		log.Printf("Creating driver failed: %v", err)
-		os.Exit(1)
+	databaseapi.SessionTS, TsErr = databaseapi.ConnectTimescale(databaseapi.ConfigTS.Username, databaseapi.ConfigTS.Password, databaseapi.ConfigTS.Port, databaseapi.ConfigTS.Database)
+	if TsErr != nil {
+		log.Fatalf("creating ts connection failed: %v", TsErr)
 	}
-	defer SessionTS.Close(context.Background())
+	defer databaseapi.SessionTS.Close(context.Background())
 
 	// TEST QUERIES
 	//String ttQuery2 = "FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ping > 22.33" + "RETURN n.ping, n ";
@@ -117,8 +128,18 @@ func Api() {
 	// FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  a.properties_components_cpu
 	// FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  *
 	// FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN  a.properties_components_cpu
+	// FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) RETURN  a.properties_components_cpu
 
-	fmt.Print("Enter Query: \n")
+	fmt.Println(`
+		Hello, welcome to TTDB CLI !
+		To query TimeTravelDB type in a valid TTQL query.
+		To generate test data type 'Generate Data' and return.
+		To generate test data type 'Load Data' and return.
+		To enable debug mode type 'Debug=1' and return. 
+		To disable debug mode type 'Debug=1' and return. 
+		To exit the program type 'quit' 'q' or 'exit' and return.
+		For more infos: https://github.com/LexaTRex/timetravelDB/`)
+
 	p := prompt.New(
 		executor,
 		completer,
@@ -139,27 +160,59 @@ func executor(in string) {
 	switch in {
 	case "hello":
 		fmt.Println("Hello, welcome to TTDB CLI !")
-	case "quit":
+	case "quit", "q", "exit", "Exit", "Quit", "EXIT":
 		handleExit() // note: cannot handle this with defer (probably goroutine race condition)
 		os.Exit(0)
-	case "exit":
-		handleExit()
-		os.Exit(0)
-	case "Quit":
-		handleExit()
-		os.Exit(0)
-	case "Exit":
-		handleExit()
-		os.Exit(0)
-	case "help":
-		fmt.Println("To query TimeTravelDB type in a valid TTQL query.\nTo exit the program type 'quit' 'q' or 'exit' and hit enter.\nFor more infos: https://github.com/LexaTRex/timetravelDB/")
+	case "help", "h", "-h", "--help":
+		fmt.Println(`
+		Hello, welcome to TTDB CLI !
+		To query TimeTravelDB type in a valid TTQL query.
+		To generate test data type 'Generate Data' and return.
+		To generate test data type 'Load Data' and return.
+		To enable debug mode type 'Debug=1' and return. 
+		To disable debug mode type 'Debug=1' and return. 
+		To exit the program type 'quit' 'q' or 'exit' and return.
+		For more infos: https://github.com/LexaTRex/timetravelDB/`)
+	case "Generate Data":
+		datagenerator.GenerateData()
+	case "Load Data":
+		dataadapter.LoadData()
+	case "Debug=1":
+		utils.DEBUG = true
+	case "Debug=0":
+		utils.DEBUG = false
 	default:
-		fmt.Printf("Processing Query: %s\n", in)
+		if ConfigErr != nil {
+			log.Printf("\n%v: There occured an error paring db configs. Please provide a valid config.yaml and restart the CLI.", ConfigErr)
+			break
+		}
+		if NeoErr != nil {
+			log.Printf("\n%v: There occured an error connecting to the neo4j database. Please provide a running database with the correct credentials (config.yaml) and restart the CLI", ConfigErr)
+			break
+		}
+		if NeoErr != nil {
+			log.Printf("\n%v: There occured an error connecting to the neo4j database. Please provide a running database with the correct credentials (config.yaml) and restart the CLI.", ConfigErr)
+			break
+		}
+		utils.Debugf("\nProcessing Query: %s\n", in)
 		in = cleanQuery(in)
-		res, err := ProcessQuery(in)
-		utils.UNUSED(res)
+		queryInfo, err := parser.ParseQuery(in)
 		if err != nil {
-			log.Printf("Failed: %v", err)
+			log.Printf("\n%v: error parsing query", err)
+			break
+		}
+		queryRes, err := ProcessQuery(queryInfo)
+
+		utils.Debugf("\n\n\n                 		 QUERY RESULT\n						%+v\n\n\n", queryRes)
+		if len(queryInfo.ReturnProjections) > 0 {
+			utils.Debug("\n\n\n                      Printed ordered\n\n\n\n")
+			fmt.Printf("%+v\n", utils.JsonStringFromMapOrdered(queryRes, queryInfo.ReturnProjections))
+		} else {
+			utils.Debug("\n\n\n                      Printed unordered\n\n\n\n")
+			fmt.Printf("%+v\n", utils.JsonStringFromMap(queryRes))
+		}
+		if err != nil {
+			log.Fatalf("Failed: %v", err)
 		}
 	}
 }

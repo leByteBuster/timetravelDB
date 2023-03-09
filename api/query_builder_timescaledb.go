@@ -129,7 +129,7 @@ func invertCmpOperatro(cmpOp string) (string, error) {
 	case "!=":
 		return "!=", nil
 	default:
-		log.Printf("\nunsupported compare operator [%s]\n", cmpOp)
+		log.Fatalf("\nunsupported compare operator [%s]\n", cmpOp)
 		return "", fmt.Errorf("unsupported compare operator %s", cmpOp)
 	}
 }

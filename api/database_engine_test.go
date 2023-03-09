@@ -2,9 +2,11 @@ package api
 
 import (
 	"log"
+	"strings"
 	"testing"
 
 	"github.com/LexaTRex/timetravelDB/parser"
+	"github.com/LexaTRex/timetravelDB/utils"
 )
 
 func TestParseQueryValid(t *testing.T) {
@@ -24,9 +26,9 @@ func TestParseQueryValid(t *testing.T) {
 		"FROM 2022-12-22T15:33:13Z TO 2022-12-29T20:24:36.311107Z MATCH (n:Node) WHERE xyz RETURN n"}
 	for _, query := range valid_queries {
 		res, err := parser.ParseQuery(query)
-		log.Printf("MatchClause: %v", res.MatchClause)
-		log.Printf("WhereClause: %v", res.WhereClause)
-		log.Printf("ReturnClause: %v", res.ReturnClause)
+		utils.Debugf("MatchClause: %v", res.MatchClause)
+		utils.Debugf("WhereClause: %v", res.WhereClause)
+		utils.Debugf("ReturnClause: %v", res.ReturnClause)
 		tmpQuery := buildTmpWhereClause(res.From, res.To, res.WhereClause, res.GraphElements.MatchGraphElements)
 
 		log.Println(tmpQuery)
@@ -74,12 +76,12 @@ func TestManipulateWhereClauseNeo4j(t *testing.T) {
 			t.Fatalf("Parsing error: %v\n This should not be happening with valid queries\n", query)
 		}
 		whereClause := res.WhereClause
-		manipulated, err := manipulateWhereClause(res, whereClause)
+		manipulated, err := manipulateWhereClause(res.LookupsWhereRelevant, whereClause)
 		if err != nil {
 			t.Fatalf("Manipulation error for: %v\n Manipulated WHERE clause is not as expected\n", query)
 		}
-		if manipulated != expected_results[i] {
-			t.Fatalf("Manipulation error for:\n     %v\nManipulated WHERE clause:\n     %v\nis not as expected:\n     %v\n", query, manipulated, expected_results[i])
+		if strings.Trim(manipulated, " ") != strings.Trim(expected_results[i], " ") {
+			t.Fatalf("\nManipulation error for:\n     %v\nManipulated WHERE clause:\n     %v\nis not as expected:\n     %v\n", query, manipulated, expected_results[i])
 		}
 		log.Println(whereClause)
 	}
@@ -88,9 +90,9 @@ func TestManipulateWhereClauseNeo4j(t *testing.T) {
 		res, err1 := parser.ParseQuery(query)
 		if err1 != nil {
 			whereClause := res.WhereClause
-			manipulated, err := manipulateWhereClause(res, whereClause)
+			manipulated, err := manipulateWhereClause(res.LookupsWhereRelevant, whereClause)
 			if err != nil {
-				if manipulated == expected_results[i] {
+				if strings.Trim(manipulated, " ") == strings.Trim(expected_results[i], " ") {
 					t.Fatalf("\nThis should be invalid: %v\n", query)
 				}
 			}

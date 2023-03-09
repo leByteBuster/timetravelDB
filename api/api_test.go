@@ -9,6 +9,8 @@ import (
 	"os"
 	"testing"
 
+	databaseapi "github.com/LexaTRex/timetravelDB/database-api"
+	"github.com/LexaTRex/timetravelDB/parser"
 	"github.com/LexaTRex/timetravelDB/utils"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
@@ -16,40 +18,48 @@ import (
 /**
   * This is a test integration test file.
   * It tests the API by sending requests to the API and checking the response.
-  * For the tests to work, there must be a Neo4j database running on the default port,
-  * as well as a timetravelDB database running on the default port.
+  * For the tests to work, a Neo4j database is required to be running on the default port,
+  * as well as a timetravelDB database running on the default port. The databases are required
+	* to have the same credentials as the ones in the tests. Furthermore they are required to be initialized
+	* with the according testing data stored in /test_data
   * See DOCKER_README.md for setting up the testing environment.
 **/
 
-func TestNonShallowQueries(t *testing.T) {
+var testConfNeo = databaseapi.Neo4jConfig{
+	Host:     "localhost",
+	Port:     "7687",
+	Username: "neo4j",
+	Password: "test",
+}
 
-	PassNeo = "test"
-	UserNeo = "neo4j"
+var testConfTS = databaseapi.TimescaleConfig{
+	Host:     "localhost",
+	Port:     "5432",
+	Username: "postgres",
+	Password: "password",
+	Database: "postgres",
+}
 
-	UserTS = "postgres"
-	PassTS = "password"
-	DBnameTS = "postgres"
-
-	var err error
+func TestDeepQueries(t *testing.T) {
 
 	// initialize Neo4j
-	DriverNeo, err = neo4j.NewDriverWithContext(UriNeo, neo4j.BasicAuth(UserNeo, PassNeo, ""))
+	DriverNeo, err := neo4j.NewDriverWithContext("neo4j://"+testConfNeo.Host+":"+testConfNeo.Port, neo4j.BasicAuth(testConfNeo.Username, testConfNeo.Password, ""))
 	if err != nil {
 		log.Printf("Creating driver failed: %v", err)
 		os.Exit(1)
 	}
 	defer DriverNeo.Close(context.Background())
 
-	SessionNeo = DriverNeo.NewSession(context.Background(), neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
-	defer SessionNeo.Close(context.Background())
+	databaseapi.SessionNeo = DriverNeo.NewSession(context.Background(), neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	defer databaseapi.SessionNeo.Close(context.Background())
 
 	// initialize TimescaleDB
-	SessionTS, err = connectTimescale(UserTS, PassTS, PortTS, DBnameTS)
+	databaseapi.SessionTS, err = databaseapi.ConnectTimescale(testConfTS.Username, testConfTS.Password, testConfTS.Port, testConfTS.Database)
 	if err != nil {
 		log.Printf("Creating driver failed: %v", err)
 		os.Exit(1)
 	}
-	defer SessionTS.Close(context.Background())
+	defer databaseapi.SessionTS.Close(context.Background())
 
 	query1 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN  a,x,b"
 	query2 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE b.properties_Risc > 0 RETURN  b, b.properties_Risc"
@@ -63,16 +73,19 @@ func TestNonShallowQueries(t *testing.T) {
 	keys := [][]string{{"a", "x", "b"}, {"b", "b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}, {"a.properties_components_cpu"}, {"a", "b"}}
 
 	for i, query := range queries {
-		res, err := ProcessQuery(cleanQuery(query))
-		fmt.Printf("res before removing: %+v", res)
+		queryInfo, err := parser.ParseQuery(cleanQuery(query))
+		if err != nil {
+			t.Fatalf("Error while parsing query: %v", err)
+		}
+		res, err := ProcessQuery(queryInfo)
+		if err != nil {
+			t.Fatalf("Error while processing query: %v", err)
+		}
+
+		// clean the internal neo4j IDs of the graph elements because the change on restore
 		removeElementIDs(res)
 		jsonRes := utils.JsonStringFromMapOrdered(res, keys[i])
-		if err != nil {
-			t.Fatalf("Error while processing query: %v", err)
-		}
-		if err != nil {
-			t.Fatalf("Error while processing query: %v", err)
-		}
+
 		byteExpected := []byte(expecteds[i])
 		bufferEx := new(bytes.Buffer)
 		if err := json.Compact(bufferEx, byteExpected); err != nil {
@@ -94,33 +107,25 @@ func TestNonShallowQueries(t *testing.T) {
 // TODO
 func TestShallowQueries(t *testing.T) {
 
-	PassNeo = "test"
-	UserNeo = "neo4j"
-
-	UserTS = "postgres"
-	PassTS = "password"
-	DBnameTS = "postgres"
-
-	var err error
-
 	// initialize Neo4j
-	DriverNeo, err = neo4j.NewDriverWithContext(UriNeo, neo4j.BasicAuth(UserNeo, PassNeo, ""))
+	DriverNeo, err := neo4j.NewDriverWithContext("neo4j://"+testConfNeo.Host+":"+testConfNeo.Port, neo4j.BasicAuth(testConfNeo.Username, testConfNeo.Password, ""))
 	if err != nil {
 		log.Printf("Creating driver failed: %v", err)
 		os.Exit(1)
 	}
 	defer DriverNeo.Close(context.Background())
 
-	SessionNeo = DriverNeo.NewSession(context.Background(), neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
-	defer SessionNeo.Close(context.Background())
+	databaseapi.SessionNeo = DriverNeo.NewSession(context.Background(), neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	defer databaseapi.SessionNeo.Close(context.Background())
 
 	// initialize TimescaleDB
-	SessionTS, err = connectTimescale(UserTS, PassTS, PortTS, DBnameTS)
+	databaseapi.SessionTS, err = databaseapi.ConnectTimescale(testConfTS.Username, testConfTS.Password, testConfTS.Port, testConfTS.Database)
 	if err != nil {
 		log.Printf("Creating driver failed: %v", err)
 		os.Exit(1)
 	}
-	defer SessionTS.Close(context.Background())
+
+	defer databaseapi.SessionTS.Close(context.Background())
 
 	query1 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NOT NULL RETURN *"
 	query2 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NOT NULL RETURN  a.properties_components_cpu"
@@ -131,17 +136,25 @@ func TestShallowQueries(t *testing.T) {
 	query7 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE b.properties_Risc > 0 RETURN  b.properties_Risc"
 	query8 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  a, a.properties_components_cpu"
 	query9 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) RETURN  *"
-	expecteds := []string{expectedShallow1, expectedShallow2, expectedShallow3, expectedShallow4, expectedShallow5, expectedShallow6, expectedShallow7, expectedShallow8, expectedShallow9}
-	queries := []string{query1, query2, query3, query4, query5, query6, query7, query8, query9}
-	keys := [][]string{{"a", "b", "x"}, {"a.properties_components_cpu"}, {"a", "b", "x"}, {"b", "b.properties_Risc"}, {"b", "b.properties_Risc"}, {"a", "x", "b"}, {"b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}}
+	query10 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) RETURN  a.properties_components_cpu"
+
+	expecteds := []string{expectedShallow1, expectedShallow2, expectedShallow3, expectedShallow4, expectedShallow5, expectedShallow6, expectedShallow7, expectedShallow8, expectedShallow9, expectedShallow10}
+	queries := []string{query1, query2, query3, query4, query5, query6, query7, query8, query9, query10}
+	keys := [][]string{{"a", "b", "x"}, {"a.properties_components_cpu"}, {"a", "b", "x"}, {"b", "b.properties_Risc"}, {"b", "b.properties_Risc"}, {"a", "x", "b"}, {"b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}, {"a.properties_components_cpu"}}
 
 	for i, query := range queries {
-		res, err := ProcessQuery(cleanQuery(query))
-		removeElementIDs(res)
-		jsonRes := utils.JsonStringFromMapOrdered(res, keys[i])
+		queryInfo, err := parser.ParseQuery(cleanQuery(query))
+		if err != nil {
+			t.Fatalf("Error while parsing query: %v", err)
+		}
+		res, err := ProcessQuery(queryInfo)
 		if err != nil {
 			t.Fatalf("Error while processing query: %v", err)
 		}
+
+		// clean the internal neo4j IDs of the graph elements because the change on restore
+		removeElementIDs(res)
+		jsonRes := utils.JsonStringFromMapOrdered(res, keys[i])
 
 		byteExpected := []byte(expecteds[i])
 		bufferEx := new(bytes.Buffer)
@@ -193,3 +206,15 @@ func removeElementIDs(graphData interface{}) {
 		}
 	}
 }
+
+// func printRes(t *testing.T, queryRes map[string][]any, queryInfo parser.ParseResult) {
+// 	t.Logf("\n\n\n                 		 QUERY RESULT\n						%+v\n\n\n", queryRes)
+// 	if len(queryInfo.ReturnProjections) > 0 {
+// 		t.Log("\n\n\n                      Printed ordered                         \n\n\n\n")
+// 		t.Logf("%+v\n", utils.JsonStringFromMapOrdered(queryRes, queryInfo.ReturnProjections))
+// 	} else {
+// 		t.Log("\n\n\n                      Printed unordered                         \n\n\n\n")
+// 		t.Logf("%+v\n", utils.JsonStringFromMap(queryRes))
+// 	}
+// }
+//

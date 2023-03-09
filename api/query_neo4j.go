@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 
+	databaseapi "github.com/LexaTRex/timetravelDB/database-api"
 	"github.com/LexaTRex/timetravelDB/utils"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
@@ -14,7 +15,7 @@ func queryNeo4j(query string) (neo4j.ResultWithContext, error) {
 	// 			 otherwise i could as well use the lower func queryReadNeo4j
 
 	utils.DebugIn("NEO4J QUERY: ", query)
-	return queryReadNeo4j(query)
+	return databaseapi.QueryReadNeo4j(query)
 }
 
 // format the result of a neo4j query to a map of arrays

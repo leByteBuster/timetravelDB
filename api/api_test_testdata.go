@@ -1126,3 +1126,22 @@ var expectedShallow9 string = `{
     }
   ]
 }`
+
+var expectedShallow10 = `{
+    "a.properties_components_cpu"  : [
+        [
+           {
+              "Timestamp": "2022-12-22T16:33:13+01:00",
+              "IsTimestamp": false,
+              "Value": "UGWJn"
+           }
+        ],
+        [
+           {
+              "Timestamp": "2022-12-22T16:33:13+01:00",
+              "IsTimestamp": false,
+              "Value": "UGWJn"
+           }
+        ]
+     ]
+  }`
