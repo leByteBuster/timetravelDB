@@ -13,11 +13,10 @@ type TimePeriod struct {
 	To   string
 }
 
-type GraphElements struct {
-	MatchGraphElements  []string
-	WhereGraphElements  []string
-	ReturnGraphElements []string
-	// ReturnGraphElementsNoLookup []string // desribes the return graph elements without a property lookup. so if RETURN n.prop, n, e -> [e]
+type QueryVariables struct {
+	MatchQueryVariables  []string
+	WhereQueryVariables  []string
+	ReturnQueryVariables []string
 }
 
 // TreeShapeListener is a listener that enters every node in the parser tree and prints the tree shape of the parse tree
@@ -29,7 +28,7 @@ type TtqlTreeListener struct {
 	Insights map[*tti.OC_ComparisonExpressionContext][]PropertyClauseInsight
 	TimePeriod
 	IsShallow bool
-	GraphElements
+	QueryVariables
 	MatchClause       string
 	WhereClause       string
 	ReturnClause      string
@@ -219,13 +218,13 @@ func (listener *TtqlTreeListener) EnterOC_Variable(vC *tti.OC_VariableContext) {
 	parent := vC.GetParent()
 	for parent != nil {
 		if _, ok := parent.(*tti.OC_MatchContext); ok {
-			listener.GraphElements.MatchGraphElements = append(listener.GraphElements.MatchGraphElements, el)
+			listener.QueryVariables.MatchQueryVariables = append(listener.QueryVariables.MatchQueryVariables, el)
 			break
 		} else if _, ok := parent.(*tti.OC_WhereContext); ok {
-			listener.GraphElements.WhereGraphElements = append(listener.GraphElements.WhereGraphElements, el)
+			listener.QueryVariables.WhereQueryVariables = append(listener.QueryVariables.WhereQueryVariables, el)
 			break // no need to check further
 		} else if _, ok := parent.(*tti.OC_ReturnContext); ok {
-			listener.GraphElements.ReturnGraphElements = append(listener.GraphElements.ReturnGraphElements, el)
+			listener.QueryVariables.ReturnQueryVariables = append(listener.QueryVariables.ReturnQueryVariables, el)
 			break // no need to check further
 		}
 		if proj, ok := parent.(*tti.OC_ProjectionItemContext); ok {

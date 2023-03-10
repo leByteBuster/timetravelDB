@@ -14,18 +14,18 @@ import (
 
 // ParseResult holds all the information about a parsed query to build queries for Neo4j and TimescaleDB
 type ParseResult struct {
-	IsShallow                 bool             // is the query shallow?
-	ContainsPropertyLookup    bool             // contains any property lookup?
-	ContainsOnlyNullPredicate bool             // if property lookups - do any of them have a NullPredicates suffix ?
-	From                      string           // start time
-	To                        string           // end time
-	MatchClause               string           // MATCH clause as string
-	WhereClause               string           // WHERE clause as string
-	ReturnClause              string           // WHERE clause
-	GraphElements             li.GraphElements // all element variables occouring in the query
-	// LookupsWhere              map[string][]string // all relevant lookups in Where (lookups that are relevant for binary querying)
-	ReturnProjections    []string     // all projections in Return, used for ordering and time-series fetching
-	LookupsWhereRelevant []LookupInfo // holds all relevant lookups (like above) but with additional information which is relevant for comparisons and information about NullPredicates. relevant: relevant for binary querying
+	IsShallow                 bool              // is the query shallow?
+	ContainsPropertyLookup    bool              // contains any property lookup?
+	ContainsOnlyNullPredicate bool              // if property lookups - do any of them have a NullPredicates suffix ?
+	From                      string            // start time
+	To                        string            // end time
+	MatchClause               string            // MATCH clause as string
+	WhereClause               string            // WHERE clause as string
+	ReturnClause              string            // WHERE clause
+	QueryVariables            li.QueryVariables // all element variables occouring in the query
+	ReturnProjections         []string          // all projections in Return, used for ordering and time-series fetching
+	LookupsWhereRelevant      []LookupInfo      // holds all relevant lookups in WHERE which are  relevant for binary querying  with additional information
+	// which is relevant for comparisons and information about NullPredicates.
 	// Null Predicate lookups are only relevant if they occur in actual comparisons (a.prop IS NOT NULL > 20)
 	LookupsReturn          map[string][]string                                                // contains all relevant lookups in Return (lookups that do not have a NullPredicate appendix - but we don't allow this in the RETURN clause yet anyways)
 	PropertyClauseInsights map[*tti.OC_ComparisonExpressionContext][]li.PropertyClauseInsight // insights of Comparison expressions / Property Clauses
@@ -84,7 +84,7 @@ func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
 	utils.Debug("............................................")
 	utils.Debug()
 	utils.Debugf("\nMatchClause variables: %v\nWhereClause variables: %v\nReturnClause variables: %v",
-		listener.GraphElements.MatchGraphElements, listener.GraphElements.WhereGraphElements, listener.GraphElements.ReturnGraphElements)
+		listener.QueryVariables.MatchQueryVariables, listener.QueryVariables.WhereQueryVariables, listener.QueryVariables.ReturnQueryVariables)
 	utils.Debug()
 	utils.Debug("............................................")
 	utils.Debug()
@@ -155,7 +155,7 @@ func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
 		}
 	}
 
-	for _, v := range listener.GraphElements.MatchGraphElements {
+	for _, v := range listener.QueryVariables.MatchQueryVariables {
 		if _, ok := lookupsWhere[v]; !ok {
 			lookupsWhere[v] = []string{}
 		}
@@ -171,11 +171,10 @@ func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
 		WhereClause:               listener.WhereClause,
 		ReturnClause:              listener.ReturnClause,
 		ReturnProjections:         listener.ReturnProjections,
-		GraphElements:             listener.GraphElements,
-		// LookupsWhere:              lookupsWhere,
-		LookupsWhereRelevant:   lookupsWhereRelevant,
-		LookupsReturn:          lookupsReturn,
-		PropertyClauseInsights: propertyClauseInsights,
+		QueryVariables:            listener.QueryVariables,
+		LookupsWhereRelevant:      lookupsWhereRelevant,
+		LookupsReturn:             lookupsReturn,
+		PropertyClauseInsights:    propertyClauseInsights,
 	}
 }
 

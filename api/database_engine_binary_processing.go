@@ -166,12 +166,12 @@ func fetchTimeSeriesAll(from string, to string, graphData map[string][]interface
 }
 
 func getShallow(queryInfo parser.ParseResult) (map[string][]interface{}, error) {
-	whereManipulated, err := manipulateWhereClause(queryInfo.LookupsWhereRelevant, queryInfo.WhereClause)
+	cndWhere, err := buildCondWhereClause(queryInfo.LookupsWhereRelevant, queryInfo.WhereClause)
 	if err != nil {
 		return nil, fmt.Errorf("%w; error manipulating WHERE query for neo4j", err)
 	}
-	tmpWhere := buildTmpWhereClause(queryInfo.From, queryInfo.To, whereManipulated, queryInfo.GraphElements.MatchGraphElements)
-	returnClause := buildReturnClause(queryInfo.LookupsWhereRelevant, queryInfo.GraphElements.ReturnGraphElements)
+	tmpWhere := buildTmpWhereClause(queryInfo.From, queryInfo.To, cndWhere, queryInfo.QueryVariables.MatchQueryVariables)
+	returnClause := buildReturnClause(queryInfo.LookupsWhereRelevant, queryInfo.QueryVariables.ReturnQueryVariables)
 	query := buildFinalQuery(queryInfo.MatchClause, tmpWhere, returnClause)
 	res, err := queryNeo4j(query)
 	if err != nil {

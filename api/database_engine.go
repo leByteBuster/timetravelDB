@@ -112,9 +112,9 @@ func propertyLookupShallow(queryInfo parser.ParseResult, queryResult map[string]
 
 func propertyLookupDeep(queryInfo parser.ParseResult, queryResult map[string][]interface{}) (map[string][]any, error) {
 
-	returnVariables := queryInfo.GraphElements.ReturnGraphElements
+	returnVariables := queryInfo.QueryVariables.ReturnQueryVariables
 	if len(returnVariables) == 0 {
-		returnVariables = queryInfo.GraphElements.MatchGraphElements
+		returnVariables = queryInfo.QueryVariables.MatchQueryVariables
 	}
 	queryResult, err := getAllTimeseries(queryInfo, queryInfo.LookupsReturn, returnVariables, queryResult)
 	if err != nil {
@@ -125,10 +125,10 @@ func propertyLookupDeep(queryInfo parser.ParseResult, queryResult map[string][]i
 
 // func noPropertyLookupDeep(queryInfo parser.ParseResult, shallowResult map[string][]any) (map[string][]any, error) {
 //
-// 	returnVariables := queryInfo.GraphElements.ReturnGraphElements
+// 	returnVariables := queryInfo.QueryVariables.ReturnQueryVariables
 //
 // 	if len(returnVariables) == 0 {
-// 		returnVariables = queryInfo.GraphElements.MatchGraphElements
+// 		returnVariables = queryInfo.QueryVariables.MatchQueryVariables
 // 	}
 //
 // 	queryResult, err := getAllTimeSeries(queryInfo, returnVariables, shallowResult)

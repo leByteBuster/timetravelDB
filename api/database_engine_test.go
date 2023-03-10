@@ -29,7 +29,7 @@ func TestParseQueryValid(t *testing.T) {
 		utils.Debugf("MatchClause: %v", res.MatchClause)
 		utils.Debugf("WhereClause: %v", res.WhereClause)
 		utils.Debugf("ReturnClause: %v", res.ReturnClause)
-		tmpQuery := buildTmpWhereClause(res.From, res.To, res.WhereClause, res.GraphElements.MatchGraphElements)
+		tmpQuery := buildTmpWhereClause(res.From, res.To, res.WhereClause, res.QueryVariables.MatchQueryVariables)
 
 		log.Println(tmpQuery)
 		if err != nil {
@@ -76,7 +76,7 @@ func TestManipulateWhereClauseNeo4j(t *testing.T) {
 			t.Fatalf("Parsing error: %v\n This should not be happening with valid queries\n", query)
 		}
 		whereClause := res.WhereClause
-		manipulated, err := manipulateWhereClause(res.LookupsWhereRelevant, whereClause)
+		manipulated, err := buildCondWhereClause(res.LookupsWhereRelevant, whereClause)
 		if err != nil {
 			t.Fatalf("Manipulation error for: %v\n Manipulated WHERE clause is not as expected\n", query)
 		}
@@ -90,7 +90,7 @@ func TestManipulateWhereClauseNeo4j(t *testing.T) {
 		res, err1 := parser.ParseQuery(query)
 		if err1 != nil {
 			whereClause := res.WhereClause
-			manipulated, err := manipulateWhereClause(res.LookupsWhereRelevant, whereClause)
+			manipulated, err := buildCondWhereClause(res.LookupsWhereRelevant, whereClause)
 			if err != nil {
 				if strings.Trim(manipulated, " ") == strings.Trim(expected_results[i], " ") {
 					t.Fatalf("\nThis should be invalid: %v\n", query)

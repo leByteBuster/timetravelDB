@@ -8,11 +8,11 @@ import (
 	"github.com/LexaTRex/timetravelDB/utils"
 )
 
-// manipulate the WHERE clause sent to neo4j to prefilter the result. If there are property lookups
+// buildCondWhereClause manipulates the WHERE clause sent to neo4j to prefilter the result. If there are property lookups
 // that compare to a value in the form of "a.prop > 2" then for performance inhancement
 // it is replaced by "a.prop IS NOT NULL". So if it does not excist we do not get a pattern back where
 // we have to try tro retrieve the non existing property values for which we want to compare to 2 (in the example)
-func manipulateWhereClause(lookupsWhereRelevant []parser.LookupInfo, whereClause string) (string, error) {
+func buildCondWhereClause(lookupsWhereRelevant []parser.LookupInfo, whereClause string) (string, error) {
 	for _, lookup := range lookupsWhereRelevant {
 
 		orig := lookup.CompareClause
