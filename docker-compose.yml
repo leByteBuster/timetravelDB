@@ -11,33 +11,7 @@ services:
      - ./docker-test/neo4j/logs:/logs
     environment:
       - NEO4J_AUTH=neo4j/test # if this does not work try neo4j/rhebo or neo4j/neo4j 
-#    depends_on:
-#      restore_neo4j:
-#        condition: service_healthy
 
-
-
-# # backups needs to be loaded before starting the database (other way around than restore process for timescaledb)
-# # the following servic eis the equivalent to running
-# # docker run --interactive --tty --rm --volume=./docker-test/data:/data --volume=./docker-test/backups:/backups neo4j neo4j-admin database load neo4j --from-path=/backups --verbose
-#   restore_neo4j:
-#     container_name: restore_neo4j
-#     image: neo4j:5.2.0
-#     restart: "no"
-#     ports:
-#       - "7474:7474"
-#       - "7687:7687"
-#     volumes: 
-#      - ./docker-test/neo4j/data:/data
-#      - ./docker-test/neo4j/backups:/backups
-#     environment:
-#       - NEO4J_AUTH=mockreplace/test # if this does not work try neo4j/rhebo or neo4j/neo4j 
-#     command: ["neo4j-admin", "database", "load", "neo4j", "--from-path=/backups", "--verbose"]
-#     healthcheck:
-#         test: ["CMD-SHELL", "! neo4j-admin database info | grep -q 'mockreplace'"]
-#         interval: 5s
-#         timeout: 3s
-#         retries: 10
 
   timescaledb:
     image: timescale/timescaledb-ha:pg14-latest
@@ -54,15 +28,14 @@ services:
       - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready", "-h", "localhost", "-p", "5432"]
-      interval: 2s
-      timeout: 3s
-      retries: 5 
-    # command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
   restore:
     image: timescale/timescaledb-ha:pg14-latest
     volumes:
-      - ./docker-test/timescaledb/data:/var/lib/postgresql/data
       - ./docker-test/timescaledb/backups:/tmp/
     restart: "no"
     environment:
@@ -74,4 +47,5 @@ services:
     depends_on:
       timescaledb:
         condition: service_healthy
+
 

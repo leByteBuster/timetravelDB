@@ -11,9 +11,13 @@ docker stop $(docker ps -aq)
 
 # cleanup before (if docker-compose was run in other ways than this script there might be some leftovers)
 sudo rm -rf $TTDB_SCRIPTS/../docker-test/neo4j/backups/*
+ls $TTDB_SCRIPTS/../docker-test/neo4j/backups/
 sudo rm -rf $TTDB_SCRIPTS/../docker-test/neo4j/data/*
+ls $TTDB_SCRIPTS/../docker-test/neo4j/data/
 sudo rm -rf $TTDB_SCRIPTS/../docker-test/timescaledb/backups/*
+ls  $TTDB_SCRIPTS/../docker-test/timescaledb/backups/
 sudo rm -rf $TTDB_SCRIPTS/../docker-test/timescaledb/data/*
+ls $TTDB_SCRIPTS/../docker-test/timescaledb/data/
 
 
 # prepare testing data 
@@ -21,7 +25,7 @@ cp $TTDB_SCRIPTS/../test-data/neo4j_test_backup/neo4j.dump $TTDB_SCRIPTS/../dock
 cp $TTDB_SCRIPTS/../test-data/timescaledb_test_backup/postgres.bak $TTDB_SCRIPTS/../docker-test/timescaledb/backups/
 
 # restore neo4j data (was not able to get this to work with docker-compose yet)
-docker run --interactive --tty --rm --volume=$TTDB_SCRIPTS/../docker-test/neo4j/data:/data --volume=$TTDB_SCRIPTS/../docker-test/neo4j/backups:/backups neo4j neo4j-admin database load neo4j --from-path=/backups --verbose
+docker run --rm --volume=$TTDB_SCRIPTS/../docker-test/neo4j/data:/data --volume=$TTDB_SCRIPTS/../docker-test/neo4j/backups:/backups neo4j neo4j-admin database load neo4j --from-path=/backups --verbose
 
 # prepare testing envionment 
 docker-compose -f $TTDB_SCRIPTS/../docker-compose.yml up -d
@@ -38,9 +42,9 @@ docker exec test_timescaledb sh -c "while ! psql -lqt | cut -d \| -f 1 | grep -q
 echo "timescaledb database ready"
 
 # Run Golang tests
-go test -v -count=1 $TTDB_SCRIPTS/../api -run TestShallowQueries -test.v #> >(tee -a /dev/stdout) 2> >(tee -a /dev/stderr >&2)
+go test -count=1 $TTDB_SCRIPTS/../api -run TestShallowQueries 
 gotest1=$?
-go test -v -count=1 $TTDB_SCRIPTS/../api -run DeepShallowQueries -test.v #> >(tee -a /dev/stdout) 2> >(tee -a /dev/stderr >&2)
+go test -count=1 $TTDB_SCRIPTS/../api -run TestDeepQueries 
 gotest2=$?
 
 
@@ -53,10 +57,15 @@ gotest2=$?
 # sudo rm -rf $TTDB_SCRIPTS/../docker-test/timescaledb/backups/*
 # sudo rm -rf $TTDB_SCRIPTS/../docker-test/timescaledb/data/*
 
-# if ( $gotest1 -eq 0 && $gotest2 -eq 0 ); then
-#     echo "Tests passed"
-#     exit 0
-# else
-#     echo "Tests failed"
-#     exit 1
-# fi
+if [ $gotest1 -eq 0 ] && [ $gotest2 -eq 0 ]; then
+    echo "Tests passed"
+    exit 0
+else
+    if [ $gotest1 -ne 0 ]; then
+        echo "Shallow tests failed"
+    fi
+    if [ $gotest2 -ne 0 ]; then
+        echo "Deep tests failed"
+    fi
+    exit 1
+fi
