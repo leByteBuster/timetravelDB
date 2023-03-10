@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	utils.Debug("starting TTQL application...")
 	utils.DEBUG = true
 	api.Api()
 }

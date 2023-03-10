@@ -42,7 +42,6 @@ func ProcessQuery(queryInfo parser.ParseResult) (map[string][]any, error) {
 
 func applyBinaryQueryShallow(queryInfo parser.ParseResult, shallowResult map[string][]interface{}) (map[string][]interface{}, error) {
 	var queryResult map[string][]interface{}
-	var err error
 	// no or no relevant lookups
 	// NOTE: in the case of prop.a IS NOT NULL > 20 this doesnt work right yet
 	// even though this does not make much sense in practice in the first place we should handle it correctly
@@ -53,11 +52,11 @@ func applyBinaryQueryShallow(queryInfo parser.ParseResult, shallowResult map[str
 		return shallowResult, nil
 	} else {
 
-		queryResult, err = filterForCondLookupsInWhere(queryInfo.From, queryInfo.To, queryInfo.LookupsWhereRelevant, shallowResult)
+		filteredResult, err := filterForCondLookupsInWhere(queryInfo.From, queryInfo.To, queryInfo.LookupsWhereRelevant, shallowResult)
 		if err != nil {
 			return nil, fmt.Errorf("%w; error filtering query result on WHERE conditions", err)
 		}
-		queryResult, err = propertyLookupShallow(queryInfo, queryResult)
+		queryResult, err = propertyLookupShallow(queryInfo, filteredResult)
 		if err != nil {
 			if ok, err := handleErrorOnResult(queryResult, fmt.Errorf("error executing shallow query with lookup: %v", err)); !ok {
 				return nil, err
@@ -68,8 +67,8 @@ func applyBinaryQueryShallow(queryInfo parser.ParseResult, shallowResult map[str
 }
 
 func applyBinaryQueryDeep(queryInfo parser.ParseResult, shallowResult map[string][]interface{}) (map[string][]interface{}, error) {
+
 	var queryResult map[string][]interface{}
-	var err error
 
 	// if !queryInfo.ContainsPropertyLookup || queryInfo.ContainsPropertyLookup && queryInfo.ContainsOnlyNullPredicate {
 
@@ -84,11 +83,11 @@ func applyBinaryQueryDeep(queryInfo parser.ParseResult, shallowResult map[string
 	//} else {
 	utils.Debug("DEEP QUERY CONTAINING LOOKUPS")
 
-	queryResult, err = filterForCondLookupsInWhere(queryInfo.From, queryInfo.To, queryInfo.LookupsWhereRelevant, shallowResult)
+	filteredResult, err := filterForCondLookupsInWhere(queryInfo.From, queryInfo.To, queryInfo.LookupsWhereRelevant, shallowResult)
 	if err != nil {
 		return nil, fmt.Errorf("%w; error filtering query result on WHERE conditions", err)
 	}
-	queryResult, err = propertyLookupDeep(queryInfo, queryResult)
+	queryResult, err = propertyLookupDeep(queryInfo, filteredResult)
 
 	if err != nil {
 		if ok, err := handleErrorOnResult(queryResult, fmt.Errorf("error executing deep query with lookup: %v", err)); !ok {

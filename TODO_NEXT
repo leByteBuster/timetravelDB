@@ -1,3 +1,6 @@
+
+- [] handle the case when a property is not a time-series but a conditional property lookup is happening on it. In this case it needs to be 
+     forwarded and handled in neo4j and not translated into timescaledb
 - [] check data-adapter-neo4j-only 
   - think about to which setup we will load this. maybe create an extra neo4j database for that ? for that we need an extra docker container 
 - [] running the integration test via go test -v main/main_test.go or the script doesnt seem to work. 

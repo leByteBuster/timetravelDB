@@ -9,6 +9,7 @@
 
 
 ## TTQL CLI
+  - run go run main/main.go
   - TTQL query in the form of: FROM x TO y MATCH (n)-[r]->(s) RETURN n,r,s
   - help: prints some help text
   - quit/exit: quits the program

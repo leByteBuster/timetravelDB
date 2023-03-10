@@ -581,3 +581,875 @@
 2023-03-07 13:55:17.459+0000 INFO  creationDate: 2023-03-07T13:55:13.894Z
 2023-03-07 13:55:17.459+0000 INFO  Started.
 2023-03-08 18:43:30.269+0000 WARN  The client is unauthorized due to authentication failure.
+2023-03-09 13:39:06.298+0000 INFO  Starting...
+2023-03-09 13:39:06.797+0000 INFO  This instance is ServerId{b180ac91} (b180ac91-ce81-449e-ab48-31911827ab04)
+2023-03-09 13:39:07.785+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 13:39:09.452+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 13:39:10.375+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 13:39:10.380+0000 INFO  id: 12FE7EBB422571CC6CFCD532363DF2B69A40EA6AFD6B820C24C60CB0870E7D4B
+2023-03-09 13:39:10.380+0000 INFO  name: system
+2023-03-09 13:39:10.381+0000 INFO  creationDate: 2023-03-07T13:55:13.894Z
+2023-03-09 13:39:10.381+0000 INFO  Started.
+2023-03-09 13:39:15.509+0000 WARN  The client is unauthorized due to authentication failure.
+2023-03-09 13:39:15.944+0000 WARN  The client is unauthorized due to authentication failure.
+2023-03-09 13:39:16.310+0000 WARN  The client is unauthorized due to authentication failure.
+2023-03-09 13:39:16.654+0000 WARN  The client has provided incorrect authentication details too many times in a row.
+2023-03-09 20:45:36.633+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 20:45:36.656+0000 INFO  Stopping...
+2023-03-09 20:45:42.617+0000 INFO  Stopped.
+2023-03-09 20:46:12.106+0000 INFO  Starting...
+2023-03-09 20:46:13.090+0000 INFO  This instance is ServerId{2bc74467} (2bc74467-52e9-41c2-8e3d-b541328ca29e)
+2023-03-09 20:46:15.089+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 20:46:19.135+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 20:46:20.885+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 20:46:20.890+0000 INFO  id: 71EE067026725925D4F98BD3BA2B96A1012B0A365041C85C3A8819B55317D454
+2023-03-09 20:46:20.891+0000 INFO  name: system
+2023-03-09 20:46:20.892+0000 INFO  creationDate: 2023-03-09T20:46:16.55Z
+2023-03-09 20:46:20.892+0000 INFO  Started.
+2023-03-09 20:47:58.103+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 20:47:58.106+0000 INFO  Stopping...
+2023-03-09 20:48:03.193+0000 INFO  Stopped.
+2023-03-09 20:48:22.851+0000 INFO  Starting...
+2023-03-09 20:48:23.641+0000 INFO  This instance is ServerId{9bec8e26} (9bec8e26-dc2d-48c2-8ff9-af79e6c2bf96)
+2023-03-09 20:48:25.521+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 20:48:29.565+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 20:48:30.867+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 20:48:30.872+0000 INFO  id: F680DBF5A2A547DAAF32811C1C19973BCB92BDBF240038A1492715A3100D9B31
+2023-03-09 20:48:30.873+0000 INFO  name: system
+2023-03-09 20:48:30.874+0000 INFO  creationDate: 2023-03-09T20:48:26.777Z
+2023-03-09 20:48:30.874+0000 INFO  Started.
+2023-03-09 20:49:08.905+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 20:49:08.906+0000 INFO  Stopping...
+2023-03-09 20:49:14.100+0000 INFO  Stopped.
+2023-03-09 20:49:35.023+0000 INFO  Starting...
+2023-03-09 20:49:35.989+0000 INFO  This instance is ServerId{7d1b9157} (7d1b9157-684b-48e4-b774-1c770875a963)
+2023-03-09 20:49:38.711+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 20:49:42.537+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 20:49:43.899+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 20:49:43.904+0000 INFO  id: 9846A3D91A7B60647531BB57F8A66AFAA7DBDFD1CBC6A4663EEBA2A4FA998F87
+2023-03-09 20:49:43.904+0000 INFO  name: system
+2023-03-09 20:49:43.905+0000 INFO  creationDate: 2023-03-09T20:49:39.912Z
+2023-03-09 20:49:43.905+0000 INFO  Started.
+2023-03-09 20:51:31.464+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 20:51:31.465+0000 INFO  Stopping...
+2023-03-09 20:51:36.880+0000 INFO  Stopped.
+2023-03-09 20:52:24.539+0000 INFO  Starting...
+2023-03-09 20:52:25.349+0000 INFO  This instance is ServerId{aebb13fa} (aebb13fa-c628-461e-8c7b-07100ab1cd6c)
+2023-03-09 20:52:26.625+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 20:52:30.492+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 20:52:31.929+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 20:52:31.934+0000 INFO  id: 8DC96053A9B150C88F16041FAB376DF8B9CDB0B4EE6A3C3E1A6781C3C7081B4B
+2023-03-09 20:52:31.934+0000 INFO  name: system
+2023-03-09 20:52:31.935+0000 INFO  creationDate: 2023-03-09T20:52:27.682Z
+2023-03-09 20:52:31.935+0000 INFO  Started.
+2023-03-09 20:54:35.878+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 20:54:35.879+0000 INFO  Stopping...
+2023-03-09 20:54:41.213+0000 INFO  Stopped.
+2023-03-09 21:30:25.379+0000 INFO  Starting...
+2023-03-09 21:30:26.399+0000 INFO  This instance is ServerId{fdd7bd2c} (fdd7bd2c-d11e-4327-9465-28ed47c76dab)
+2023-03-09 21:30:27.794+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 21:30:34.037+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 21:30:35.560+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 21:30:35.567+0000 INFO  id: 402D94A743B3EA3DAE054D494B809BC125C72D33978AF6FCB5AE2D107B8A04AE
+2023-03-09 21:30:35.567+0000 INFO  name: system
+2023-03-09 21:30:35.568+0000 INFO  creationDate: 2023-03-09T21:30:29.029Z
+2023-03-09 21:30:35.569+0000 INFO  Started.
+2023-03-09 21:43:35.773+0000 WARN  The client is unauthorized due to authentication failure.
+2023-03-09 21:43:36.157+0000 WARN  The client is unauthorized due to authentication failure.
+2023-03-09 21:54:49.904+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 21:54:49.906+0000 INFO  Stopping...
+2023-03-09 21:54:55.086+0000 INFO  Stopped.
+2023-03-09 22:15:24.050+0000 INFO  Starting...
+2023-03-09 22:15:24.845+0000 INFO  This instance is ServerId{fdd7bd2c} (fdd7bd2c-d11e-4327-9465-28ed47c76dab)
+2023-03-09 22:15:26.282+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 22:15:28.807+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 22:15:30.286+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 22:15:30.294+0000 INFO  id: 402D94A743B3EA3DAE054D494B809BC125C72D33978AF6FCB5AE2D107B8A04AE
+2023-03-09 22:15:30.295+0000 INFO  name: system
+2023-03-09 22:15:30.295+0000 INFO  creationDate: 2023-03-09T21:30:29.029Z
+2023-03-09 22:15:30.296+0000 INFO  Started.
+2023-03-09 22:31:12.675+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 22:31:12.681+0000 INFO  Stopping...
+2023-03-09 22:31:18.719+0000 INFO  Stopped.
+2023-03-09 22:31:40.281+0000 INFO  Starting...
+2023-03-09 22:31:41.139+0000 INFO  This instance is ServerId{21e7b1f5} (21e7b1f5-efd7-4e2f-a07b-41566bc4283d)
+2023-03-09 22:31:42.758+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 22:31:46.796+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 22:31:48.233+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 22:31:48.238+0000 INFO  id: 2EC9A3E9B58E32AFE410350F52E7D44FA008828B492EAD0221C533DAAAB0BCCE
+2023-03-09 22:31:48.239+0000 INFO  name: system
+2023-03-09 22:31:48.240+0000 INFO  creationDate: 2023-03-09T22:31:43.942Z
+2023-03-09 22:31:48.240+0000 INFO  Started.
+2023-03-09 22:37:08.160+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 22:37:08.161+0000 INFO  Stopping...
+2023-03-09 22:37:13.283+0000 INFO  Stopped.
+2023-03-09 22:38:43.887+0000 INFO  Starting...
+2023-03-09 22:38:44.796+0000 INFO  This instance is ServerId{9e627dd9} (9e627dd9-0cad-41f4-a330-e7ceaf0bd91f)
+2023-03-09 22:38:46.276+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 22:38:49.920+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 22:38:51.232+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 22:38:51.238+0000 INFO  id: B86D44C8413E0B61F1983F5CC8D39FE83B492A4C5285C2C6C05C07CBB2E115CF
+2023-03-09 22:38:51.239+0000 INFO  name: system
+2023-03-09 22:38:51.239+0000 INFO  creationDate: 2023-03-09T22:38:47.456Z
+2023-03-09 22:38:51.240+0000 INFO  Started.
+2023-03-09 22:43:03.755+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 22:43:03.758+0000 INFO  Stopping...
+2023-03-09 22:43:09.113+0000 INFO  Stopped.
+2023-03-09 22:43:33.172+0000 INFO  Starting...
+2023-03-09 22:43:33.993+0000 INFO  This instance is ServerId{95bdbc98} (95bdbc98-17b3-4be9-8988-1461364a503d)
+2023-03-09 22:43:35.724+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 22:43:39.228+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 22:43:40.909+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 22:43:40.916+0000 INFO  id: 4E09204A0A5532C686554A5FA1D2648AE12915EB862A9DB7C32B1EA4D2324CFB
+2023-03-09 22:43:40.917+0000 INFO  name: system
+2023-03-09 22:43:40.917+0000 INFO  creationDate: 2023-03-09T22:43:36.889Z
+2023-03-09 22:43:40.918+0000 INFO  Started.
+2023-03-09 22:44:55.767+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 22:44:55.768+0000 INFO  Stopping...
+2023-03-09 22:45:01.689+0000 INFO  Stopped.
+2023-03-09 22:46:09.120+0000 INFO  Starting...
+2023-03-09 22:46:13.105+0000 INFO  This instance is ServerId{312812b9} (312812b9-7da3-4dea-8636-267655a77ec7)
+2023-03-09 22:46:20.469+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 22:46:35.455+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 22:46:42.389+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 22:46:42.417+0000 INFO  id: 1C9CC77DBDA801DCCEBB3BF1B1B6D7613D381DD75BA8259EA86E85B804CD0CEF
+2023-03-09 22:46:42.420+0000 INFO  name: system
+2023-03-09 22:46:42.422+0000 INFO  creationDate: 2023-03-09T22:46:25.25Z
+2023-03-09 22:46:42.424+0000 INFO  Started.
+2023-03-09 22:47:54.010+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 22:47:54.011+0000 INFO  Stopping...
+2023-03-09 22:47:59.527+0000 INFO  Stopped.
+2023-03-09 22:49:00.095+0000 INFO  Starting...
+2023-03-09 22:49:03.985+0000 INFO  This instance is ServerId{34b0fdad} (34b0fdad-b421-49f7-ac63-b0c7324f6d13)
+2023-03-09 22:49:10.072+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 22:49:24.147+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 22:49:30.498+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 22:49:30.526+0000 INFO  id: 72128BBF52D93FFB59A3765C402BA555A1A7CD16E84F57B6A66005615887C2DC
+2023-03-09 22:49:30.530+0000 INFO  name: system
+2023-03-09 22:49:30.531+0000 INFO  creationDate: 2023-03-09T22:49:14.168Z
+2023-03-09 22:49:30.532+0000 INFO  Started.
+2023-03-09 22:52:19.967+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 22:52:19.968+0000 INFO  Stopping...
+2023-03-09 22:52:25.275+0000 INFO  Stopped.
+2023-03-09 22:52:57.401+0000 INFO  Starting...
+2023-03-09 22:52:58.261+0000 INFO  This instance is ServerId{577afcc5} (577afcc5-524b-4ac4-a91b-d4dbf15e001b)
+2023-03-09 22:52:59.786+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 22:53:05.123+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 22:53:06.750+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 22:53:06.757+0000 INFO  id: EA673C89286ADB8DE18CC2CB2FF6F8E78F99205CBD7E5FDE4B618FEF32F0EE03
+2023-03-09 22:53:06.758+0000 INFO  name: system
+2023-03-09 22:53:06.759+0000 INFO  creationDate: 2023-03-09T22:53:02.671Z
+2023-03-09 22:53:06.760+0000 INFO  Started.
+2023-03-09 22:55:39.442+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 22:55:39.443+0000 INFO  Stopping...
+2023-03-09 22:55:44.750+0000 INFO  Stopped.
+2023-03-09 22:57:10.915+0000 INFO  Starting...
+2023-03-09 22:57:11.871+0000 INFO  This instance is ServerId{c0ac2819} (c0ac2819-6ead-48a0-9b9f-b109dc2989f1)
+2023-03-09 22:57:13.683+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 22:57:18.179+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 22:57:19.698+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 22:57:19.706+0000 INFO  id: B1B4BE7911DBEFE5B998B98E339C8527D2513264832053CA65543A6CC453D4AB
+2023-03-09 22:57:19.707+0000 INFO  name: system
+2023-03-09 22:57:19.708+0000 INFO  creationDate: 2023-03-09T22:57:15.59Z
+2023-03-09 22:57:19.708+0000 INFO  Started.
+2023-03-09 23:00:22.939+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 23:00:22.939+0000 INFO  Stopping...
+2023-03-09 23:00:28.269+0000 INFO  Stopped.
+2023-03-09 23:00:53.469+0000 INFO  Starting...
+2023-03-09 23:00:54.364+0000 INFO  This instance is ServerId{7a3f576b} (7a3f576b-7556-42c9-bc63-95328945dfa7)
+2023-03-09 23:00:56.308+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 23:01:00.202+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 23:01:02.051+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 23:01:02.059+0000 INFO  id: 9AA1049D80D842426EA9B8F83F64ED9E9295EF97F978B00B688B31B2C8A13ED1
+2023-03-09 23:01:02.060+0000 INFO  name: system
+2023-03-09 23:01:02.061+0000 INFO  creationDate: 2023-03-09T23:00:57.907Z
+2023-03-09 23:01:02.062+0000 INFO  Started.
+2023-03-09 23:10:22.731+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 23:10:22.732+0000 INFO  Stopping...
+2023-03-09 23:10:57.279+0000 INFO  Starting...
+2023-03-09 23:10:57.961+0000 INFO  This instance is ServerId{1c88b92d} (1c88b92d-96b8-4130-991d-fdf6a6279cad)
+2023-03-09 23:10:59.267+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 23:11:02.201+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 23:11:03.515+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 23:11:03.519+0000 INFO  id: 24E6EC27859140E1C496D7B0916223D2DE4267787DE0B2052AEEC3971D17831A
+2023-03-09 23:11:03.520+0000 INFO  name: system
+2023-03-09 23:11:03.521+0000 INFO  creationDate: 2023-03-09T23:11:00.156Z
+2023-03-09 23:11:03.521+0000 INFO  Started.
+2023-03-09 23:11:32.123+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 23:11:32.124+0000 INFO  Stopping...
+2023-03-09 23:11:37.633+0000 INFO  Stopped.
+2023-03-09 23:12:10.128+0000 INFO  Starting...
+2023-03-09 23:12:10.785+0000 INFO  This instance is ServerId{b8d44bed} (b8d44bed-663a-41bb-ac79-5e3e6a29433e)
+2023-03-09 23:12:11.933+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 23:12:14.537+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 23:12:15.704+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 23:12:15.708+0000 INFO  id: 016D34D80E82D670C188A84E58A7487157791CFDA3732BD5E6D6B35D10000D89
+2023-03-09 23:12:15.709+0000 INFO  name: system
+2023-03-09 23:12:15.710+0000 INFO  creationDate: 2023-03-09T23:12:12.733Z
+2023-03-09 23:12:15.710+0000 INFO  Started.
+2023-03-09 23:54:18.223+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 23:54:18.227+0000 INFO  Stopping...
+2023-03-09 23:54:23.516+0000 INFO  Stopped.
+2023-03-09 23:54:59.732+0000 INFO  Starting...
+2023-03-09 23:55:00.643+0000 INFO  This instance is ServerId{3e40d15a} (3e40d15a-75f1-428f-a87b-e126df0f5daf)
+2023-03-09 23:55:01.979+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 23:55:04.970+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 23:55:06.174+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 23:55:06.179+0000 INFO  id: EB8DA49ECB80B19272012FC243F11318744AABE34EE81F938FEB54D202EFBF70
+2023-03-09 23:55:06.180+0000 INFO  name: system
+2023-03-09 23:55:06.180+0000 INFO  creationDate: 2023-03-09T23:55:02.978Z
+2023-03-09 23:55:06.181+0000 INFO  Started.
+2023-03-09 23:55:42.378+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-09 23:55:42.378+0000 INFO  Stopping...
+2023-03-09 23:55:47.678+0000 INFO  Stopped.
+2023-03-09 23:56:10.272+0000 INFO  Starting...
+2023-03-09 23:56:10.896+0000 INFO  This instance is ServerId{396241cd} (396241cd-1f38-4a88-8d38-30b75e365bac)
+2023-03-09 23:56:12.049+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-09 23:56:14.527+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-09 23:56:15.640+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-09 23:56:15.644+0000 INFO  id: 453AF9C6271A37EF8DD8C2A37D7815D6B17255858E97B152052EF4F63855842E
+2023-03-09 23:56:15.645+0000 INFO  name: system
+2023-03-09 23:56:15.645+0000 INFO  creationDate: 2023-03-09T23:56:12.843Z
+2023-03-09 23:56:15.646+0000 INFO  Started.
+2023-03-10 00:00:35.154+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 00:00:35.155+0000 INFO  Stopping...
+2023-03-10 00:00:40.499+0000 INFO  Stopped.
+2023-03-10 00:01:03.990+0000 INFO  Starting...
+2023-03-10 00:01:04.908+0000 INFO  This instance is ServerId{776f8650} (776f8650-3e42-4538-8ac5-4d28d6c265e9)
+2023-03-10 00:01:06.811+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 00:01:10.248+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 00:01:11.351+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 00:01:11.356+0000 INFO  id: FC40FC285DDDCCDE876E5B672E748D630DF2B24F46B926F644821B33B3DC8DF6
+2023-03-10 00:01:11.357+0000 INFO  name: system
+2023-03-10 00:01:11.358+0000 INFO  creationDate: 2023-03-10T00:01:07.654Z
+2023-03-10 00:01:11.358+0000 INFO  Started.
+2023-03-10 00:01:38.945+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 00:01:38.946+0000 INFO  Stopping...
+2023-03-10 00:01:44.232+0000 INFO  Stopped.
+2023-03-10 00:11:12.332+0000 INFO  Starting...
+2023-03-10 00:11:13.186+0000 INFO  This instance is ServerId{b83b0b3a} (b83b0b3a-4fa2-44ce-b665-ec873cf69256)
+2023-03-10 00:11:15.213+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 00:11:18.212+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 00:11:19.250+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 00:11:19.255+0000 INFO  id: EB1D72F0304F17946FE901C835C8AE985D1BA55F5DE383A38FC4616ABB82FCE2
+2023-03-10 00:11:19.256+0000 INFO  name: system
+2023-03-10 00:11:19.256+0000 INFO  creationDate: 2023-03-10T00:11:16.066Z
+2023-03-10 00:11:19.257+0000 INFO  Started.
+2023-03-10 00:18:53.236+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 00:18:53.237+0000 INFO  Stopping...
+2023-03-10 00:18:58.559+0000 INFO  Stopped.
+2023-03-10 00:19:29.204+0000 INFO  Starting...
+2023-03-10 00:19:30.178+0000 INFO  This instance is ServerId{0641fdf3} (0641fdf3-4c9c-4728-84a1-928b52631983)
+2023-03-10 00:19:31.599+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 00:19:34.701+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 00:19:36.066+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 00:19:36.071+0000 INFO  id: 270E3AA9FFFF4FE8ABD478BBEECF86E74D38382E98F07508FB7371FE8866ED92
+2023-03-10 00:19:36.071+0000 INFO  name: system
+2023-03-10 00:19:36.072+0000 INFO  creationDate: 2023-03-10T00:19:32.601Z
+2023-03-10 00:19:36.072+0000 INFO  Started.
+2023-03-10 00:23:16.643+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 00:23:16.643+0000 INFO  Stopping...
+2023-03-10 00:23:21.904+0000 INFO  Stopped.
+2023-03-10 00:32:31.172+0000 INFO  Starting...
+2023-03-10 00:32:31.876+0000 INFO  This instance is ServerId{72f87087} (72f87087-b6cd-4e19-a8fd-353c71a85783)
+2023-03-10 00:32:33.181+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 00:32:36.127+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 00:32:37.177+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 00:32:37.181+0000 INFO  id: 6BDAB9FECF02F669BDB190D2DD92A5597918D91843391B37120DF0FE9BC766DE
+2023-03-10 00:32:37.182+0000 INFO  name: system
+2023-03-10 00:32:37.182+0000 INFO  creationDate: 2023-03-10T00:32:34.102Z
+2023-03-10 00:32:37.183+0000 INFO  Started.
+2023-03-10 00:35:07.937+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 00:35:07.938+0000 INFO  Stopping...
+2023-03-10 00:35:13.259+0000 INFO  Stopped.
+2023-03-10 00:35:40.393+0000 INFO  Starting...
+2023-03-10 00:35:41.086+0000 INFO  This instance is ServerId{e4e85eaa} (e4e85eaa-5520-416e-b108-ab2cd06f2f74)
+2023-03-10 00:35:42.778+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 00:35:45.265+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 00:35:46.388+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 00:35:46.392+0000 INFO  id: C02F2A9C9AFEE2565F1FCB0B8EC911870DA857494D753417A0F18BAD613DBE07
+2023-03-10 00:35:46.393+0000 INFO  name: system
+2023-03-10 00:35:46.393+0000 INFO  creationDate: 2023-03-10T00:35:43.545Z
+2023-03-10 00:35:46.393+0000 INFO  Started.
+2023-03-10 00:37:17.678+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 00:37:17.679+0000 INFO  Stopping...
+2023-03-10 00:37:23.063+0000 INFO  Stopped.
+2023-03-10 00:37:51.733+0000 INFO  Starting...
+2023-03-10 00:37:52.917+0000 INFO  This instance is ServerId{30c9499b} (30c9499b-3386-428d-b766-f54dcfc9746e)
+2023-03-10 00:37:54.572+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 00:37:57.355+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 00:37:58.409+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 00:37:58.413+0000 INFO  id: B9FC6B2DBEBDC6049CAB1CC35C68B83834C39650949DAE708C1A7CE4D7B62F9C
+2023-03-10 00:37:58.414+0000 INFO  name: system
+2023-03-10 00:37:58.414+0000 INFO  creationDate: 2023-03-10T00:37:55.563Z
+2023-03-10 00:37:58.415+0000 INFO  Started.
+2023-03-10 00:47:48.872+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 00:47:48.874+0000 INFO  Stopping...
+2023-03-10 00:47:54.227+0000 INFO  Stopped.
+2023-03-10 09:07:28.596+0000 INFO  Starting...
+2023-03-10 09:07:29.544+0000 INFO  This instance is ServerId{d7ac76e1} (d7ac76e1-700d-468c-b2c8-43d88295c8c5)
+2023-03-10 09:07:31.391+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 09:07:36.036+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 09:07:38.010+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 09:07:38.016+0000 INFO  id: 9E4B6027D379C2C47832EA0B8FD4D9F8CBCC43627788C992ED417FACF8596669
+2023-03-10 09:07:38.017+0000 INFO  name: system
+2023-03-10 09:07:38.017+0000 INFO  creationDate: 2023-03-10T09:07:32.868Z
+2023-03-10 09:07:38.018+0000 INFO  Started.
+2023-03-10 09:12:12.995+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 09:12:12.996+0000 INFO  Stopping...
+2023-03-10 09:12:18.306+0000 INFO  Stopped.
+2023-03-10 09:13:04.166+0000 INFO  Starting...
+2023-03-10 09:13:05.634+0000 INFO  This instance is ServerId{5c219d90} (5c219d90-a153-4240-9bcf-dbd429810038)
+2023-03-10 09:13:08.645+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 09:13:12.372+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 09:13:15.104+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 09:13:15.116+0000 INFO  id: C27C3D146F5F79C04C5BD1641CC20517B7DDC077F6C6A835A738A42437BB9FFF
+2023-03-10 09:13:15.117+0000 INFO  name: system
+2023-03-10 09:13:15.117+0000 INFO  creationDate: 2023-03-10T09:13:09.974Z
+2023-03-10 09:13:15.118+0000 INFO  Started.
+2023-03-10 09:17:11.141+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 09:17:11.145+0000 INFO  Stopping...
+2023-03-10 09:17:17.033+0000 INFO  Stopped.
+2023-03-10 09:17:49.546+0000 INFO  Starting...
+2023-03-10 09:17:51.049+0000 INFO  This instance is ServerId{a483592f} (a483592f-fd82-4614-baaa-d3dafbc65cc4)
+2023-03-10 09:17:53.857+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 09:18:01.604+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 09:18:03.820+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 09:18:03.827+0000 INFO  id: E4DE136BFBF7F5F30A785D8C700EE8996BF94CBFA84196E039E4100A5A8A0183
+2023-03-10 09:18:03.828+0000 INFO  name: system
+2023-03-10 09:18:03.829+0000 INFO  creationDate: 2023-03-10T09:17:55.033Z
+2023-03-10 09:18:03.830+0000 INFO  Started.
+2023-03-10 09:20:27.517+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 09:20:27.519+0000 INFO  Stopping...
+2023-03-10 09:20:32.782+0000 INFO  Stopped.
+2023-03-10 09:20:48.211+0000 INFO  Starting...
+2023-03-10 09:20:49.158+0000 INFO  This instance is ServerId{46dd8fbb} (46dd8fbb-0f93-4f9c-ab05-b447ad11a3ca)
+2023-03-10 09:20:51.801+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 09:20:57.079+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 09:20:58.845+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 09:20:58.850+0000 INFO  id: A181A50BCE9B7592931DF8AE0558ED8EE5C00DB00E8396A9B3E21BF8B9C521D8
+2023-03-10 09:20:58.851+0000 INFO  name: system
+2023-03-10 09:20:58.852+0000 INFO  creationDate: 2023-03-10T09:20:53.105Z
+2023-03-10 09:20:58.852+0000 INFO  Started.
+2023-03-10 09:41:37.328+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 09:41:37.335+0000 INFO  Stopping...
+2023-03-10 09:41:43.238+0000 INFO  Stopped.
+2023-03-10 09:42:34.200+0000 INFO  Starting...
+2023-03-10 09:42:37.574+0000 INFO  This instance is ServerId{9246f2a3} (9246f2a3-6f2a-420c-9326-f273d749d494)
+2023-03-10 09:42:42.767+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 09:42:51.065+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 09:42:54.479+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 09:42:54.502+0000 INFO  id: 8F1E5ACE81AB4F8084C13FD3653329D131023986486C1A21ADAF5629A28E2F19
+2023-03-10 09:42:54.505+0000 INFO  name: system
+2023-03-10 09:42:54.507+0000 INFO  creationDate: 2023-03-10T09:42:45.428Z
+2023-03-10 09:42:54.509+0000 INFO  Started.
+2023-03-10 09:49:44.039+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 09:49:44.049+0000 INFO  Stopping...
+2023-03-10 09:49:49.270+0000 INFO  Stopped.
+2023-03-10 09:51:11.299+0000 INFO  Starting...
+2023-03-10 09:51:15.290+0000 INFO  This instance is ServerId{f007448c} (f007448c-9167-4819-8db5-c98d17f14cfd)
+2023-03-10 09:51:22.819+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 09:51:36.132+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 09:51:43.215+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 09:51:43.285+0000 INFO  id: 5DADEC0F26FE6F7E7274666B9959E5F2505DB9B1D82A9D0D23586211477887A9
+2023-03-10 09:51:43.300+0000 INFO  name: system
+2023-03-10 09:51:43.304+0000 INFO  creationDate: 2023-03-10T09:51:26.354Z
+2023-03-10 09:51:43.313+0000 INFO  Started.
+2023-03-10 10:02:29.887+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 10:02:29.892+0000 INFO  Stopping...
+2023-03-10 10:02:35.351+0000 INFO  Stopped.
+2023-03-10 10:14:45.336+0000 INFO  Starting...
+2023-03-10 10:14:47.032+0000 INFO  This instance is ServerId{e1764012} (e1764012-c4f4-49d0-8ab6-f03de59aaabc)
+2023-03-10 10:14:50.938+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 10:15:00.246+0000 ERROR Failed to start Neo4j on 0.0.0.0:7474.
+java.lang.RuntimeException: Error starting Neo4j database server at /var/lib/neo4j/data/databases
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:255) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.build(DatabaseManagementServiceFactory.java:193) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.CommunityBootstrapper.createNeo(CommunityBootstrapper.java:36) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:164) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:85) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.CommunityEntryPoint.main(CommunityEntryPoint.java:30) ~[neo4j-5.2.0.jar:5.2.0]
+Caused by: org.neo4j.kernel.lifecycle.LifecycleException: Component 'org.neo4j.dbms.database.DefaultSystemGraphInitializer@52a33c3f' was successfully initialized, but failed to start. Please see the attached cause exception "/var/lib/neo4j/data/databases/system/database_lock".
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:370) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+	Suppressed: org.neo4j.kernel.lifecycle.LifecycleException: Component 'org.neo4j.dbms.database.DatabaseLifecycles$AllDatabaseStopper@adafe19' failed to stop. Please see the attached cause exception "System database is not (yet) available".
+		at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.stop(LifeSupport.java:384) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport.stopInstances(LifeSupport.java:212) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport.stop(LifeSupport.java:120) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:97) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.build(DatabaseManagementServiceFactory.java:193) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.CommunityBootstrapper.createNeo(CommunityBootstrapper.java:36) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:164) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:85) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.CommunityEntryPoint.main(CommunityEntryPoint.java:30) ~[neo4j-5.2.0.jar:5.2.0]
+	Caused by: org.neo4j.graphdb.DatabaseShutdownException: This database is shutdown.
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.execute(SystemGraphDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.getByName(SystemGraphDatabaseIdRepository.java:40) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.lambda$getByName$0(MapCachingDatabaseIdRepository.java:53) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1708) ~[?:?]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.getByName(MapCachingDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseRepository.getDatabaseContext(DatabaseRepository.java:54) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles.defaultContext(DatabaseLifecycles.java:75) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles$AllDatabaseStopper.stop(DatabaseLifecycles.java:149) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.stop(LifeSupport.java:380) ~[neo4j-common-5.2.0.jar:5.2.0]
+		... 9 more
+	Caused by: org.neo4j.dbms.api.DatabaseManagementException: System database is not (yet) available
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.execute(SystemGraphDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.getByName(SystemGraphDatabaseIdRepository.java:40) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.lambda$getByName$0(MapCachingDatabaseIdRepository.java:53) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1708) ~[?:?]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.getByName(MapCachingDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseRepository.getDatabaseContext(DatabaseRepository.java:54) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles.defaultContext(DatabaseLifecycles.java:75) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles$AllDatabaseStopper.stop(DatabaseLifecycles.java:149) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.stop(LifeSupport.java:380) ~[neo4j-common-5.2.0.jar:5.2.0]
+		... 9 more
+Caused by: org.neo4j.graphdb.DatabaseShutdownException: This database is shutdown.
+	at org.neo4j.kernel.availability.DatabaseAvailabilityGuard.assertDatabaseAvailable(DatabaseAvailabilityGuard.java:154) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseFacade.beginKernelTransaction(GraphDatabaseFacade.java:148) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseFacade.beginTransactionInternal(GraphDatabaseFacade.java:117) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseFacade.beginTransaction(GraphDatabaseFacade.java:92) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTransaction(GraphDatabaseTransactions.java:113) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTransaction(GraphDatabaseTransactions.java:107) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTransaction(GraphDatabaseTransactions.java:102) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTx(GraphDatabaseTransactions.java:93) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.SystemGraphComponents.initializeSystemGraph(SystemGraphComponents.java:97) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DefaultSystemGraphInitializer.initializeSystemGraph(DefaultSystemGraphInitializer.java:38) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.SystemGraphInitializer.start(SystemGraphInitializer.java:27) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+Caused by: org.neo4j.kernel.lifecycle.LifecycleException: Component 'org.neo4j.kernel.internal.locker.LockerLifecycleAdapter@4a6a6a69' was successfully initialized, but failed to start. Please see the attached cause exception "/var/lib/neo4j/data/databases/system/database_lock".
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:370) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.AbstractDatabase.start(AbstractDatabase.java:158) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles.startDatabase(DatabaseLifecycles.java:119) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles$SystemDatabaseStarter.start(DatabaseLifecycles.java:142) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+Caused by: org.neo4j.io.locker.FileLockException: Unable to obtain lock on file: /var/lib/neo4j/data/databases/system/database_lock: Owner of the lock file 'root' and user running this process 'neo4j' differs, which means this could be a file permission problem. Ensure that the lock file has the same owner, or at least has write access for the user running the Neo4j process trying to lock it. Please ensure no other process is using this database, and that the directory is writable (required even for read-only access)
+	at org.neo4j.io.locker.Locker.storeLockException(Locker.java:151) ~[neo4j-io-5.2.0.jar:5.2.0]
+	at org.neo4j.io.locker.Locker.unableToObtainLockException(Locker.java:145) ~[neo4j-io-5.2.0.jar:5.2.0]
+	at org.neo4j.io.locker.Locker.checkLock(Locker.java:92) ~[neo4j-io-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.internal.locker.GlobalFileLocker.checkLock(GlobalFileLocker.java:55) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.internal.locker.DatabaseLocker.checkLock(DatabaseLocker.java:28) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.internal.locker.LockerLifecycleAdapter.start(LockerLifecycleAdapter.java:34) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.AbstractDatabase.start(AbstractDatabase.java:158) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles.startDatabase(DatabaseLifecycles.java:119) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles$SystemDatabaseStarter.start(DatabaseLifecycles.java:142) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+Caused by: java.nio.file.AccessDeniedException: /var/lib/neo4j/data/databases/system/database_lock
+	at sun.nio.fs.UnixException.translateToIOException(UnixException.java:90) ~[?:?]
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:106) ~[?:?]
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111) ~[?:?]
+	at sun.nio.fs.UnixFileSystemProvider.newFileChannel(UnixFileSystemProvider.java:181) ~[?:?]
+	at java.nio.channels.FileChannel.open(FileChannel.java:298) ~[?:?]
+	at org.neo4j.io.fs.DefaultFileSystemAbstraction.open(DefaultFileSystemAbstraction.java:70) ~[neo4j-io-5.2.0.jar:5.2.0]
+	at org.neo4j.io.fs.DefaultFileSystemAbstraction.write(DefaultFileSystemAbstraction.java:86) ~[neo4j-io-5.2.0.jar:5.2.0]
+	at org.neo4j.io.fs.DefaultFileSystemAbstraction.write(DefaultFileSystemAbstraction.java:56) ~[neo4j-io-5.2.0.jar:5.2.0]
+	at org.neo4j.io.locker.Locker.checkLock(Locker.java:77) ~[neo4j-io-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.internal.locker.GlobalFileLocker.checkLock(GlobalFileLocker.java:55) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.internal.locker.DatabaseLocker.checkLock(DatabaseLocker.java:28) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.internal.locker.LockerLifecycleAdapter.start(LockerLifecycleAdapter.java:34) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.AbstractDatabase.start(AbstractDatabase.java:158) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles.startDatabase(DatabaseLifecycles.java:119) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles$SystemDatabaseStarter.start(DatabaseLifecycles.java:142) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+2023-03-10 10:15:00.252+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 10:15:00.254+0000 INFO  Stopped.
+2023-03-10 10:15:22.566+0000 INFO  Starting...
+2023-03-10 10:15:23.856+0000 INFO  This instance is ServerId{e1764012} (e1764012-c4f4-49d0-8ab6-f03de59aaabc)
+2023-03-10 10:15:28.645+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 10:15:37.151+0000 ERROR Failed to start Neo4j on 0.0.0.0:7474.
+java.lang.RuntimeException: Error starting Neo4j database server at /data/databases
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:255) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.build(DatabaseManagementServiceFactory.java:193) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.CommunityBootstrapper.createNeo(CommunityBootstrapper.java:36) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:164) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:85) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.CommunityEntryPoint.main(CommunityEntryPoint.java:30) ~[neo4j-5.2.0.jar:5.2.0]
+Caused by: org.neo4j.kernel.lifecycle.LifecycleException: Component 'org.neo4j.dbms.database.DefaultSystemGraphInitializer@b5de58f' was successfully initialized, but failed to start. Please see the attached cause exception "Transaction logs are missing and recovery is not possible.".
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:370) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+	Suppressed: org.neo4j.kernel.lifecycle.LifecycleException: Component 'org.neo4j.dbms.database.DatabaseLifecycles$AllDatabaseStopper@3dea226b' failed to stop. Please see the attached cause exception "System database is not (yet) available".
+		at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.stop(LifeSupport.java:384) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport.stopInstances(LifeSupport.java:212) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport.stop(LifeSupport.java:120) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:97) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.build(DatabaseManagementServiceFactory.java:193) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.CommunityBootstrapper.createNeo(CommunityBootstrapper.java:36) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:164) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:85) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.CommunityEntryPoint.main(CommunityEntryPoint.java:30) ~[neo4j-5.2.0.jar:5.2.0]
+	Caused by: org.neo4j.graphdb.DatabaseShutdownException: This database is shutdown.
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.execute(SystemGraphDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.getByName(SystemGraphDatabaseIdRepository.java:40) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.lambda$getByName$0(MapCachingDatabaseIdRepository.java:53) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1708) ~[?:?]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.getByName(MapCachingDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseRepository.getDatabaseContext(DatabaseRepository.java:54) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles.defaultContext(DatabaseLifecycles.java:75) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles$AllDatabaseStopper.stop(DatabaseLifecycles.java:149) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.stop(LifeSupport.java:380) ~[neo4j-common-5.2.0.jar:5.2.0]
+		... 9 more
+	Caused by: org.neo4j.dbms.api.DatabaseManagementException: System database is not (yet) available
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.execute(SystemGraphDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.getByName(SystemGraphDatabaseIdRepository.java:40) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.lambda$getByName$0(MapCachingDatabaseIdRepository.java:53) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1708) ~[?:?]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.getByName(MapCachingDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseRepository.getDatabaseContext(DatabaseRepository.java:54) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles.defaultContext(DatabaseLifecycles.java:75) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles$AllDatabaseStopper.stop(DatabaseLifecycles.java:149) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.stop(LifeSupport.java:380) ~[neo4j-common-5.2.0.jar:5.2.0]
+		... 9 more
+Caused by: org.neo4j.graphdb.DatabaseShutdownException: This database is shutdown.
+	at org.neo4j.kernel.availability.DatabaseAvailabilityGuard.assertDatabaseAvailable(DatabaseAvailabilityGuard.java:154) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseFacade.beginKernelTransaction(GraphDatabaseFacade.java:148) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseFacade.beginTransactionInternal(GraphDatabaseFacade.java:117) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseFacade.beginTransaction(GraphDatabaseFacade.java:92) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTransaction(GraphDatabaseTransactions.java:113) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTransaction(GraphDatabaseTransactions.java:107) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTransaction(GraphDatabaseTransactions.java:102) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTx(GraphDatabaseTransactions.java:93) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.SystemGraphComponents.initializeSystemGraph(SystemGraphComponents.java:97) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DefaultSystemGraphInitializer.initializeSystemGraph(DefaultSystemGraphInitializer.java:38) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.SystemGraphInitializer.start(SystemGraphInitializer.java:27) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+Caused by: org.neo4j.kernel.lifecycle.LifecycleException: Component 'org.neo4j.kernel.recovery.Recovery$MissingTransactionLogsCheck@52d7ab79' failed to initialize. Please see the attached cause exception "Transaction logs are missing and recovery is not possible.".
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.init(LifeSupport.java:340) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.init(LifeSupport.java:57) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:86) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery.performRecovery(Recovery.java:628) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery.performRecovery(Recovery.java:366) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.Database.specificStart(Database.java:392) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.AbstractDatabase.start(AbstractDatabase.java:156) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles.startDatabase(DatabaseLifecycles.java:119) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles$SystemDatabaseStarter.start(DatabaseLifecycles.java:142) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+Caused by: java.lang.RuntimeException: Transaction logs are missing and recovery is not possible.
+	at org.neo4j.kernel.recovery.Recovery$MissingTransactionLogsCheck.checkForMissingLogFiles(Recovery.java:864) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery$MissingTransactionLogsCheck.init(Recovery.java:850) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.init(LifeSupport.java:323) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.init(LifeSupport.java:57) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:86) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery.performRecovery(Recovery.java:628) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery.performRecovery(Recovery.java:366) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.Database.specificStart(Database.java:392) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.AbstractDatabase.start(AbstractDatabase.java:156) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles.startDatabase(DatabaseLifecycles.java:119) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles$SystemDatabaseStarter.start(DatabaseLifecycles.java:142) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+2023-03-10 10:15:37.162+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 10:15:37.165+0000 INFO  Stopped.
+2023-03-10 10:16:39.311+0000 INFO  Starting...
+2023-03-10 10:16:40.566+0000 INFO  This instance is ServerId{e1764012} (e1764012-c4f4-49d0-8ab6-f03de59aaabc)
+2023-03-10 10:16:43.782+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 10:16:51.793+0000 ERROR Failed to start Neo4j on 0.0.0.0:7474.
+java.lang.RuntimeException: Error starting Neo4j database server at /data/databases
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:255) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.build(DatabaseManagementServiceFactory.java:193) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.CommunityBootstrapper.createNeo(CommunityBootstrapper.java:36) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:164) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:85) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.CommunityEntryPoint.main(CommunityEntryPoint.java:30) ~[neo4j-5.2.0.jar:5.2.0]
+Caused by: org.neo4j.kernel.lifecycle.LifecycleException: Component 'org.neo4j.dbms.database.DefaultSystemGraphInitializer@b5de58f' was successfully initialized, but failed to start. Please see the attached cause exception "Transaction logs are missing and recovery is not possible.".
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:370) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+	Suppressed: org.neo4j.kernel.lifecycle.LifecycleException: Component 'org.neo4j.dbms.database.DatabaseLifecycles$AllDatabaseStopper@3dea226b' failed to stop. Please see the attached cause exception "System database is not (yet) available".
+		at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.stop(LifeSupport.java:384) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport.stopInstances(LifeSupport.java:212) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport.stop(LifeSupport.java:120) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:97) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.build(DatabaseManagementServiceFactory.java:193) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.CommunityBootstrapper.createNeo(CommunityBootstrapper.java:36) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:164) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:85) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.CommunityEntryPoint.main(CommunityEntryPoint.java:30) ~[neo4j-5.2.0.jar:5.2.0]
+	Caused by: org.neo4j.graphdb.DatabaseShutdownException: This database is shutdown.
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.execute(SystemGraphDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.getByName(SystemGraphDatabaseIdRepository.java:40) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.lambda$getByName$0(MapCachingDatabaseIdRepository.java:53) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1708) ~[?:?]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.getByName(MapCachingDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseRepository.getDatabaseContext(DatabaseRepository.java:54) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles.defaultContext(DatabaseLifecycles.java:75) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles$AllDatabaseStopper.stop(DatabaseLifecycles.java:149) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.stop(LifeSupport.java:380) ~[neo4j-common-5.2.0.jar:5.2.0]
+		... 9 more
+	Caused by: org.neo4j.dbms.api.DatabaseManagementException: System database is not (yet) available
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.execute(SystemGraphDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.getByName(SystemGraphDatabaseIdRepository.java:40) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.lambda$getByName$0(MapCachingDatabaseIdRepository.java:53) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1708) ~[?:?]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.getByName(MapCachingDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseRepository.getDatabaseContext(DatabaseRepository.java:54) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles.defaultContext(DatabaseLifecycles.java:75) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles$AllDatabaseStopper.stop(DatabaseLifecycles.java:149) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.stop(LifeSupport.java:380) ~[neo4j-common-5.2.0.jar:5.2.0]
+		... 9 more
+Caused by: org.neo4j.graphdb.DatabaseShutdownException: This database is shutdown.
+	at org.neo4j.kernel.availability.DatabaseAvailabilityGuard.assertDatabaseAvailable(DatabaseAvailabilityGuard.java:154) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseFacade.beginKernelTransaction(GraphDatabaseFacade.java:148) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseFacade.beginTransactionInternal(GraphDatabaseFacade.java:117) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseFacade.beginTransaction(GraphDatabaseFacade.java:92) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTransaction(GraphDatabaseTransactions.java:113) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTransaction(GraphDatabaseTransactions.java:107) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTransaction(GraphDatabaseTransactions.java:102) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTx(GraphDatabaseTransactions.java:93) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.SystemGraphComponents.initializeSystemGraph(SystemGraphComponents.java:97) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DefaultSystemGraphInitializer.initializeSystemGraph(DefaultSystemGraphInitializer.java:38) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.SystemGraphInitializer.start(SystemGraphInitializer.java:27) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+Caused by: org.neo4j.kernel.lifecycle.LifecycleException: Component 'org.neo4j.kernel.recovery.Recovery$MissingTransactionLogsCheck@52d7ab79' failed to initialize. Please see the attached cause exception "Transaction logs are missing and recovery is not possible.".
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.init(LifeSupport.java:340) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.init(LifeSupport.java:57) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:86) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery.performRecovery(Recovery.java:628) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery.performRecovery(Recovery.java:366) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.Database.specificStart(Database.java:392) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.AbstractDatabase.start(AbstractDatabase.java:156) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles.startDatabase(DatabaseLifecycles.java:119) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles$SystemDatabaseStarter.start(DatabaseLifecycles.java:142) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+Caused by: java.lang.RuntimeException: Transaction logs are missing and recovery is not possible.
+	at org.neo4j.kernel.recovery.Recovery$MissingTransactionLogsCheck.checkForMissingLogFiles(Recovery.java:864) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery$MissingTransactionLogsCheck.init(Recovery.java:850) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.init(LifeSupport.java:323) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.init(LifeSupport.java:57) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:86) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery.performRecovery(Recovery.java:628) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery.performRecovery(Recovery.java:366) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.Database.specificStart(Database.java:392) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.AbstractDatabase.start(AbstractDatabase.java:156) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles.startDatabase(DatabaseLifecycles.java:119) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles$SystemDatabaseStarter.start(DatabaseLifecycles.java:142) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+2023-03-10 10:16:51.799+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 10:16:51.800+0000 INFO  Stopped.
+2023-03-10 10:30:57.397+0000 INFO  Starting...
+2023-03-10 10:30:59.989+0000 INFO  This instance is ServerId{e1764012} (e1764012-c4f4-49d0-8ab6-f03de59aaabc)
+2023-03-10 10:31:02.644+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 10:31:10.987+0000 ERROR Failed to start Neo4j on 0.0.0.0:7474.
+java.lang.RuntimeException: Error starting Neo4j database server at /data/databases
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:255) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.build(DatabaseManagementServiceFactory.java:193) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.CommunityBootstrapper.createNeo(CommunityBootstrapper.java:36) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:164) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:85) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.server.CommunityEntryPoint.main(CommunityEntryPoint.java:30) ~[neo4j-5.2.0.jar:5.2.0]
+Caused by: org.neo4j.kernel.lifecycle.LifecycleException: Component 'org.neo4j.dbms.database.DefaultSystemGraphInitializer@b5de58f' was successfully initialized, but failed to start. Please see the attached cause exception "Transaction logs are missing and recovery is not possible.".
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:370) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+	Suppressed: org.neo4j.kernel.lifecycle.LifecycleException: Component 'org.neo4j.dbms.database.DatabaseLifecycles$AllDatabaseStopper@3dea226b' failed to stop. Please see the attached cause exception "System database is not (yet) available".
+		at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.stop(LifeSupport.java:384) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport.stopInstances(LifeSupport.java:212) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport.stop(LifeSupport.java:120) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:97) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.build(DatabaseManagementServiceFactory.java:193) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.CommunityBootstrapper.createNeo(CommunityBootstrapper.java:36) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:164) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.NeoBootstrapper.start(NeoBootstrapper.java:85) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.server.CommunityEntryPoint.main(CommunityEntryPoint.java:30) ~[neo4j-5.2.0.jar:5.2.0]
+	Caused by: org.neo4j.graphdb.DatabaseShutdownException: This database is shutdown.
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.execute(SystemGraphDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.getByName(SystemGraphDatabaseIdRepository.java:40) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.lambda$getByName$0(MapCachingDatabaseIdRepository.java:53) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1708) ~[?:?]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.getByName(MapCachingDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseRepository.getDatabaseContext(DatabaseRepository.java:54) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles.defaultContext(DatabaseLifecycles.java:75) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles$AllDatabaseStopper.stop(DatabaseLifecycles.java:149) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.stop(LifeSupport.java:380) ~[neo4j-common-5.2.0.jar:5.2.0]
+		... 9 more
+	Caused by: org.neo4j.dbms.api.DatabaseManagementException: System database is not (yet) available
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.execute(SystemGraphDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.SystemGraphDatabaseIdRepository.getByName(SystemGraphDatabaseIdRepository.java:40) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.lambda$getByName$0(MapCachingDatabaseIdRepository.java:53) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1708) ~[?:?]
+		at org.neo4j.kernel.database.MapCachingDatabaseIdRepository.getByName(MapCachingDatabaseIdRepository.java:52) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.database.DatabaseIdRepository.getByName(DatabaseIdRepository.java:55) ~[neo4j-common-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseRepository.getDatabaseContext(DatabaseRepository.java:54) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles.defaultContext(DatabaseLifecycles.java:75) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.dbms.database.DatabaseLifecycles$AllDatabaseStopper.stop(DatabaseLifecycles.java:149) ~[neo4j-5.2.0.jar:5.2.0]
+		at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.stop(LifeSupport.java:380) ~[neo4j-common-5.2.0.jar:5.2.0]
+		... 9 more
+Caused by: org.neo4j.graphdb.DatabaseShutdownException: This database is shutdown.
+	at org.neo4j.kernel.availability.DatabaseAvailabilityGuard.assertDatabaseAvailable(DatabaseAvailabilityGuard.java:154) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseFacade.beginKernelTransaction(GraphDatabaseFacade.java:148) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseFacade.beginTransactionInternal(GraphDatabaseFacade.java:117) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseFacade.beginTransaction(GraphDatabaseFacade.java:92) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTransaction(GraphDatabaseTransactions.java:113) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTransaction(GraphDatabaseTransactions.java:107) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTransaction(GraphDatabaseTransactions.java:102) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.impl.factory.GraphDatabaseTransactions.beginTx(GraphDatabaseTransactions.java:93) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.SystemGraphComponents.initializeSystemGraph(SystemGraphComponents.java:97) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DefaultSystemGraphInitializer.initializeSystemGraph(DefaultSystemGraphInitializer.java:38) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.SystemGraphInitializer.start(SystemGraphInitializer.java:27) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+Caused by: org.neo4j.kernel.lifecycle.LifecycleException: Component 'org.neo4j.kernel.recovery.Recovery$MissingTransactionLogsCheck@52d7ab79' failed to initialize. Please see the attached cause exception "Transaction logs are missing and recovery is not possible.".
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.init(LifeSupport.java:340) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.init(LifeSupport.java:57) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:86) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery.performRecovery(Recovery.java:628) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery.performRecovery(Recovery.java:366) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.Database.specificStart(Database.java:392) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.AbstractDatabase.start(AbstractDatabase.java:156) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles.startDatabase(DatabaseLifecycles.java:119) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles$SystemDatabaseStarter.start(DatabaseLifecycles.java:142) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+Caused by: java.lang.RuntimeException: Transaction logs are missing and recovery is not possible.
+	at org.neo4j.kernel.recovery.Recovery$MissingTransactionLogsCheck.checkForMissingLogFiles(Recovery.java:864) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery$MissingTransactionLogsCheck.init(Recovery.java:850) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.init(LifeSupport.java:323) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.init(LifeSupport.java:57) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:86) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery.performRecovery(Recovery.java:628) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.recovery.Recovery.performRecovery(Recovery.java:366) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.Database.specificStart(Database.java:392) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.database.AbstractDatabase.start(AbstractDatabase.java:156) ~[neo4j-kernel-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles.startDatabase(DatabaseLifecycles.java:119) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.dbms.database.DatabaseLifecycles$SystemDatabaseStarter.start(DatabaseLifecycles.java:142) ~[neo4j-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport$LifecycleInstance.start(LifeSupport.java:353) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.kernel.lifecycle.LifeSupport.start(LifeSupport.java:92) ~[neo4j-common-5.2.0.jar:5.2.0]
+	at org.neo4j.graphdb.facade.DatabaseManagementServiceFactory.startDatabaseServer(DatabaseManagementServiceFactory.java:246) ~[neo4j-5.2.0.jar:5.2.0]
+	... 5 more
+2023-03-10 10:31:10.995+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 10:31:10.997+0000 INFO  Stopped.
+2023-03-10 10:31:59.542+0000 INFO  Starting...
+2023-03-10 10:32:00.477+0000 INFO  This instance is ServerId{0d8e24d9} (0d8e24d9-2a01-473a-b5e3-737bab78cc20)
+2023-03-10 10:32:03.784+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 10:32:09.755+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 10:32:12.215+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 10:32:12.233+0000 INFO  id: E747049A08F66262CF028975D6B747AA0DBCB38DD13553C860246AFE5F14B26C
+2023-03-10 10:32:12.235+0000 INFO  name: system
+2023-03-10 10:32:12.235+0000 INFO  creationDate: 2023-03-10T10:32:05.328Z
+2023-03-10 10:32:12.239+0000 INFO  Started.
+2023-03-10 10:34:24.061+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 10:34:24.072+0000 INFO  Stopping...
+2023-03-10 10:34:29.715+0000 INFO  Stopped.
+2023-03-10 10:35:47.950+0000 INFO  Starting...
+2023-03-10 10:35:49.876+0000 INFO  This instance is ServerId{89b25d6f} (89b25d6f-2bc3-4145-9f5f-03090b4f8850)
+2023-03-10 10:35:52.405+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 10:35:58.464+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 10:36:01.436+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 10:36:01.455+0000 INFO  id: A7A57E6B1FCB9F47972549999403777755E8855D3DA0403E520EFBBEF8F70680
+2023-03-10 10:36:01.458+0000 INFO  name: system
+2023-03-10 10:36:01.460+0000 INFO  creationDate: 2023-03-10T10:35:53.779Z
+2023-03-10 10:36:01.461+0000 INFO  Started.
+2023-03-10 10:41:59.700+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 10:41:59.703+0000 INFO  Stopping...
+2023-03-10 10:42:04.834+0000 INFO  Stopped.
+2023-03-10 10:42:30.643+0000 INFO  Starting...
+2023-03-10 10:42:32.325+0000 INFO  This instance is ServerId{a0184e50} (a0184e50-b8fe-4685-9086-26eb02fa0bcf)
+2023-03-10 10:42:35.131+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 10:42:40.714+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 10:42:43.025+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 10:42:43.061+0000 INFO  id: C8CBE958A8BF9EF517A240E62A075ACD6ED6C452FFF1624B83BE09EE3B54D820
+2023-03-10 10:42:43.064+0000 INFO  name: system
+2023-03-10 10:42:43.081+0000 INFO  creationDate: 2023-03-10T10:42:36.53Z
+2023-03-10 10:42:43.083+0000 INFO  Started.
+2023-03-10 10:45:44.140+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 10:45:44.144+0000 INFO  Stopping...
+2023-03-10 10:45:49.516+0000 INFO  Stopped.
+2023-03-10 10:46:44.071+0000 INFO  Starting...
+2023-03-10 10:46:46.180+0000 INFO  This instance is ServerId{3a6113cf} (3a6113cf-7859-4fc4-aef5-9c18ec11fc5d)
+2023-03-10 10:46:50.447+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 10:46:57.095+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 10:46:58.638+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 10:46:58.646+0000 INFO  id: CC69F6D4D6155C7EB3FFEB209C9CB35D1FC4E05843BAF74ECAC6682C7A732F0F
+2023-03-10 10:46:58.647+0000 INFO  name: system
+2023-03-10 10:46:58.647+0000 INFO  creationDate: 2023-03-10T10:46:53.065Z
+2023-03-10 10:46:58.648+0000 INFO  Started.
+2023-03-10 10:50:24.566+0000 WARN  The client is unauthorized due to authentication failure.
+2023-03-10 10:50:34.167+0000 WARN  The client is unauthorized due to authentication failure.
+2023-03-10 10:53:26.105+0000 WARN  The client is unauthorized due to authentication failure.
+2023-03-10 10:53:48.690+0000 WARN  The client is unauthorized due to authentication failure.
+2023-03-10 10:54:16.724+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 10:54:16.730+0000 INFO  Stopping...
+2023-03-10 10:54:22.244+0000 INFO  Stopped.
+2023-03-10 11:12:15.358+0000 INFO  Starting...
+2023-03-10 11:12:17.202+0000 INFO  This instance is ServerId{3a6113cf} (3a6113cf-7859-4fc4-aef5-9c18ec11fc5d)
+2023-03-10 11:12:19.494+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 11:12:23.512+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 11:12:26.643+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 11:12:26.657+0000 INFO  id: CC69F6D4D6155C7EB3FFEB209C9CB35D1FC4E05843BAF74ECAC6682C7A732F0F
+2023-03-10 11:12:26.661+0000 INFO  name: system
+2023-03-10 11:12:26.667+0000 INFO  creationDate: 2023-03-10T10:46:53.065Z
+2023-03-10 11:12:26.668+0000 INFO  Started.
+2023-03-10 11:18:27.581+0000 INFO  Neo4j Server shutdown initiated by request
+2023-03-10 11:18:27.588+0000 INFO  Stopping...
+2023-03-10 11:18:33.146+0000 INFO  Stopped.
+2023-03-10 11:19:08.372+0000 INFO  Starting...
+2023-03-10 11:19:09.797+0000 INFO  This instance is ServerId{c5a691c9} (c5a691c9-ce77-4427-b846-691487f8bb1b)
+2023-03-10 11:19:13.176+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-03-10 11:19:17.312+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-03-10 11:19:19.435+0000 INFO  Remote interface available at http://localhost:7474/
+2023-03-10 11:19:19.471+0000 INFO  id: 4CCDFFC0409FF95A64FFADA95F442DB4657FFC3CF95EC4161B32D0D0E433D3B0
+2023-03-10 11:19:19.484+0000 INFO  name: system
+2023-03-10 11:19:19.487+0000 INFO  creationDate: 2023-03-10T11:19:14.375Z
+2023-03-10 11:19:19.490+0000 INFO  Started.

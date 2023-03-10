@@ -44,6 +44,8 @@ func LoadData() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	// TODO: use the config and database-api package
 	driver, err := neo4j.NewDriverWithContext("neo4j://localhost:7687", neo4j.BasicAuth("neo4j", "rhebo", ""))
 	if err != nil {
 		fmt.Println(err)

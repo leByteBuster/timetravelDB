@@ -1,3 +1,5 @@
+Future Work: Visualization
+
 GEPHI:
 
 Try to export the neo4j graph as GraphML or GEFX, manipulate the properties and import it into Gephi.
