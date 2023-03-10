@@ -208,7 +208,8 @@ func GetRelevantLookupInfoWhere(compareClause string, insights []li.PropertyClau
 	case 0:
 		return LookupInfo{}, errors.New("no insights found for comparison. should be impossible if comparison is in list")
 	case 1:
-		if !insights[0].IsAppendixOfNullPredicate && insights[0].IsWhere {
+		insight := insights[0]
+		if !insight.IsAppendixOfNullPredicate && insight.IsWhere {
 			return LookupInfo{}, errors.New("single lookups withouth appendix of null predicate (IS NULL / IS NOT NULL) only allowed in return")
 		}
 		return LookupInfo{}, nil
@@ -218,6 +219,12 @@ func GetRelevantLookupInfoWhere(compareClause string, insights []li.PropertyClau
 		insightRight := insights[1]
 		if !insightLeft.IsWhere || !insightRight.IsWhere {
 			return LookupInfo{}, errors.New("comparison not in WHERE clause")
+		}
+
+		leftPrefix := strings.HasPrefix(insightLeft.PropertyKey, "ts_") || strings.HasPrefix(insightLeft.PropertyKey, "properties_")
+		rightPrefix := strings.HasPrefix(insightRight.PropertyKey, "ts_") || strings.HasPrefix(insightRight.PropertyKey, "properties_")
+		if !(leftPrefix || rightPrefix) {
+			return LookupInfo{}, nil
 		}
 		if insightLeft.IsPartOfActualComparison {
 			compareOperator = insightLeft.CompareOperator

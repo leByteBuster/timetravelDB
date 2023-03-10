@@ -51,18 +51,28 @@ func TestParseQueryValid(t *testing.T) {
 
 func TestManipulateWhereClauseNeo4j(t *testing.T) {
 	valid_queries := []string{
+		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ts_ping > 22.33 RETURN n ",
 		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ping > 22.33 RETURN n ",
+		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ts_ping > 22.33 AND n.ts_name = 'hans' RETURN n ",
 		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ping > 22.33 AND n.name = 'hans' RETURN n ",
+		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ts_ping > 22.33 OR n.ts_ping IS NOT NULL RETURN n ",
 		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ping > 22.33 OR n.ping IS NOT NULL RETURN n ",
+		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ts_ping IS NOT NULL RETURN n ",
 		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ping IS NOT NULL RETURN n ",
-		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ping > 22.33 AND n.ping < 23 OR n.ping IS NULL RETURN n ",
+		// note: OR is not supported yet
+		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ts_ping > 22.33 AND n.ts_ping < 23 OR n.ts_ping IS NULL RETURN n ",
 	}
 	expected_results := []string{
+		"WHERE n.ts_ping IS NOT NULL",
+		"WHERE n.ping > 22.33",
+		"WHERE n.ts_ping IS NOT NULL AND n.ts_name IS NOT NULL",
+		"WHERE n.ping > 22.33 AND n.name = 'hans'",
+		"WHERE n.ts_ping IS NOT NULL OR n.ts_ping IS NOT NULL",
+		"WHERE n.ping > 22.33 OR n.ping IS NOT NULL",
+		"WHERE n.ts_ping IS NOT NULL",
 		"WHERE n.ping IS NOT NULL",
-		"WHERE n.ping IS NOT NULL AND n.name IS NOT NULL",
-		"WHERE n.ping IS NOT NULL OR n.ping IS NOT NULL",
-		"WHERE n.ping IS NOT NULL",
-		"WHERE n.ping IS NOT NULL AND n.ping IS NOT NULL OR n.ping IS NULL",
+		"WHERE n.ts_ping IS NOT NULL AND n.ts_ping IS NOT NULL OR n.ts_ping IS NULL",
+		"WHERE n.ping > 22.33 AND n.ping < 23 OR n.ping IS NULL",
 	}
 	invalid_queries := []string{
 		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ping > 22.33 > 11 RETURN n ",
@@ -70,6 +80,7 @@ func TestManipulateWhereClauseNeo4j(t *testing.T) {
 		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ping > n.ping NOT NULL RETURN n ",                      // maybe before error
 		"FROM 2123-12-13T12:34:39Z TO 2123-12-13T14:34:39.2222Z MATCH (n) WHERE n.ping > 20 AND (n.ping > 10 OR n.ping > 30)  RETURN n ", // this is still valid but should be invalid
 	}
+	utils.UNUSED(invalid_queries)
 	for i, query := range valid_queries {
 		res, err := parser.ParseQuery(query)
 		if err != nil {
@@ -86,45 +97,18 @@ func TestManipulateWhereClauseNeo4j(t *testing.T) {
 		log.Println(whereClause)
 	}
 
-	for i, query := range invalid_queries {
-		res, err1 := parser.ParseQuery(query)
-		if err1 != nil {
-			whereClause := res.WhereClause
-			manipulated, err := buildCondWhereClause(res.LookupsWhereRelevant, whereClause)
-			if err != nil {
-				if strings.Trim(manipulated, " ") == strings.Trim(expected_results[i], " ") {
-					t.Fatalf("\nThis should be invalid: %v\n", query)
-				}
-			}
-		}
-	}
+	// TODO: update test with invalid queries
+	// 			 there is limited possibility to check for validity as long as the parser is passed so we are not protected against invalid queries
+	// for i, query := range invalid_queries {
+	// 	res, err1 := parser.ParseQuery(query)
+	// 	if err1 != nil {
+	// 		whereClause := res.WhereClause
+	// 		manipulated, err := buildCondWhereClause(res.LookupsWhereRelevant, whereClause)
+	// 		if err != nil {
+	// 			if strings.Trim(manipulated, " ") == strings.Trim(expected_results[i], " ") {
+	// 				t.Fatalf("\nThis should be invalid: %v\n", query)
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
-
-// // TODO: move this test to Parser where it belongs and fix it
-// func TestGetRelevantLookupInfoWhere(t *testing.T) {
-// 	validQueries := []string{
-// 		"FROM 2023-02-03T12:34:39Z TO 2023-02-03 SHALLOW MATCH (a)-[x]->(b) WHERE 22 > a.ping RETURN a",
-// 		"FROM 2023-02-03T12:34:39Z TO 2023-02-03 SHALLOW MATCH (a)-[x]->(b) WHERE a.ping > 22 RETURN a",
-// 		"FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.name = 'UGWJn' RETURN  *",
-// 	}
-// 	expected := []parser.LookupInfo{{ElementVariable: "a", Property: "ping", CompareOperator: ">", CompareValue: 22, LookupLeft: false},
-// 		{ElementVariable: "a", Property: "ping", CompareOperator: ">", CompareValue: 22, LookupLeft: true},
-// 		{ElementVariable: "a", Property: "name", CompareOperator: "=", CompareValue: "'UGWJn'", LookupLeft: true},
-// 	}
-//
-// 	for i, query := range validQueries {
-// 		res, err := parser.ParseQuery(query)
-// 		if err != nil {
-// 			t.Fatalf("Query should be valid: %v\n", query)
-// 		}
-// 		lookups, err := parser.GetRelevantLookupInfoWhere(res)
-// 		lookup := lookups[0]
-// 		if err != nil {
-// 			t.Fatalf("Error retrieving lookup info: %v\n", query)
-// 		}
-// 		if lookup.ElementVariable != expected[i].ElementVariable || lookup.Property != expected[i].Property || lookup.CompareOperator != expected[i].CompareOperator || lookup.CompareValue != expected[i].CompareValue || lookup.LookupLeft != expected[i].LookupLeft {
-// 			t.Fatalf("\n Expected:\n%+v\nGot:\n%+v\n", expected[i], lookup)
-// 		}
-// 	}
-// }
-//

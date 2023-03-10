@@ -34,7 +34,7 @@ func getSelectedTimeSeries(queryInfo parser.ParseResult, lookupsMap map[string][
 			mergeVariables = true
 		}
 		for _, prop := range lookups {
-			if !strings.HasPrefix(prop, "ts") && !strings.HasPrefix(prop, "properties") {
+			if !strings.HasPrefix(prop, "ts_") && !strings.HasPrefix(prop, "properties_") {
 				continue
 			}
 			graphData, err = fetchTimeSeries(queryInfo.From, queryInfo.To, graphData, elements, prop, elVar, mergeVariables)
@@ -68,7 +68,7 @@ func getAllTimeseries(queryInfo parser.ParseResult, lookupsMap map[string][]stri
 		alreadyFetched := utils.Contains(plainReturnVariables, elVar)
 		for _, property := range lookups {
 			utils.Debugf("                        GRAPH DATA BEFORE SINGLE TIME SERIES FETCH: \n         %+v\n", graphData)
-			if !strings.HasPrefix(property, "ts") && !strings.HasPrefix(property, "properties") {
+			if !strings.HasPrefix(property, "ts_") && !strings.HasPrefix(property, "properties_") {
 				continue
 			}
 			graphData, err = getTimeSeriesSingleLookup(queryInfo, graphData, elVar, property, alreadyFetched)
@@ -138,7 +138,7 @@ func fetchTimeSeriesAll(from string, to string, graphData map[string][]interface
 		case neo4j.Entity:
 			properties := e.GetProperties()
 			for prop, uuid := range properties {
-				if !strings.HasPrefix(prop, "ts") && !strings.HasPrefix(prop, "properties") {
+				if !strings.HasPrefix(prop, "ts_") && !strings.HasPrefix(prop, "properties_") {
 					continue
 				}
 				if uuid == nil {

@@ -104,7 +104,6 @@ func TestDeepQueries(t *testing.T) {
 	}
 }
 
-// TODO
 func TestShallowQueries(t *testing.T) {
 
 	// initialize Neo4j
