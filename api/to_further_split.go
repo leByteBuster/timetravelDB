@@ -132,7 +132,7 @@ func fetchTimeSeriesAll(from string, to string, graphData map[string][]interface
 		case neo4j.Entity:
 			properties := e.GetProperties()
 			for prop, uuid := range properties {
-				if !strings.HasPrefix(prop, "ts") || !strings.HasPrefix(prop, "properties") {
+				if !strings.HasPrefix(prop, "ts") && !strings.HasPrefix(prop, "properties") {
 					continue
 				}
 				if uuid == nil {
