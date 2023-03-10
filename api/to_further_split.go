@@ -33,8 +33,11 @@ func getSelectedTimeSeries(queryInfo parser.ParseResult, lookupsMap map[string][
 		if utils.Contains(returnProjections, elVar) {
 			mergeVariables = true
 		}
-		for _, lookup := range lookups {
-			graphData, err = fetchTimeSeries(queryInfo.From, queryInfo.To, graphData, elements, lookup, elVar, mergeVariables)
+		for _, prop := range lookups {
+			if !strings.HasPrefix(prop, "ts") && !strings.HasPrefix(prop, "properties") {
+				continue
+			}
+			graphData, err = fetchTimeSeries(queryInfo.From, queryInfo.To, graphData, elements, prop, elVar, mergeVariables)
 		}
 	}
 	return graphData, err
@@ -63,9 +66,12 @@ func getAllTimeseries(queryInfo parser.ParseResult, lookupsMap map[string][]stri
 
 	for elVar, lookups := range lookupsMap {
 		alreadyFetched := utils.Contains(plainReturnVariables, elVar)
-		for _, lookup := range lookups {
+		for _, property := range lookups {
 			utils.Debugf("                        GRAPH DATA BEFORE SINGLE TIME SERIES FETCH: \n         %+v\n", graphData)
-			graphData, err = getTimeSeriesSingleLookup(queryInfo, graphData, elVar, lookup, alreadyFetched)
+			if !strings.HasPrefix(property, "ts") && !strings.HasPrefix(property, "properties") {
+				continue
+			}
+			graphData, err = getTimeSeriesSingleLookup(queryInfo, graphData, elVar, property, alreadyFetched)
 			utils.Debugf("                        GRAPH DATA AFTER SINGLE TIME SERIES FETCH : \n         %+v\n", graphData)
 		}
 	}
