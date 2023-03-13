@@ -25,20 +25,34 @@ cp $TTDB_SCRIPTS/../test-data/neo4j_test_backup/neo4j.dump $TTDB_SCRIPTS/../dock
 cp $TTDB_SCRIPTS/../test-data/timescaledb_test_backup/postgres.bak $TTDB_SCRIPTS/../docker-test/timescaledb/backups/
 
 # restore neo4j data (was not able to get this to work with docker-compose yet)
-docker run --rm --volume=$TTDB_SCRIPTS/../docker-test/neo4j/data:/data --volume=$TTDB_SCRIPTS/../docker-test/neo4j/backups:/backups neo4j neo4j-admin database load neo4j --from-path=/backups --verbose
+docker run --name restore_neo4j --volume=$TTDB_SCRIPTS/../docker-test/neo4j/data:/data --volume=$TTDB_SCRIPTS/../docker-test/neo4j/backups:/backups neo4j neo4j-admin database load neo4j --from-path=/backups --verbose
+
+
+
+# neo4j restore needs some time to finish
+sleep 4
 
 # prepare testing envionment 
 docker-compose -f $TTDB_SCRIPTS/../docker-compose.yml up -d
 
-# wait for testing envionment to be ready 
+
+# wait for ports to be available 
 dockerize -wait tcp://127.0.0.1:7687 -timeout 10s
 dockerize -wait tcp://127.0.0.1:5432 -timeout 10s
+
 
 # check if neo4j database is ready
 docker exec test_neo4j sh -c "while neo4j-admin database info | grep -q 'Database in use:.*false'; do echo 'neo4j database not ready yet'; sleep 2; done"
 echo "neo4j database ready"
 
-docker exec test_timescaledb sh -c "while ! psql -lqt | cut -d \| -f 1 | grep -qw postgres; do echo 'timescaledb database not ready yet'; sleep 2; done"
+
+# check if timescaledb database is ready
+# Note: we cannot just check for the database name because the name "postgres" of the testing database
+# is the same as the initial database and therefore cannot be differed just by its name. Therefore readiness cannot be implied without checking for content. 
+while ! echo "\dt" | docker exec -i test_timescaledb psql | grep -qw ts_96a4656a_5de6_4807_8052_4546f2b0b291; 
+do echo "timescaledb not ready yet"; sleep 2; 
+done
+
 echo "timescaledb database ready"
 
 # Run Golang tests
