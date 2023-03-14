@@ -21,26 +21,11 @@ type TmpPropVal[T any] struct {
 
 func LoadData() {
 
-	// var comp_list = []comp{
-	// 	{
-	// 		id:        11,
-	// 		some_data: "testdata",
-	// 		is_ts:     true,
-	// 	},
-	// 	{
-	// 		id:        22,
-	// 		some_data: "testdata",
-	// 		is_ts:     false,
-	// 	},
-	// }
-
-	// res, err := load_data(context.Background(), "neo4j://localhost:7687", "neo4j", "rhebo", comp_list)
-
-	graph_nodes, err := utils.LoadJsonData("graph_nodes.json")
+	graph_nodes, err := utils.LoadJsonData("data-generator/generated-data/graph_nodes.json")
 	if err != nil {
 		fmt.Println(err)
 	}
-	graph_edges, err := utils.LoadJsonData("graph_edges.json")
+	graph_edges, err := utils.LoadJsonData("data-generator/generated-data/graph_edges.json")
 	if err != nil {
 		fmt.Println(err)
 	}

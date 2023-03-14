@@ -12,16 +12,18 @@ import (
 
 func LoadData() {
 
-	graph_nodes, err := utils.LoadJsonData("data-adapter/graph_nodes.json")
+	graph_nodes, err := utils.LoadJsonData("data-generator/generated-data/graph_nodes.json")
 	if err != nil {
 		log.Printf("Error loading nodes from json: %v", err)
 	}
-	graph_edges, err := utils.LoadJsonData("data-adapter/graph_edges.json")
+	graph_edges, err := utils.LoadJsonData("data-generator/generated-data/graph_edges.json")
 	if err != nil {
 		log.Printf("Error loading edges from json: %v", err)
+		return
 	}
-	//log.Printf("\n Number nodes: %v", len(graph_nodes))
-	//log.Printf("\n Number edges: %v", len(graph_edges))
+
+	utils.Debugf("\n Number nodes: %v", len(graph_nodes))
+	utils.Debugf("\n Number edges: %v", len(graph_edges))
 
 	nodeQuereis, timeSeriesNodes := getQueryStringsNodes(graph_nodes)
 	edgeQueries, timeSeriesEdges := getQueryStringsEdges(graph_edges)
@@ -29,8 +31,8 @@ func LoadData() {
 	databaseapi.WriteQueryMultipleNeo4j(context.Background(), nodeQuereis)
 	databaseapi.WriteQueryMultipleNeo4j(context.Background(), edgeQueries)
 
-	// log.Printf("\n Number time-series map nodes: %v", len(timeSeriesNodes))
-	// log.Printf("\n Number time-series map edges: %v", len(timeSeriesEdges))
+	utils.Debugf("\n Number time-series map nodes: %v", len(timeSeriesNodes))
+	utils.Debugf("\n Number time-series map edges: %v", len(timeSeriesEdges))
 
 	timeSeries := map[uuid.UUID][]map[string]interface{}{}
 
@@ -45,6 +47,6 @@ func LoadData() {
 
 	if err != nil {
 		fmt.Printf("Error: %v", err)
+		return
 	}
-	// fmt.Printf("Result: %v", res)
 }

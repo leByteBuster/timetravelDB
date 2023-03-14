@@ -1,0 +1,101 @@
+"nodes":
+  - "labels": ["client"]
+    "count": 50
+    template:
+      IP:
+        "DataType": "string"
+        "Quantity": 5
+      firewall:
+        "DataType": "boolean"
+        "Quantity": 30
+      root:
+        "DataType": "string"
+        "Quantity": 2
+      Risc:
+        "DataType": "int"
+        "Quantity": 300
+      components:        
+        gpu:
+          "DataType": "string"
+          Quantity: 1
+        cpu:
+          "DataType": "string"
+          Quantity: 1
+        ram:
+          "DataType": "string"
+          "Quantity": 2
+  - labels: ["server"]
+    count: 5
+    template:
+      IP:
+        "DataType": "string"
+        Quantity: 1
+      firewall:
+        "DataType": "boolean"
+        "Quantity": 3
+      root:
+        "DataType": "string"
+        Quantity: 10
+      Risc:
+        "DataType": "int"
+        "Quantity": 20
+      components: 
+        cpu:
+          "DataType": "string"
+          "Quantity": 1
+        ram:
+          "DataType": "string"
+          "Quantity": 1
+  - labels: ["printer"]
+    count: 10
+    template:
+      IP:
+        "DataType": "string"
+        "Quantity": 1
+      root:
+        "DataType": "string"
+        "Quantity": 1
+      Risc:
+        "DataType": "int"
+        "Quantity": 100
+      components: 
+        wifi:
+          "DataType": "string"
+          "Quantity": 1
+edges:
+  - labels: ["traffic"]
+    count: 10
+    from: "server"
+    to: "server" 
+    template:
+      TCPUDP:
+        "DataType": "string"
+        "Quantity": 200
+      IPv4IPv6:
+        "DataType": "string"
+        "Quantity": 200
+      Risc:
+        "DataType": "int"
+        "Quantity": 1000
+      Count:
+        "DataType": "int"
+        "Quantity": 10000
+  - labels: ["traffic"]
+    count: 10
+    from: "server"
+    to: "server"
+    template:
+      TCPUDP:
+        "DataType": "string"
+        "Quantity": 200
+      IPv4IPv6:
+        "DataType": "string"
+        "Quantity": 200
+      Risc:
+        "DataType": "int"
+        "Quantity": 1000
+      Count:
+        "DataType": "int"
+        "Quantity": 10000
+
+   

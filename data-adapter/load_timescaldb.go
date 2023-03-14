@@ -91,10 +91,4 @@ func loadDataTimeScaleDB(timeseries map[uuid.UUID][]map[string]interface{}) {
 		databaseapi.WriteSameQueryMultipleTimeScale(insertQuery, parameters)
 	}
 
-	//   `time TIMESTAMPTZ NOT NULL,
-	//   value TEXT NOT NULL,
-	//   price DOUBLE PRECISION NULL,
-	//   day_volume INT NULL
-	// );`
-
 }

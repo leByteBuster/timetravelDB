@@ -28,8 +28,8 @@ cp $TTDB_SCRIPTS/../test-data/timescaledb_test_backup/postgres.bak $TTDB_SCRIPTS
 docker run --name restore_neo4j --volume=$TTDB_SCRIPTS/../docker-test/neo4j/data:/data --volume=$TTDB_SCRIPTS/../docker-test/neo4j/backups:/backups neo4j neo4j-admin database load neo4j --from-path=/backups --verbose
 
 
-
-# neo4j restore needs some time to finish
+# some rest for neo4j restore to settle; even checking for database status like we do below with the help of status request via neo4j-admin database info 
+# does not seem to assure readiness of the database in any case  
 sleep 4
 
 # prepare testing envionment 

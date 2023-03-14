@@ -98,13 +98,13 @@ func executor(in string) {
 		To disable debug mode type 'Debug=1' and return. 
 		To exit the program type 'quit' 'q' or 'exit' and return.
 		For more infos: https://github.com/LexaTRex/timetravelDB/`)
-	case "Generate Data":
+	case "Generate Data", "GD", "gd":
 		datagenerator.GenerateData()
-	case "Load Data":
+	case "Load Data", "LD", "ld":
 		dataadapter.LoadData()
-	case "Debug=1":
+	case "Debug=1", "--debug=1", "-debug=1", "--debug=true", "-debug=true":
 		utils.DEBUG = true
-	case "Debug=0":
+	case "Debug=0", "--debug=0", "-debug=0", "--debug=false", "-debug=false":
 		utils.DEBUG = false
 	default:
 		if ConfigErr != nil {
