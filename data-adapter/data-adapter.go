@@ -2,7 +2,6 @@ package dataadapter
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	databaseapi "github.com/LexaTRex/timetravelDB/database-api"
@@ -25,12 +24,16 @@ func LoadData() {
 	utils.Debugf("\n Number nodes: %v", len(graph_nodes))
 	utils.Debugf("\n Number edges: %v", len(graph_edges))
 
-	nodeQuereis, timeSeriesNodes := getQueryStringsNodes(graph_nodes)
+	nodeQueries, timeSeriesNodes := getQueryStringsNodes(graph_nodes)
 	edgeQueries, timeSeriesEdges := getQueryStringsEdges(graph_edges)
+	utils.Debugf("\n edge time-series: %v", timeSeriesEdges)
 
-	databaseapi.WriteQueryMultipleNeo4j(context.Background(), nodeQuereis)
-	databaseapi.WriteQueryMultipleNeo4j(context.Background(), edgeQueries)
+	databaseapi.WriteQueryMultipleNeo4j(context.Background(), nodeQueries, map[string]interface{}{})
+	databaseapi.WriteQueryMultipleNeo4j(context.Background(), edgeQueries, map[string]interface{}{})
 
+	utils.Debugf("\n node Queries: %v", nodeQueries)
+	utils.Debugf("\n edge Queries: %v", edgeQueries)
+	utils.Debugf("\n node time-series: %v", timeSeriesNodes)
 	utils.Debugf("\n Number time-series map nodes: %v", len(timeSeriesNodes))
 	utils.Debugf("\n Number time-series map edges: %v", len(timeSeriesEdges))
 
@@ -44,9 +47,4 @@ func LoadData() {
 	}
 
 	loadDataTimeScaleDB(timeSeries)
-
-	if err != nil {
-		fmt.Printf("Error: %v", err)
-		return
-	}
 }

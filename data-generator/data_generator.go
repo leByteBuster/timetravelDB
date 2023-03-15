@@ -46,15 +46,12 @@ var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 var current_node_id = 0
 var current_relation_id = 0
 
-//var graph_nodes []map[string]interface{}
-//var graph_edges []map[string]interface{}
-
 // the index x of the array represents the starting node of and edge
 // every map at position x contains all the ending nodes of the edges
 // of node x as key with the amount as values (because between two nodes
 // there can be multiple edges because we work with a multi graph model)
 // example:
-// 0: {1: 3, 3: 1} 		// there are three edges of type (0,1) and one edge of type (0,3)
+// 0: {1: 3, 3: 1} 		// three edges of type (0,1) and one edge of type (0,3)
 // 1: ...
 var adjacency_list []map[int]int
 
@@ -78,10 +75,8 @@ func GenerateData() {
 	nodeTemplates := graphTemplate.Nodes
 	edgeTemplates := graphTemplate.Edges
 
-	if utils.DEBUG {
-		log.Printf("%#v\n", nodeTemplates)
-		log.Printf("%#v\n", edgeTemplates)
-	}
+	utils.Debugf("%#v\n", nodeTemplates)
+	utils.Debugf("%#v\n", edgeTemplates)
 
 	// TODO: parse correctly
 	begin, err := time.Parse("2006-01-02 15:04:05.0000000 -0700 MST", "2022-11-22 15:33:13.0000005 +0000 UTC")
@@ -103,15 +98,16 @@ func GenerateData() {
 		nodes := generatePropertyNodes(node.Count, node.Labels, node.PropertyTemplate, begin, end)
 		graphNodes = append(graphNodes, nodes)
 	}
-	for _, edge := range edgeTemplates {
+	for _, edgeGroup := range edgeTemplates {
 		var edges []map[string]any
-		if edge.From == edge.To {
+		if edgeGroup.From == edgeGroup.To {
 			for _, nodeGroup := range graphNodes {
 
 				// this is kind of unstable because we are only alloed single labels for the data generator
 				labels := nodeGroup[0]["labels"].([]string)
-				if labels[0] == edge.From {
-					edges = generateIntraRelations(edge.Count, edge.Labels, nodeGroup, edge.PropertyTemplate)
+				if labels[0] == edgeGroup.From {
+					utils.Debugf("generate intra relations from %v to %v", edgeGroup.From, edgeGroup.To)
+					edges = generateIntraRelations(edgeGroup.Count, edgeGroup.Labels, nodeGroup, edgeGroup.PropertyTemplate)
 				}
 			}
 		} else {
@@ -121,17 +117,18 @@ func GenerateData() {
 
 				// this is kind of unstable because we are only alloed single labels for the data generator
 				labels := nodeGroup[0]["labels"].([]string)
-				if labels[0] == edge.From {
+				if labels[0] == edgeGroup.From {
 					fromGroups = append(fromGroups, nodeGroup)
 				}
-				if nodeGroup[0]["labels"] == edge.To {
-					toGroups = append(fromGroups, toGroups...)
+				if labels[0] == edgeGroup.To {
+					toGroups = append(toGroups, nodeGroup)
 				}
 			}
 
 			for _, fromGroup := range fromGroups {
 				for _, toGroup := range toGroups {
-					edges = generateInterRelations(edge.Count, edge.Labels, fromGroup, toGroup, edge.PropertyTemplate)
+					utils.Debugf("generate inter relations from %v to %v", edgeGroup.From, edgeGroup.To)
+					edges = generateInterRelations(edgeGroup.Count, edgeGroup.Labels, fromGroup, toGroup, edgeGroup.PropertyTemplate)
 				}
 			}
 		}
@@ -181,7 +178,7 @@ func generatePropertyNodes(numberNodes int, nodelabels []string, property_fields
 		nodes = append(nodes, node)
 
 		// create adjacency entry for the newly generated node (if missing also for nodes before - should not happen)
-		for len(adjacency_list) < current_node_id {
+		for len(adjacency_list) < current_node_id+1 {
 			adjacency_list = append(adjacency_list, make(map[int]int))
 		}
 		current_node_id++
@@ -252,7 +249,7 @@ func minTimeBoundaries(from_node, to_node map[string]interface{}) (time.Time, ti
 	return start, end
 }
 
-// This function generates >numberRelations< random relations between the passed from_nodes and to_nodes. It sets reandom values for the passed property_fields.
+// generatInterRelations generates <numberRelations> random relations between the passed from_nodes and to_nodes. It sets reandom values for the passed property_fields.
 // It returns the relations as a tuple of json-like Objects which store all the data as well as an array of AdjacenctPairs which just represent the edges via node ids
 // in the form of (from, to)
 func generateInterRelations(numberRelations int, relation_labels []string, from_nodes []map[string]interface{}, to_nodes []map[string]interface{}, property_fields map[string]interface{}) []map[string]interface{} {
@@ -282,7 +279,7 @@ func generateInterRelations(numberRelations int, relation_labels []string, from_
 		relation["from"] = node_id_from
 		relation["to"] = node_id_to
 
-		// add edge to adjacency list
+		// increment edge count between the two nodes in the adjacency list
 		adjacency_list[node_id_from][node_id_to] = adjacency_list[node_id_from][node_id_to] + 1
 
 		// Generate all the properties of <property_fields>

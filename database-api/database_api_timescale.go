@@ -8,12 +8,12 @@ import (
 	"time"
 
 	"github.com/LexaTRex/timetravelDB/utils"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 var ConfigTS = TimescaleConfig{}
 
-var SessionTS *pgx.Conn
+var SessionTS *pgxpool.Pool
 
 type TimeSeriesRow struct {
 	Timestamp   time.Time
@@ -21,7 +21,7 @@ type TimeSeriesRow struct {
 	Value       interface{}
 }
 
-func ConnectTimescale(username, password, port, dbname string) (*pgx.Conn, error) {
+func ConnectTimescale(username, password, port, dbname string) (*pgxpool.Pool, error) {
 
 	var sb strings.Builder
 	sb.WriteString("postgresql://")
@@ -34,7 +34,7 @@ func ConnectTimescale(username, password, port, dbname string) (*pgx.Conn, error
 	sb.WriteString(dbname)
 
 	// conn, err := pgxpool.Connect(context.Background(), connStr) // use pgxpool for managing multiple connections
-	conn, err := pgx.Connect(context.Background(), sb.String())
+	conn, err := pgxpool.New(context.Background(), sb.String())
 	return conn, err
 }
 
@@ -149,4 +149,35 @@ func WriteSameQueryMultipleTimeScale(query string, parameters [][]interface{}) {
 	for i := range parameters {
 		WriteQueryTimeScale(query, parameters[i])
 	}
+}
+
+func ClearTimescale() {
+
+	dropTables := `SELECT 'DROP TABLE IF EXISTS "' || tablename || '" CASCADE;' FROM pg_tables WHERE schemaname = 'public';`
+
+	// Execute the SQL statement to get a list of DROP TABLE statements
+	rows, err := SessionTS.Query(context.Background(), dropTables)
+	if err != nil {
+		log.Println("Error getting list of tables to drop:", err)
+		return
+	}
+	defer rows.Close()
+
+	// Iterate over the rows and execute each DROP TABLE statement
+	for rows.Next() {
+		var dropQuery string
+		err = rows.Scan(&dropQuery)
+		if err != nil {
+			log.Println("Error scanning rows:", err)
+			return
+		}
+		_, err = SessionTS.Exec(context.Background(), dropQuery)
+		if err != nil {
+			log.Println("Error dropping table:", err)
+			return
+		}
+	}
+
+	log.Println("All tables dropped successfully!")
+
 }

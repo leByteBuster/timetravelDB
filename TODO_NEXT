@@ -1,4 +1,8 @@
-- [] generate data:
+
+- [] data-adapters:
+  - [] take care of the change from label string to labels []string 
+  - [] maybe change neo4j only time-series data to time-stamps 
+- [x] generate data:
   - in the setField method: if we have type map[string]interface: check if it is actually type TemplateField
 - [] handle the case when a property is not a time-series but a conditional property lookup is happening on it. In this case it needs to be 
      forwarded and handled in neo4j and not translated into timescaledb

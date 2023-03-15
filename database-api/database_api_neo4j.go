@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/LexaTRex/timetravelDB/utils"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
@@ -39,6 +40,9 @@ func ReadQueryNeo4j(query string) (neo4j.ResultWithContext, error) {
 
 	res, err := SessionNeo.Run(context.Background(), query, map[string]interface{}{})
 
+	utils.Debugf("Neo4j read query: %v", query)
+	utils.Debugf("res: %v", res)
+
 	if err != nil {
 		log.Printf("%v: error executing neo4j query: %v", err, query)
 		return nil, err
@@ -47,18 +51,27 @@ func ReadQueryNeo4j(query string) (neo4j.ResultWithContext, error) {
 	return res, nil
 }
 
-// the following functions are used by the data-adapter
+// the following functions are used by the data-adapters
 
-func WriteQueryNeo4j(ctx context.Context, query string) {
-	_, err := SessionNeo.Run(ctx, query, map[string]interface{}{})
+func WriteQueryNeo4j(ctx context.Context, query string, params map[string]interface{}) {
+	res, err := SessionNeo.Run(ctx, query, params)
+
+	utils.Debugf("Neo4j write query: %v", query)
+	utils.Debugf("res: %v", res)
+
 	if err != nil {
 		log.Printf("%v: error executing neo4j query: %v", err, query)
 		return
 	}
 }
 
-func WriteQueryMultipleNeo4j(ctx context.Context, queries []string) {
+func WriteQueryMultipleNeo4j(ctx context.Context, queries []string, params map[string]interface{}) {
 	for _, query := range queries {
-		WriteQueryNeo4j(ctx, query)
+		WriteQueryNeo4j(ctx, query, params)
 	}
+}
+
+func ClearNeo4j() {
+	query := "MATCH (n) DETACH DELETE n"
+	WriteQueryNeo4j(context.Background(), query, map[string]interface{}{})
 }

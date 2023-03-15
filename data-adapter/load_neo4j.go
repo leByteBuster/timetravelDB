@@ -21,10 +21,10 @@ func getQueryStringsNodes(graph_nodes []map[string]interface{}) ([]string, map[u
 	// Loop through the data array
 	for _, node := range graph_nodes {
 
+		labels := node["labels"]
+		delete(node, "labels")
 		// TODO: node["label"] should be able to contain a list of labels
-		query := `CREATE (n:` + node["label"].(string) + ` {`
-
-		delete(node, "label")
+		query := `CREATE (n:` + labels.([]interface{})[0].(string) + ` {`
 
 		primaryQueryFragmentsFlat, timeSeriesMapNode := generateNeo4jFlatProperties(node)
 
@@ -57,12 +57,14 @@ func getQueryStringsEdges(graph_edges []map[string]interface{}) ([]string, map[u
 
 		from := edge["from"]
 		to := edge["to"]
+		labels := edge["labels"]
 
 		// maybe make a copy forst to keep the original ?  or is the map copied into this funciton anyways ?
 		delete(edge, "from")
 		delete(edge, "to")
+		delete(edge, "labels")
 
-		queryPrefix := `MATCH (a),(b) WHERE a.nodeid = ` + fmt.Sprint(from) + ` AND b.nodeid = ` + fmt.Sprint(to) + ` CREATE (a)-[r:Relation {`
+		queryPrefix := `MATCH (a),(b) WHERE a.nodeid = ` + fmt.Sprint(from) + ` AND b.nodeid = ` + fmt.Sprint(to) + ` CREATE (a)-[r:` + labels.([]interface{})[0].(string) + ` {`
 		querySuffix := `}]->(b)`
 
 		neo4jEdgeProperties, timeSeriesMapEdge := generateNeo4jFlatProperties(edge)
@@ -82,6 +84,7 @@ func getQueryStringsEdges(graph_edges []map[string]interface{}) ([]string, map[u
 		edgeQuery := queryPrefix + queryProperties + querySuffix
 		queries = append(queries, edgeQuery)
 
+		utils.Debugf("Edge Query: %v", edgeQuery)
 	}
 
 	return queries, timeSeries

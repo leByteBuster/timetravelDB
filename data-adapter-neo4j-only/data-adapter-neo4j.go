@@ -6,11 +6,11 @@ package dataadapterneo4j
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
+	databaseapi "github.com/LexaTRex/timetravelDB/database-api"
 	"github.com/LexaTRex/timetravelDB/utils"
-
-	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 type TmpPropVal[T any] struct {
@@ -23,99 +23,66 @@ func LoadData() {
 
 	graph_nodes, err := utils.LoadJsonData("data-generator/generated-data/graph_nodes.json")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	graph_edges, err := utils.LoadJsonData("data-generator/generated-data/graph_edges.json")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
-	// TODO: use the config and database-api package
-	driver, err := neo4j.NewDriverWithContext("neo4j://localhost:7687", neo4j.BasicAuth("neo4j", "rhebo", ""))
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer driver.Close(context.Background())
-
-	loadGraphNodesIntoNeo4jDatabase(graph_nodes, context.Background(), driver)
-	loadGraphEdgesIntoNeo4jDatabase(graph_edges, context.Background(), driver)
+	loadGraphNodesIntoNeo4jDatabase(graph_nodes, context.Background())
+	loadGraphEdgesIntoNeo4jDatabase(graph_edges, context.Background())
 
 	if err != nil {
-		fmt.Printf("Error: %v", err)
+		log.Printf("Error: %v", err)
 	}
-	// fmt.Printf("Result: %v", res)
 }
 
-func loadGraphNodesIntoNeo4jDatabase(graph_nodes []map[string]interface{}, ctx context.Context, driver neo4j.DriverWithContext) {
-	// Connect to the Neo4j database
-	session := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
-	defer session.Close(ctx)
+func loadGraphNodesIntoNeo4jDatabase(graph_nodes []map[string]interface{}, ctx context.Context) {
 
 	// Loop through the data array
 	for _, node := range graph_nodes {
 
-		// Build the CREATE query
-		// primaryQueryNode := `CREATE (:Node {`
-		queryFlat := `CREATE (:Node {`
+		labels := node["labels"]
+		start := node["start"]
+		end := node["end"]
 
-		// the primaryQueryFragment repesents all the properties of node n
-		// the secondaryQuery represents all nodes which represent values of the properties of node n which are
-		// generated in the process
-		//primaryQueryFragments, secondaryQuery := generateNeo4jNodeProperties(node)
+		delete(node, "labels")
 
+		queryFlat := `CREATE (n:` + labels.([]interface{})[0].(string) + ` {start: "` + start.(string) + `", end: "` + end.(string) + `",`
 		primaryQueryFragmentsFlat := generateNeo4jFlatProperties(node)
-		// for _, fragment := range primaryQueryFragments {
-		// 	primaryQueryNode += fragment
-		// }
+
 		for _, fragment := range primaryQueryFragmentsFlat {
 			queryFlat += fragment
 		}
-		// primaryQueryNode = primaryQueryNode[:len(primaryQueryNode)-2] + `})`
-		// secondaryQuery = secondaryQuery[:len(secondaryQuery)-2]
 
 		queryFlat = queryFlat[:len(queryFlat)-2] + `})`
 
-		// nodeQuery := primaryQueryNode + ", " + secondaryQuery
+		utils.Debugf("\nNode Query: %v\n", queryFlat)
 
-		// fmt.Printf("\nOuter Query Part: %v\n", primaryQueryNode)
-		// fmt.Printf("\nInner Query Part: %v\n", secondaryQuery)
-		fmt.Printf("\nFlat Query: %v\n", queryFlat)
-
-		//res, err := session.Run(ctx, `CREATE (:Node {end: "2011-05-14 22:20:58 +0200 CEST", label: "Server", nodeid: 0, properties_components_cpu_0_start: "1993-06-19 11:22:43 +0200 CEST", properties_components_cpu_0_end: "1987-08-03 13:39:26 +0200 CEST", properties_components_cpu_0_value: "XPyXgdBG", properties_components_ram_0_start: "1991-08-29 06:30:37 +0200 CEST", properties_components_ram_0_end: "2008-08-27 19:18:41 +0200 CEST", properties_components_ram_0_value: "fNQLV", properties_IP_0_start: "1977-09-09 12:52:29 +0100 CET", properties_IP_0_end: "1983-08-09 00:46:50 +0200 CEST", properties_IP_0_value: "izX", properties_Risc_0_start: "2010-01-03 11:14:59 +0100 CET", properties_Risc_0_end: "2011-04-14 10:15:46 +0200 CEST", properties_Risc_0_value: 18, start: "2010-12-18 21:09:25 +0100 CET"})`,
-		//	map[string]interface{}{})
-		// Execute the CREATE query
-		res, err := session.Run(ctx, queryFlat, map[string]interface{}{})
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		fmt.Println("Result: ", res)
+		databaseapi.WriteQueryNeo4j(ctx, queryFlat, map[string]interface{}{})
 	}
 }
 
-func loadGraphEdgesIntoNeo4jDatabase(graph_edges []map[string]interface{}, ctx context.Context, driver neo4j.DriverWithContext) {
-
-	session := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
-	defer session.Close(ctx)
+func loadGraphEdgesIntoNeo4jDatabase(graph_edges []map[string]interface{}, ctx context.Context) {
 
 	// Loop through the data array
 	for _, edge := range graph_edges {
 
+		start := edge["start"]
+		end := edge["end"]
 		from := edge["from"]
 		to := edge["to"]
+		labels := edge["labels"]
 
-		// maybe make a copy forst to keep the original ?  or is the map copied into this funciton anyways ?
 		delete(edge, "from")
 		delete(edge, "to")
+		delete(edge, "start")
+		delete(edge, "end")
+		delete(edge, "labels")
 
-		queryPrefix := `MATCH (a),(b) WHERE a.nodeid = $from AND b.nodeid = $to CREATE (a)-[r:Relation {`
+		queryPrefix := `MATCH (a),(b) WHERE a.nodeid = $from AND b.nodeid = $to CREATE (a)-[r:` + labels.([]interface{})[0].(string) + ` {start: "` + start.(string) + `", end: "` + end.(string) + `",`
 		querySuffix := `}]->(b)`
-
-		// the primaryQueryFragment repesents all the properties of node n
-		// the secondaryQuery represents all nodes which represent values of the properties of node n which are
-		// generated in the process
-		//primaryQueryFragments, secondaryQuery := generateNeo4jNodeProperties(node)
 
 		neo4jEdgeProperties := generateNeo4jFlatProperties(edge)
 
@@ -129,133 +96,13 @@ func loadGraphEdgesIntoNeo4jDatabase(graph_edges []map[string]interface{}, ctx c
 
 		edgeQuery := queryPrefix + queryProperties + querySuffix
 
-		fmt.Printf("\nEdge Query: %v\n", edgeQuery)
-		fmt.Printf("\nFrom: %v\n", from)
-		fmt.Printf("\nTo: %v\n", to)
+		utils.Debugf("\nEdge Query: %v\n", edgeQuery)
+		utils.Debugf("\nFrom: %v\n", from)
+		utils.Debugf("\nTo: %v\n", to)
 
-		// res, err := session.Run(ctx, ``,
-		//	map[string]interface{}{})
-		// Execute the CREATE query
-		res, err := session.Run(ctx, edgeQuery, map[string]interface{}{"from": from, "to": to})
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		fmt.Println("Result: ", res)
+		databaseapi.WriteQueryNeo4j(ctx, edgeQuery, map[string]interface{}{"from": from, "to": to})
 	}
 }
-
-// the first return value repesents all the properties of node n
-// the second return value represents all nodes which represent values of the properties of node n which are generated in the process
-// func generateNeo4jNodeProperties(property map[string]interface{}) ([]string, string) {
-// 	queryBaseFragment := ""
-// 	queryPropertyFragments := make([]string, 0)
-// 	queryFragmentInner := ""
-// 	for key, value := range property {
-// 		switch propertyValue := value.(type) {
-//
-// 		case map[string]interface{}:
-// 			propertyFragments, innerFragment := generateNeo4jNodeProperties(propertyValue)
-// 			for _, fragment := range propertyFragments {
-// 				queryPropertyFragments = append(queryPropertyFragments, queryBaseFragment+key+`_`+fragment)
-// 			}
-// 			queryFragmentInner += innerFragment
-//
-// 			fmt.Println("map[string]interface{}")
-// 		// in the case of string propertyValue is tested for being a date-time value
-// 		// if its a date-time value, the propertyValue is just a regular string value
-// 		// or not in the right format (ISO 8601)
-// 		case string:
-//
-// 			datetime, err := time.Parse("2006-01-02T15:04:05.9999999999Z", fmt.Sprint(propertyValue))
-//
-// 			if err == nil {
-// 				propertyFragment := key + `: ` + fmt.Sprint(datetime) + `, `
-// 				queryPropertyFragments = append(queryPropertyFragments, propertyFragment)
-// 				fmt.Printf("\nno Error Parsing DateTime")
-// 				// panic("Correct")
-// 			} else {
-// 				fmt.Printf("\nError Parsing DateTime: %e\n", err)
-// 				propertyFragment := key + `: "` + propertyValue + `", `
-// 				queryPropertyFragments = append(queryPropertyFragments, propertyFragment)
-// 			}
-// 			fmt.Println("string")
-//
-// 		// in the case of an array of maps, every map object represents a temporal value of a property in the form of {start:_, end:_, value:_}. Create an
-// 		// query entry for creating an own node for every of these temporal property values
-// 		case []interface{}:
-//
-// 			convertedPropertyValue := utils.ConvertMaps(propertyValue)
-//
-// 			valueNodeIds := make([]string, 0)
-//
-// 			// iterate over the array of maps and create a value-node query fragment for each of them (for the CREATE query)
-// 			for _, value := range convertedPropertyValue {
-// 				// create an unique node id (maybe later use the internal node id only)
-// 				node_id := uuid.NewString()
-// 				valueNodeIds = append(valueNodeIds, node_id)
-// 				// generate a node vor the temporal value (a temporal value is in the for {start:_, end:_ , value:_ })
-// 				_, err := time.Parse("2006-01-02T15:04:05.9999999999Z", fmt.Sprint(value["Start"]))
-// 				_, err2 := time.Parse("2006-01-02T15:04:05.9999999999Z", fmt.Sprint(value["End"]))
-//
-// 				if err != nil || err2 != nil {
-// 					fmt.Printf("\nError Parsing DateTime. No ISO8601: %e\n", err)
-// 				}
-//
-// 				queryFragmentInner += `(:Node { node_id: "` + node_id + `", start: "` + fmt.Sprint(value["Start"]) + `", end: "` + fmt.Sprint(value["End"]) + `", value: `
-// 				switch valueType := value["Value"].(type) {
-// 				case string:
-// 					queryFragmentInner += `"` + valueType + `"}), `
-// 				default:
-// 					queryFragmentInner += fmt.Sprint(valueType) + `}), `
-// 				}
-// 			}
-//
-// 			propertyFragment := fmt.Sprintf("%s: [%s], ", key, strings.Join(valueNodeIds, `","`))
-// 			queryPropertyFragments = append(queryPropertyFragments, propertyFragment)
-// 			fmt.Println("interface{}")
-//
-// 		default:
-// 			fmt.Println("default")
-// 			propertyFragment := key + `: ` + fmt.Sprint(propertyValue) + `, `
-// 			queryPropertyFragments = append(queryPropertyFragments, propertyFragment)
-// 			// An dieser stelle über v iterieren und für jeden eintrag einen Knoten erstellen und mit papa knoten verbinden
-// 			// zu queryFragmentInner hinzufügen
-// 		}
-// 	}
-// 	return queryPropertyFragments, queryFragmentInner
-// }
-
-// this function not only flattenes the property fields but also the value list of maps representing the according property's value. Every
-// entry in the list gets its own property by its index. Like for example:
-// mainboard.GPU.temperature.1: {Start:_, End:, Value: }
-// mainboard.GPU.temperature.2: {Start:_, End:, Value: }
-// mainboard.GPU.temperature.3: {Start:_, End:, Value: }
-// instead of "." use "_" as seperator because "." is not allowed
-// func generateNeo4jFlatProperties(element map[string]interface{}) (string, string) {
-// 	queryFragment := ""
-// 	queryFragmentInner := ""
-// 	for key, value := range element {
-// 		switch v := value.(type) {
-// 		case map[string]interface{}:
-// 			primaryFragment, secondaryFragment := generateNeo4jFlatProperties(v)
-// 			queryFragment += key + "." + primaryFragment
-// 			queryFragmentInner += secondaryFragment
-// 		case string:
-// 			queryFragment += key + ": "
-// 			queryFragment += "'" + v + "'"
-// 			// An dieser stelle über v iterieren und für jeden eintrag einen Knoten erstellen und mit papa knoten verbinden
-// 			// zu queryFragmentInner hinzufügen
-// 		default:
-// 			queryFragment += key + ": "
-// 			queryFragment += fmt.Sprint(v)
-// 			// An dieser stelle über v iterieren und für jeden eintrag einen Knoten erstellen und mit papa knoten verbinden
-// 			// zu queryFragmentInner hinzufügen
-// 		}
-// 		queryFragment += ", "
-// 	}
-// 	return queryFragment, queryFragmentInner
-// }
 
 func generateNeo4jFlatProperties(property map[string]interface{}) []string {
 	queryBaseFragment := ""
