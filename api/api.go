@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	dataadapter "github.com/LexaTRex/timetravelDB/data-adapter"
+	dataadapterneo4j "github.com/LexaTRex/timetravelDB/data-adapter-neo4j-only"
 	datagenerator "github.com/LexaTRex/timetravelDB/data-generator"
 	databaseapi "github.com/LexaTRex/timetravelDB/database-api"
 	"github.com/LexaTRex/timetravelDB/parser"
@@ -19,6 +20,20 @@ import (
 var NeoErr error
 var TsErr error
 var ConfigErr error
+
+var HelpString = `
+		Hello, welcome to TTDB CLI !
+		To query TimeTravelDB type in a valid TTQL query.
+		To generate test data type 'Generate Data' and return.
+		To load generated data into TTDB type 'Load Data' and return.
+		To load generated data only Neo4j type 'Load Data Neo4j' and return.
+		To define the structure of the generated data alter data-generator/graph_template.yaml
+		To clear TTDB from all data type 'Clear TTDB' and return.
+		To clear only Neo4j from all data type 'Clear Neo4j' and return.
+		To enable debug mode type 'Debug=1' and return. 
+		To disable debug mode type 'Debug=1' and return. 
+		To exit the program type 'quit' 'q' or 'exit' and return.
+		For more infos: https://github.com/LexaTRex/timetravelDB/`
 
 func Api() {
 
@@ -53,18 +68,10 @@ func Api() {
 	if TsErr != nil {
 		log.Fatalf("creating ts connection failed: %v", TsErr)
 	}
-	defer databaseapi.SessionTS.Close(context.Background())
 
-	fmt.Println(`
-		Hello, welcome to TTDB CLI !
-		To query TimeTravelDB type in a valid TTQL query.
-		To generate test data type 'Generate Data' and return.
-		To generate test data type 'Load Data' and return.
-		To enable debug mode type 'Debug=1' and return. 
-		To disable debug mode type 'Debug=1' and return. 
-		To exit the program type 'quit' 'q' or 'exit' and return.
-		For more infos: https://github.com/LexaTRex/timetravelDB/`)
+	defer databaseapi.SessionTS.Close()
 
+	fmt.Println(HelpString)
 	p := prompt.New(
 		executor,
 		completer,
@@ -89,19 +96,18 @@ func executor(in string) {
 		handleExit() // note: cannot handle this with defer (probably goroutine race condition)
 		os.Exit(0)
 	case "help", "h", "-h", "--help":
-		fmt.Println(`
-		Hello, welcome to TTDB CLI !
-		To query TimeTravelDB type in a valid TTQL query.
-		To generate test data type 'Generate Data' and return.
-		To generate test data type 'Load Data' and return.
-		To enable debug mode type 'Debug=1' and return. 
-		To disable debug mode type 'Debug=1' and return. 
-		To exit the program type 'quit' 'q' or 'exit' and return.
-		For more infos: https://github.com/LexaTRex/timetravelDB/`)
+		fmt.Println(HelpString)
 	case "Generate Data", "GD", "gd":
 		datagenerator.GenerateData()
 	case "Load Data", "LD", "ld":
 		dataadapter.LoadData()
+	case "Load Data Neo4j", "LDN", "ldn":
+		dataadapterneo4j.LoadData()
+	case "Clear Data", "Clear DB", "CD", "cd", "Clear TTDB":
+		databaseapi.ClearNeo4j()
+		databaseapi.ClearTimescale()
+	case "Clear Neo4j":
+		databaseapi.ClearNeo4j()
 	case "Debug=1", "--debug=1", "-debug=1", "--debug=true", "-debug=true":
 		utils.DEBUG = true
 	case "Debug=0", "--debug=0", "-debug=0", "--debug=false", "-debug=false":
