@@ -33,3 +33,13 @@ dockerize -wait tcp://127.0.0.1:5432 -timeout 10s
 # check if neo4j database is ready
 docker exec test_neo4j sh -c "while neo4j-admin database info | grep -q 'Database in use:.*false'; do echo 'neo4j database not ready yet'; sleep 2; done"
 echo "neo4j database ready"
+
+# check if timescaledb database is ready
+# Note: we cannot just check for the database name because the name "postgres" of the testing database
+# is the same as the initial database and therefore cannot be differed just by its name. Therefore readiness cannot be implied without checking for content. 
+while ! echo "\dt" | docker exec -i test_timescaledb psql | grep -qw ts_96a4656a_5de6_4807_8052_4546f2b0b291; 
+do echo "timescaledb not ready yet"; sleep 2; 
+done
+
+echo "timescaledb database ready"
+
