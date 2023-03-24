@@ -81,7 +81,7 @@ func loadGraphEdgesIntoNeo4jDatabase(graph_edges []map[string]interface{}, ctx c
 		delete(edge, "end")
 		delete(edge, "labels")
 
-		queryPrefix := `MATCH (a),(b) WHERE a.nodeid = $from AND b.nodeid = $to CREATE (a)-[r:` + labels.([]interface{})[0].(string) + ` {start: "` + start.(string) + `", end: "` + end.(string) + `",`
+		queryPrefix := `MATCH (a),(b) WHERE a.nodeid = $from AND b.nodeid = $to CREATE (a)-[r:` + labels.(string) + ` {start: "` + start.(string) + `", end: "` + end.(string) + `",`
 		querySuffix := `}]->(b)`
 
 		neo4jEdgeProperties := generateNeo4jFlatProperties(edge)

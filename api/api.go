@@ -112,34 +112,46 @@ func executor(in string) {
 		utils.DEBUG = true
 	case "Debug=0", "--debug=0", "-debug=0", "--debug=false", "-debug=false":
 		utils.DEBUG = false
+	case "Benchmark":
+		runBenchmark()
 	default:
-		if ConfigErr != nil {
-			log.Printf("\n%v: There occured an error paring db configs. Please provide a valid config.yaml and restart the CLI.", ConfigErr)
-			break
-		}
-		if TsErr != nil {
-			log.Printf("\n%v: There occured an error connecting to the timescale database. Please provide a running database with the correct credentials (config.yaml) and restart the CLI", TsErr)
-			break
-		}
-		if NeoErr != nil {
-			log.Printf("\n%v: There occured an error connecting to the neo4j database. Please provide a running database with the correct credentials (config.yaml) and restart the CLI.", NeoErr)
-			break
-		}
-		utils.Debugf("\nProcessing Query: %s\n", in)
-		in = cleanQuery(in)
-		queryInfo, err := parser.ParseQuery(in)
-		if err != nil {
-			log.Printf("\n%v: error parsing query", err)
-			break
-		}
-		queryRes, err := ProcessQuery(queryInfo)
-		if err != nil {
-			log.Fatalf("processing query failed: %v", err)
-			break
-		}
-		printResult(queryRes, queryInfo)
-
+		runTTQLQuery(in)
 	}
+}
+
+func runBenchmark() {
+	// TODO: implement benchmark
+	// - how to differe if only neo4j or TTDB
+	// -
+	panic("unimplemented")
+}
+
+func runTTQLQuery(in string) {
+	if ConfigErr != nil {
+		log.Printf("\n%v: There occured an error paring db configs. Please provide a valid config.yaml and restart the CLI.", ConfigErr)
+		return
+	}
+	if TsErr != nil {
+		log.Printf("\n%v: There occured an error connecting to the timescale database. Please provide a running database with the correct credentials (config.yaml) and restart the CLI", TsErr)
+		return
+	}
+	if NeoErr != nil {
+		log.Printf("\n%v: There occured an error connecting to the neo4j database. Please provide a running database with the correct credentials (config.yaml) and restart the CLI.", NeoErr)
+		return
+	}
+	utils.Debugf("\nProcessing Query: %s\n", in)
+	in = cleanQuery(in)
+	queryInfo, err := parser.ParseQuery(in)
+	if err != nil {
+		log.Printf("\n%v: error parsing query", err)
+		return
+	}
+	queryRes, err := ProcessQuery(queryInfo)
+	if err != nil {
+		log.Fatalf("processing query failed: %v", err)
+		return
+	}
+	printResult(queryRes, queryInfo)
 }
 
 // auto completion suggestions for the prompt

@@ -1,4 +1,9 @@
-
+- []  
+- [] edges to have single type (not multiple labels)
+- [] change only neo4j ts values to only have a single timestamp
+- [] choose symbol for: valid until current: [12:33.22, current)
+- [] if not existing: create folder when generating data
+- [] irgendwas war glaube ich noch mit data-generator / data-loader
 - [] data-adapters:
   - [] take care of the change from label string to labels []string 
   - [] maybe change neo4j only time-series data to time-stamps 

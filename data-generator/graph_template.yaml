@@ -47,7 +47,7 @@
           "DataType": "string"
           "Quantity": 1
 edges:
-  - labels: ["traffic"]
+  - label: "traffic"
     count: 3 
     from: "server"
     to: "client" 
@@ -64,7 +64,7 @@ edges:
       Count:
         "DataType": "int"
         "Quantity": 4 
-  - labels: ["traffic_in"]
+  - label: "traffic_in"
     count: 3 
     from: "client"
     to: "server" 
@@ -81,7 +81,7 @@ edges:
       Count:
         "DataType": "int"
         "Quantity": 4 
-  - labels: ["self_client"]
+  - label: "self_client"
     count: 2 
     from: "client"
     to: "client" 
@@ -98,7 +98,7 @@ edges:
       Count:
         "DataType": "int"
         "Quantity": 4 
-  - labels: ["self_server"]
+  - label: "self_server"
     count: 10 
     from: "server"
     to: "server" 

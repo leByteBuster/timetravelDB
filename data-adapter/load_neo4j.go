@@ -57,14 +57,14 @@ func getQueryStringsEdges(graph_edges []map[string]interface{}) ([]string, map[u
 
 		from := edge["from"]
 		to := edge["to"]
-		labels := edge["labels"]
+		label := edge["label"]
 
 		// maybe make a copy forst to keep the original ?  or is the map copied into this funciton anyways ?
 		delete(edge, "from")
 		delete(edge, "to")
-		delete(edge, "labels")
+		delete(edge, "label")
 
-		queryPrefix := `MATCH (a),(b) WHERE a.nodeid = ` + fmt.Sprint(from) + ` AND b.nodeid = ` + fmt.Sprint(to) + ` CREATE (a)-[r:` + labels.([]interface{})[0].(string) + ` {`
+		queryPrefix := `MATCH (a),(b) WHERE a.nodeid = ` + fmt.Sprint(from) + ` AND b.nodeid = ` + fmt.Sprint(to) + ` CREATE (a)-[r:` + label.(string) + ` {`
 		querySuffix := `}]->(b)`
 
 		neo4jEdgeProperties, timeSeriesMapEdge := generateNeo4jFlatProperties(edge)

@@ -30,7 +30,7 @@ type NodeTemplate struct {
 }
 
 type EdgeTemplate struct {
-	Labels           []string       `yaml:"labels"`
+	Label            string         `yaml:"label"`
 	Count            int            `yaml:"count"`
 	From             string         `yaml:"from"`
 	To               string         `yaml:"to"`
@@ -107,7 +107,7 @@ func GenerateData() {
 				labels := nodeGroup[0]["labels"].([]string)
 				if labels[0] == edgeGroup.From {
 					utils.Debugf("generate intra relations from %v to %v", edgeGroup.From, edgeGroup.To)
-					edges = generateIntraRelations(edgeGroup.Count, edgeGroup.Labels, nodeGroup, edgeGroup.PropertyTemplate)
+					edges = generateIntraRelations(edgeGroup.Count, edgeGroup.Label, nodeGroup, edgeGroup.PropertyTemplate)
 				}
 			}
 		} else {
@@ -128,7 +128,7 @@ func GenerateData() {
 			for _, fromGroup := range fromGroups {
 				for _, toGroup := range toGroups {
 					utils.Debugf("generate inter relations from %v to %v", edgeGroup.From, edgeGroup.To)
-					edges = generateInterRelations(edgeGroup.Count, edgeGroup.Labels, fromGroup, toGroup, edgeGroup.PropertyTemplate)
+					edges = generateInterRelations(edgeGroup.Count, edgeGroup.Label, fromGroup, toGroup, edgeGroup.PropertyTemplate)
 				}
 			}
 		}
@@ -189,17 +189,23 @@ func generatePropertyNodes(numberNodes int, nodelabels []string, property_fields
 // This function generates >numberRelations< random relations between the passed nodes. It sets reandom values for the passed property_fields. It returns
 // the relations as a tuple of json-like Objects which store all the data as well as an array of AdjacenctPairs which just represent the edges via node ids
 // in the form of (from, to)
-func generateIntraRelations(numberRelations int, relation_labels []string, nodes []map[string]interface{}, property_fields map[string]interface{}) []map[string]interface{} {
+func generateIntraRelations(numberRelations int, relation_label string, nodes []map[string]interface{}, property_fields map[string]interface{}) []map[string]interface{} {
+
 	relations := []map[string]interface{}{}
+
 	for i := 0; i < numberRelations; i++ {
+
 		relation := make(map[string]interface{})
+
 		relation["relationid"] = current_relation_id
-		relation["labels"] = relation_labels
-		// TODO: time frame condition for timestamps (between the time of the nodes)
+		relation["label"] = relation_label
+
 		random_from_index := R.Intn(len(nodes))
 		from_node := nodes[random_from_index]
+
 		random_to_index := R.Intn(len(nodes))
 		to_node := nodes[random_to_index]
+
 		node_id_from := from_node["nodeid"].(int)
 		node_id_to := to_node["nodeid"].(int)
 
@@ -207,6 +213,7 @@ func generateIntraRelations(numberRelations int, relation_labels []string, nodes
 
 		relation["start"] = begin
 		relation["end"] = end
+
 		relation["from"] = node_id_from
 		relation["to"] = node_id_to
 
@@ -252,7 +259,7 @@ func minTimeBoundaries(from_node, to_node map[string]interface{}) (time.Time, ti
 // generatInterRelations generates <numberRelations> random relations between the passed from_nodes and to_nodes. It sets reandom values for the passed property_fields.
 // It returns the relations as a tuple of json-like Objects which store all the data as well as an array of AdjacenctPairs which just represent the edges via node ids
 // in the form of (from, to)
-func generateInterRelations(numberRelations int, relation_labels []string, from_nodes []map[string]interface{}, to_nodes []map[string]interface{}, property_fields map[string]interface{}) []map[string]interface{} {
+func generateInterRelations(numberRelations int, relation_label string, from_nodes []map[string]interface{}, to_nodes []map[string]interface{}, property_fields map[string]interface{}) []map[string]interface{} {
 
 	// an array of relations of type <relation_label>
 	relations := []map[string]interface{}{}
@@ -263,7 +270,7 @@ func generateInterRelations(numberRelations int, relation_labels []string, from_
 
 		// set all the obligatory fields
 		relation["relationid"] = current_relation_id
-		relation["labels"] = relation_labels
+		relation["label"] = relation_label
 
 		random_from_index := R.Intn(len(from_nodes))
 		from_node := from_nodes[random_from_index]
