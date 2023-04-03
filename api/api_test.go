@@ -59,7 +59,7 @@ func TestDeepQueries(t *testing.T) {
 		log.Printf("Creating driver failed: %v", err)
 		os.Exit(1)
 	}
-	defer databaseapi.SessionTS.Close(context.Background())
+	defer databaseapi.SessionTS.Close()
 
 	query1 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN  a,x,b"
 	query2 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE b.properties_Risc > 0 RETURN  b, b.properties_Risc"
@@ -124,7 +124,7 @@ func TestShallowQueries(t *testing.T) {
 		os.Exit(1)
 	}
 
-	defer databaseapi.SessionTS.Close(context.Background())
+	defer databaseapi.SessionTS.Close()
 
 	query1 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NOT NULL RETURN *"
 	query2 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NOT NULL RETURN  a.properties_components_cpu"
