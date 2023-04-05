@@ -52,7 +52,7 @@ func applyBinaryQueryShallow(queryInfo parser.ParseResult, shallowResult map[str
 		return shallowResult, nil
 	} else {
 
-		filteredResult, err := filterForCondLookupsInWhere(queryInfo.From, queryInfo.To, queryInfo.LookupsWhereRelevant, shallowResult)
+		filteredResult, err := filterForCondLookups(queryInfo.From, queryInfo.To, queryInfo.LookupsWhereRelevant, shallowResult)
 		if err != nil {
 			return nil, fmt.Errorf("%w; error filtering query result on WHERE conditions", err)
 		}
@@ -83,7 +83,7 @@ func applyBinaryQueryDeep(queryInfo parser.ParseResult, shallowResult map[string
 	//} else {
 	utils.Debug("DEEP QUERY CONTAINING LOOKUPS")
 
-	filteredResult, err := filterForCondLookupsInWhere(queryInfo.From, queryInfo.To, queryInfo.LookupsWhereRelevant, shallowResult)
+	filteredResult, err := filterForCondLookups(queryInfo.From, queryInfo.To, queryInfo.LookupsWhereRelevant, shallowResult)
 	if err != nil {
 		return nil, fmt.Errorf("%w; error filtering query result on WHERE conditions", err)
 	}

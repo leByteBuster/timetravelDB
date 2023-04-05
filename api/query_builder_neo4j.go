@@ -34,7 +34,7 @@ func buildCondWhereClause(lookupsWhereRelevant []parser.LookupInfo, whereClause 
 	return whereClause, nil
 }
 
-func buildTmpWhereClause(from, to, whereClause string, matchElements []string) string {
+func buildTmpWhereClause(from, to, whereClause string, matchElVars []string) string {
 
 	var sb strings.Builder
 	if strings.TrimSpace(whereClause) == "" {
@@ -44,19 +44,33 @@ func buildTmpWhereClause(from, to, whereClause string, matchElements []string) s
 		sb.WriteString(whereClause)
 		sb.WriteString(" AND")
 	}
-	for i, el := range matchElements {
-		sb.WriteString(" ")
-		sb.WriteString(el)
-		sb.WriteString(".")
-		sb.WriteString("end >= '")
-		sb.WriteString(from)
-		sb.WriteString("' AND ")
-		sb.WriteString(el)
-		sb.WriteString(".")
-		sb.WriteString("start <= '")
-		sb.WriteString(to)
-		sb.WriteString("' ")
-		if i < len(matchElements)-1 {
+	for i, elVar := range matchElVars {
+
+		if from != "current" {
+			sb.WriteString(" ")
+			sb.WriteString(elVar)
+			sb.WriteString(".")
+			sb.WriteString("end >= '")
+			sb.WriteString(from)
+			sb.WriteString("'")
+		} else {
+			// if from == current then only allow elements that elVar.from == current
+			sb.WriteString(" ")
+			sb.WriteString(elVar)
+			sb.WriteString(".")
+			sb.WriteString("from == current ")
+		}
+
+		// if to != current check elVar.start <= to elseif to == current then the element will start earlier (or same time) anyways
+		if to != "current" {
+			sb.WriteString(" AND ")
+			sb.WriteString(elVar)
+			sb.WriteString(".")
+			sb.WriteString("start <= '")
+			sb.WriteString(to)
+			sb.WriteString("' ")
+		}
+		if i < len(matchElVars)-1 {
 			sb.WriteString("AND")
 		}
 	}

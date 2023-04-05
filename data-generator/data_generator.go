@@ -144,9 +144,17 @@ func GenerateData() {
 
 func exportGraphAsJson(graph_nodes []map[string]interface{}, graph_edges []map[string]interface{}, file_path string) {
 
+	err := os.MkdirAll(file_path, 0755)
+	if err != nil {
+		log.Printf("couldn't generate directory: %v\n", err)
+		return
+	}
+
 	edgeFile, err := os.OpenFile(file_path+"graph_edges.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0664)
 	if err != nil {
 		log.Printf("error open edge file: %v\n", err)
+		edgeFile.Close()
+		return
 	}
 	defer edgeFile.Close()
 	encoderEdges := json.NewEncoder(edgeFile)
@@ -155,6 +163,8 @@ func exportGraphAsJson(graph_nodes []map[string]interface{}, graph_edges []map[s
 	nodeFile, err := os.OpenFile(file_path+"graph_nodes.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0664)
 	if err != nil {
 		log.Printf("error open node file: %v\n", err)
+		nodeFile.Close()
+		return
 	}
 	defer nodeFile.Close()
 	encoderNodes := json.NewEncoder(nodeFile)

@@ -1,15 +1,13 @@
 # running the tests 
 
-# running docker compose
-
 # timescaledb: 
 
 ## manually starting setting up docker testing environment
 
 ### making a backup 
-    - run the psql terminal of the timescaledb docker container: `docker exec -it test_timescaledb psql -U postgres`
-    - `pg_dump -Fc -f <database>.bak <database>`
-    - either copy it from a running container using `docker cp` or use a shared volume for the /tmp/ directory 
+  - run the psql terminal of the timescaledb docker container: `docker exec -it test_timescaledb psql -U postgres`
+  - `pg_dump -Fc -f <database>.bak <database>`
+  - either copy it from a running container using `docker cp` or use a shared volume for the /tmp/ directory 
 
 ### restoring the backup 
   - start container: 
@@ -73,14 +71,4 @@ create and start a new container based on the loaded backup:
   - `docker run --interactive --tty --rm --volume=./docker-test/neo4j/data:/data --volume=./docker-test/neo4j/backups:/backups neo4j neo4j-admin database load neo4j --from-path=/backups --verbose`
 - run container with restored database:  
   - `docker run --name testneo4j -p7474:7474 -p7687:7687 -d -v ./docker-test/neo4j/data:/data -v ./docker-test/neo4j/logs:/logs -v ./docker-test/neo4j/backups:/backups --env NEO4J_AUTH=neo4j/test neo4j:5.2.0`
-
-
-note THIS WORKS AS WELL 
-docker run \
-    --name testneo4j \
-    -p7474:7474 -p7687:7687 \
-    -d \
-    -v ./data:/data \
-    -v ./backups:/backups \
-    neo4j:latest
 

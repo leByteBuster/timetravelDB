@@ -1,7 +1,6 @@
 // Code generated from java-escape by ANTLR 4.11.1. DO NOT EDIT.
 
 package ttql_interface // TTQL
-
 import "github.com/antlr/antlr4/runtime/Go/antlr/v4"
 
 // BaseTTQLListener is a complete listener for a parse tree produced by TTQLParser.

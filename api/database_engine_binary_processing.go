@@ -13,6 +13,8 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
+// isValidPropertyLookups checks if all property lookups occuring in valid clauses i.e. WHERE or RETURN clause.  We do not allow
+// property lookups elsewhere. This should be part of parsing in the future.
 func isValidPropertyLookups(insights map[*tti.OC_ComparisonExpressionContext][]listeners.PropertyClauseInsight) (isValid bool) {
 	isValid = true
 	for _, listOfInsights := range insights {
@@ -25,6 +27,7 @@ func isValidPropertyLookups(insights map[*tti.OC_ComparisonExpressionContext][]l
 	return isValid
 }
 
+// getSelectedTimeSeries fetches all time series of specific property lookups which are time series properties
 func getSelectedTimeSeries(queryInfo parser.ParseResult, lookupsMap map[string][]string, returnProjections []string, graphData map[string][]interface{}) (map[string][]interface{}, error) {
 	var err error
 	for elVar, lookups := range lookupsMap {
@@ -102,6 +105,7 @@ func getTimeSeriesSingleLookup(queryInfo parser.ParseResult, graphData map[strin
 	return graphData, nil
 }
 
+// fetchSinglePropTimeSeries fetches a single time series of a graph element property
 func fetchSinglePropTimeSeries(queryInfo parser.ParseResult, graphData map[string][]interface{}, elementVar, property string) (map[string][]any, error) {
 
 	lookup := getLookupString(elementVar, property)
@@ -110,15 +114,21 @@ func fetchSinglePropTimeSeries(queryInfo parser.ParseResult, graphData map[strin
 
 	for i, el := range elements {
 		if e, ok := el.(neo4j.Entity); ok {
+
 			properties := e.GetProperties()
 			uuid := properties[property]
+
 			if uuid == nil {
 				// property not available - do nothing
 				utils.Debugf("\nproperty %v not available on element with id : %v\n", property, e.GetElementId())
 			} else if s, ok := uuid.(string); ok {
+
+				// fetch time series by uuid
 				tablename := uuidToTablename(s)
 				_, timeseries, err := getTimeSeries(queryInfo.From, queryInfo.To, "", tablename)
+
 				graphData[lookup][i] = timeseries
+
 				if err != nil {
 					return graphData, fmt.Errorf("%w; error - couldnt fetch  properties for %v of element", err, property)
 				}
@@ -132,6 +142,7 @@ func fetchSinglePropTimeSeries(queryInfo parser.ParseResult, graphData map[strin
 	return graphData, nil
 }
 
+// fetchTimeSeriesAll fetches all time series of all properties of all passed elements
 func fetchTimeSeriesAll(from string, to string, graphData map[string][]interface{}, elements []interface{}, elementVar string) (map[string][]interface{}, error) {
 	for _, el := range elements {
 		switch e := el.(type) {
@@ -165,6 +176,7 @@ func fetchTimeSeriesAll(from string, to string, graphData map[string][]interface
 	return graphData, nil
 }
 
+// getShallow returns the shallow graph without time series content
 func getShallow(queryInfo parser.ParseResult) (map[string][]interface{}, error) {
 	cndWhere, err := buildCondWhereClause(queryInfo.LookupsWhereRelevant, queryInfo.WhereClause)
 	if err != nil {
@@ -187,14 +199,28 @@ func getShallow(queryInfo parser.ParseResult) (map[string][]interface{}, error) 
 	return resMap, err
 }
 
-func filterForCondLookupsInWhere(from string, to string, relevantLookups []parser.LookupInfo, graphData map[string][]interface{}) (map[string][]interface{}, error) {
+// filterForCondLookups filters the result set of graph elements after a conditional lookup in a time series. Right now the only possible
+// filter is ANY() which is treated equivalent to not using an operator for lookup of a time series. For example if a.prop > 20 in the
+// WHERE clause it will be checked if there is a value > 20 in the time series of a.prop (in the boundaries of the specified time frame
+// of the query). If there is an element > 20 the element will be in the result set which is available for RETURN. If not it is removed.
+// Right now saying a.prop > 20 is equivalent to ANY(a.prop) > 20. This is supposed to be changed when more operators are implemented.
+func filterForCondLookups(from string, to string, relevantLookups []parser.LookupInfo, graphData map[string][]interface{}) (map[string][]interface{}, error) {
 	var err error
 	var toRemove []int
 	filteredData := graphData
 	for _, lookupInfo := range relevantLookups {
 		elements := graphData[lookupInfo.ElementVariable]
-		toRemove, err = checkIfValueForConditionExists(from, to, graphData, elements, lookupInfo.Property, lookupInfo.ElementVariable, lookupInfo.CompareOperator, lookupInfo.CompareValue, lookupInfo.LookupLeft)
+
+		// check if ANY() condition is fullfilled.
+		toRemove, err = checkAnyCondition(from, to, graphData, elements, lookupInfo.Property, lookupInfo.ElementVariable, lookupInfo.CompareOperator, lookupInfo.CompareValue, lookupInfo.LookupLeft)
+
+		// TO IMPLEMENT:
+		// check if AVG() condition is fullfilled.
+		// toRemove, err = checkAVGCondition()
+
+		// filter result set
 		filteredData = filterMatches(filteredData, toRemove, []string{})
+
 		if err != nil {
 			return nil, fmt.Errorf("%w; error - couldnt merge time series in property", err)
 		}
@@ -202,6 +228,8 @@ func filterForCondLookupsInWhere(from string, to string, relevantLookups []parse
 	return filteredData, nil
 }
 
+// fetchTimeSeries fetches the time series of a specific property for all matching elements
+// for example with "MATCH a RETURN a.prop" all time series of prop are fetched for all elements a
 func fetchTimeSeries(from string, to string, graphData map[string][]interface{}, elements []interface{}, property string, elementVar string, mergeVariables bool) (map[string][]interface{}, error) {
 	for i, el := range elements {
 		switch e := el.(type) {
@@ -230,7 +258,12 @@ func fetchTimeSeries(from string, to string, graphData map[string][]interface{},
 	return graphData, nil
 }
 
-func checkIfValueForConditionExists(from string, to string, graphData map[string][]interface{}, elements []interface{}, property string, elementVar string, compareOp string, compareVal any, lookupLeft bool) ([]int, error) {
+// checkAnyCondition conditionally checks time series of a property for the ANY() operator
+// ANY() is treated equivalent to not using an operator for lookup of a time series. For example if a.prop > 20 in the
+// WHERE clause it will be checked if there is a value > 20 in the time series of a.prop (in the boundaries of the specified time frame
+// of the query). If there is an element > 20 the element will be in the result set which is available for RETURN. If not it is removed.
+// Right now saying a.prop > 20 is equivalent to ANY(a.prop) > 20. This is supposed to be changed when more operators are implemented.
+func checkAnyCondition(from string, to string, graphData map[string][]interface{}, elements []interface{}, property string, elementVar string, compareOp string, compareVal any, lookupLeft bool) ([]int, error) {
 	rowsToRemove := []int{}
 
 	for i, el := range elements {

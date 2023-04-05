@@ -40,12 +40,14 @@ ttQL_Query
      : ttQL_TimeClause SP SHALLOW?;
 
 ttQL_TimeClause
-     : FROM SP? DATETIME SP? TO SP? DATETIME; 
+     : FROM SP? (DATETIME | CURRENT) SP? TO SP? (DATETIME | CURRENT); 
 
 
 // DATETIME: (DATE | TIME | DATETIME); - it was necessary to merge the tokens into one because otherwise the lexer would misinterpret double digits representing integers as
 // a TIME token. Through introducing this asslong unique Token we avoid problems with the greedyness of the Lexer  
 DATETIME:  (Digit Digit Digit Digit '-' Digit Digit '-' Digit Digit) ('T' (Digit Digit (':' Digit Digit (':' Digit Digit ('.' (Digit)+ )?)?)?) ('Z' | ( '+' | '-' ) Digit Digit ':' Digit Digit))?;
+
+CURRENT:  ( 'C' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ;
 
 FROM : ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ;
 TO : ( 'T' | 't' ) ( 'O' | 'o' ) ;

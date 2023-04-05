@@ -22,18 +22,35 @@ var TsErr error
 var ConfigErr error
 
 var HelpString = `
-		Hello, welcome to TTDB CLI !
-		To query TimeTravelDB type in a valid TTQL query.
-		To generate test data type 'Generate Data' and return.
-		To load generated data into TTDB type 'Load Data' and return.
-		To load generated data only Neo4j type 'Load Data Neo4j' and return.
-		To define the structure of the generated data alter data-generator/graph_template.yaml
-		To clear TTDB from all data type 'Clear TTDB' and return.
-		To clear only Neo4j from all data type 'Clear Neo4j' and return.
-		To enable debug mode type 'Debug=1' and return. 
-		To disable debug mode type 'Debug=1' and return. 
+		Hello, welcome to 
+
+			  _____     _____     ____       ____   
+			 |_* *_|  U|_^ ^_|   |  _"\   U | __") u     ______     __         __     
+			   | |     \ | |    /| | | |   \|  _ \/     /\  ___\   /\ \       /\ \   
+			  /| |\     -| |-u  U| |_| |\   | |_) |     \ \ \____  \ \ \____  \ \ \  
+			 u |_|U      |_|     |____/ u   |____/       \ \_____\  \ \_____\  \ \_\ 
+			 _// \\_   _// \\_    |||_     _|| \\_        \/_____/   \/_____/   \/_/ 
+			(__) (__) (__) (__)  (__)_)   (__) (__)                                
+
+
+	  To greet the world type 'hello' and return.  	
 		To exit the program type 'quit' 'q' or 'exit' and return.
-		For more infos: https://github.com/LexaTRex/timetravelDB/`
+		To query TimeTravelDB type in a valid TTQL query.
+		To print helpful information type 'help' or '-h' and return.
+		To generate test data type 'Generate Data' and return. 
+		To define the structure of the generated data alter data-generator/graph_template.yaml. 
+		To load generated data into TTDB type 'Load Data' or 'LD' and return.
+		To load generated data only Neo4j type 'Load Data Neo4j' or 'LDN' and return. Note that this data cannot be queried via TTDB CLI 
+		   but must be queried via the common Neo4j methods. Refer to the README.md for further information. 
+		To clear TTDB from all data type 'Clear Data', 'Clear TTDB' or 'CD' and return.
+		To clear only Neo4j from all data type 'Clear Neo4j' and return.
+		To enable debug mode type 'Debug=1' or '--debug=true' and return. 
+		To disable debug mode type 'Debug=0' or '--debug=false' and return. 
+		To run benchmarks type 'Benchmark' or 'benchmark' and return. 
+
+		For more infos: https://github.com/LexaTRex/timetravelDB/
+		Note: In case the CLI crashes it can occour that the terminal settings are not reset and becomes unusable because of a bug in 
+		      the utilized prompt library. In this case close the terminal or type 'reset' and return. Typing will be invisible - just do it anyways..`
 
 func Api() {
 

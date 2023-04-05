@@ -9,6 +9,7 @@ require (
 	github.com/jackc/pgx/v5 v5.3.1
 	github.com/neo4j/neo4j-go-driver/v5 v5.5.0
 	github.com/shopspring/decimal v1.3.1
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -26,9 +27,7 @@ require (
 require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/neo4j/neo4j-go-driver/v4 v4.4.5
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/exp v0.0.0-20230203172020-98cc5a0785f9 // indirect
 	golang.org/x/text v0.7.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1
 )

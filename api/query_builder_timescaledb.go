@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/LexaTRex/timetravelDB/utils"
 )
@@ -17,6 +18,9 @@ func uuidToTablename(uuid string) string {
 
 // get properties / multiple time-series and apply aggrergation on it if not empty
 func buildQueryString(from, to, aggr string, cmpOp string, cmpVal any, lookupLeft bool, tables []string) (string, error) {
+
+	currentTime := time.Now()
+	currentTimeiso8601 := currentTime.Format("2006-01-02T15:04:05Z07:00")
 
 	var builder strings.Builder
 	var err error
@@ -42,13 +46,21 @@ func buildQueryString(from, to, aggr string, cmpOp string, cmpVal any, lookupLef
 		builder.WriteString(tablename)
 		builder.WriteString(" WHERE time >= ")
 		builder.WriteString("'")
-		builder.WriteString(from)
+		if from == "current" || from == "CURRENT" {
+			builder.WriteString(currentTimeiso8601)
+		} else {
+			builder.WriteString(from)
+		}
 		builder.WriteString("'")
 		builder.WriteString(" AND time < ")
 
 		//TODO: CHANGE THIS TO DATETIME
 		builder.WriteString("'")
-		builder.WriteString(to)
+		if to == "current" || to == "CURRENT" {
+			builder.WriteString(currentTimeiso8601)
+		} else {
+			builder.WriteString(to)
+		}
 		builder.WriteString("'")
 		if cmpOp != "" && cmpVal != "" {
 			builder.WriteString(" AND ")
