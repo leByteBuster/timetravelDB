@@ -67,10 +67,13 @@ func TestDeepQueries(t *testing.T) {
 	query4 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN *"
 	query5 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN a.properties_components_cpu"
 	query6 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN a, b"
+	query7 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'TTT' RETURN *"
+	query8 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE b.properties_Risc > 40 RETURN *"
+	query9 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE b.properties_Risc > 39 RETURN *"
 
-	expecteds := []string{expected1, expected2, expected3, expected4, expected5, expected6}
-	queries := []string{query1, query2, query3, query4, query5, query6}
-	keys := [][]string{{"a", "x", "b"}, {"b", "b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}, {"a.properties_components_cpu"}, {"a", "b"}}
+	expecteds := []string{expected1, expected2, expected3, expected4, expected5, expected6, expected7, expected8, expected9}
+	queries := []string{query1, query2, query3, query4, query5, query6, query7, query8, query9}
+	keys := [][]string{{"a", "x", "b"}, {"b", "b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}, {"a.properties_components_cpu"}, {"a", "b"}, {}, {}, {"a", "b", "x"}}
 
 	for i, query := range queries {
 		queryInfo, err := parser.ParseQuery(cleanQuery(query))
@@ -136,10 +139,13 @@ func TestShallowQueries(t *testing.T) {
 	query8 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN  a, a.properties_components_cpu"
 	query9 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) RETURN  *"
 	query10 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) RETURN  a.properties_components_cpu"
+	query11 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'TTT' RETURN *"
+	query12 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE b.properties_Risc > 40 RETURN *"
+	query13 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE b.properties_Risc > 39 RETURN *"
 
-	expecteds := []string{expectedShallow1, expectedShallow2, expectedShallow3, expectedShallow4, expectedShallow5, expectedShallow6, expectedShallow7, expectedShallow8, expectedShallow9, expectedShallow10}
-	queries := []string{query1, query2, query3, query4, query5, query6, query7, query8, query9, query10}
-	keys := [][]string{{"a", "b", "x"}, {"a.properties_components_cpu"}, {"a", "b", "x"}, {"b", "b.properties_Risc"}, {"b", "b.properties_Risc"}, {"a", "x", "b"}, {"b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}, {"a.properties_components_cpu"}}
+	expecteds := []string{expectedShallow1, expectedShallow2, expectedShallow3, expectedShallow4, expectedShallow5, expectedShallow6, expectedShallow7, expectedShallow8, expectedShallow9, expectedShallow10, expectedShallow11, expectedShallow12, expectedShallow13}
+	queries := []string{query1, query2, query3, query4, query5, query6, query7, query8, query9, query10, query11, query12, query13}
+	keys := [][]string{{"a", "b", "x"}, {"a.properties_components_cpu"}, {"a", "b", "x"}, {"b", "b.properties_Risc"}, {"b", "b.properties_Risc"}, {"a", "x", "b"}, {"b.properties_Risc"}, {"a", "a.properties_components_cpu"}, {"a", "b", "x"}, {"a.properties_components_cpu"}, {}, {}, {"a", "b", "x"}}
 
 	for i, query := range queries {
 		queryInfo, err := parser.ParseQuery(cleanQuery(query))

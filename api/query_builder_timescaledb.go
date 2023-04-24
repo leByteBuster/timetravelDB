@@ -87,6 +87,9 @@ func buildQueryStringCmpExists(from, to, aggr string, cmpOp string, cmpVal any, 
 	var builder strings.Builder
 	var err error
 
+	currentTime := time.Now()
+	currentTimeiso8601 := currentTime.Format("2006-01-02T15:04:05Z07:00")
+
 	if !lookupLeft && cmpOp != "" && cmpVal != "" {
 		if cmpOp, err = invertCmpOperatro(cmpOp); err != nil {
 			return "", err
@@ -104,9 +107,12 @@ func buildQueryStringCmpExists(from, to, aggr string, cmpOp string, cmpVal any, 
 	builder.WriteString("'")
 	builder.WriteString(" AND time < ")
 
-	//TODO: CHANGE THIS TO DATETIME
 	builder.WriteString("'")
-	builder.WriteString(to)
+	if to == "current" || to == "CURRENT" {
+		builder.WriteString(currentTimeiso8601)
+	} else {
+		builder.WriteString(to)
+	}
 	builder.WriteString("'")
 	if cmpOp != "" && cmpVal != "" {
 		builder.WriteString(" AND ")

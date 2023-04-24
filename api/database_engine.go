@@ -70,17 +70,6 @@ func applyBinaryQueryDeep(queryInfo parser.ParseResult, shallowResult map[string
 
 	var queryResult map[string][]interface{}
 
-	// if !queryInfo.ContainsPropertyLookup || queryInfo.ContainsPropertyLookup && queryInfo.ContainsOnlyNullPredicate {
-
-	// 	utils.Debug("DEEP NO PROPERTY LOOKUPS")
-
-	// 	queryResult, err = noPropertyLookupDeep(queryInfo, shallowResult)
-	// 	if err != nil {
-	// 		if ok, err := handleErrorOnResult(queryResult, fmt.Errorf("error executing deep query with no property lookups: %v", err)); !ok {
-	// 			return nil, err
-	// 		}
-	// 	}
-	//} else {
 	utils.Debug("DEEP QUERY CONTAINING LOOKUPS")
 
 	filteredResult, err := filterForCondLookups(queryInfo.From, queryInfo.To, queryInfo.LookupsWhereRelevant, shallowResult)
@@ -94,7 +83,6 @@ func applyBinaryQueryDeep(queryInfo parser.ParseResult, shallowResult map[string
 			return nil, err
 		}
 	}
-	//}
 	return queryResult, nil
 }
 
@@ -102,6 +90,7 @@ func propertyLookupShallow(queryInfo parser.ParseResult, queryResult map[string]
 
 	returnVariables := queryInfo.ReturnProjections
 	lookupsReturn := queryInfo.LookupsReturn
+
 	queryResult, err := getSelectedTimeSeries(queryInfo, lookupsReturn, returnVariables, queryResult)
 	if err != nil {
 		return nil, fmt.Errorf("%w; error filtering and merging queried data", err)

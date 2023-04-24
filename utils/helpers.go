@@ -70,7 +70,7 @@ func IsValidISO8601(s string) bool {
 func PrettyPrintArray(arr []any) {
 	b, err := json.MarshalIndent(arr, "", "  ")
 	if err != nil {
-		fmt.Println("marshal error:", err)
+		log.Println("marshal error:", err)
 	}
 	fmt.Print(string(b))
 }
@@ -78,19 +78,22 @@ func PrettyPrintArray(arr []any) {
 func JsonStringFromMap(s map[string][]any) string {
 	b, err := json.MarshalIndent(s, "", "  ")
 	if err != nil {
-		fmt.Println("marshal error:", err)
+		log.Println("marshal error:", err)
 	}
 	return string(b)
 }
 
 func JsonStringFromMapOrdered(m map[string][]any, keys []string) string {
 	anyEntries := false
+
+	fmt.Println("\n 	KEYS:", keys)
 	for _, key := range keys {
 		if len(m[key]) > 0 {
 			anyEntries = true
 			break
 		}
 	}
+
 	if anyEntries {
 		var sb strings.Builder
 		sb.WriteString("{\n")
@@ -198,9 +201,6 @@ func RemoveElement(slice []string, i int) []string {
 // not used right now. comparison happens in database. see query_builder_teimscaledb
 // maybe change this or alternate depending on use case for performacne reasons
 func CompareValues(val any, compareVal any, compareOp string) (bool, error) {
-	fmt.Println("XXX CompareOperator: ", compareOp)
-	fmt.Println("XXX VALUE: ", val)
-	fmt.Println("XXX COMPAREVALUE: ", compareVal)
 	switch v := val.(type) {
 	case int:
 		compareVal, ok := compareVal.(int)

@@ -14,21 +14,21 @@ import (
 
 // ParseResult holds all the information about a parsed query to build queries for Neo4j and TimescaleDB
 type ParseResult struct {
-	IsShallow                 bool              // is the query shallow?
-	ContainsPropertyLookup    bool              // contains any property lookup?
-	ContainsOnlyNullPredicate bool              // if property lookups - do any of them have a NullPredicates suffix ?
-	From                      string            // start time
-	To                        string            // end time
-	MatchClause               string            // MATCH clause as string
-	WhereClause               string            // WHERE clause as string
-	ReturnClause              string            // WHERE clause
-	QueryVariables            li.QueryVariables // all element variables occouring in the query
-	ReturnProjections         []string          // all projections in Return, used for ordering and time-series fetching
-	LookupsWhereRelevant      []LookupInfo      // holds all relevant lookups in WHERE which are  relevant for binary querying  with additional information
+	PropertyClauseInsights    map[*tti.OC_ComparisonExpressionContext][]li.PropertyClauseInsight // insights of Comparison expressions / Property Clauses
+	From                      string                                                             // start time
+	To                        string                                                             // end time
+	IsShallow                 bool                                                               // is the query shallow?
+	QueryVariables            li.QueryVariables                                                  // all element variables occouring in the query
+	MatchClause               string                                                             // MATCH clause as string
+	WhereClause               string                                                             // WHERE clause as string
+	ReturnClause              string                                                             // WHERE clause
+	ReturnProjections         []string                                                           // all projections in Return, used for ordering and time-series fetching
+	ContainsPropertyLookup    bool                                                               // contains any property lookup?
+	ContainsOnlyNullPredicate bool                                                               // if property lookups - do any of them have a NullPredicates suffix ?
+	LookupsWhereRelevant      []LookupInfo                                                       // holds all relevant lookups in WHERE which are  relevant for binary querying  with additional information
 	// which is relevant for comparisons and information about NullPredicates.
 	// Null Predicate lookups are only relevant if they occur in actual comparisons (a.prop IS NOT NULL > 20)
-	LookupsReturn          map[string][]string                                                // contains all relevant lookups in Return (lookups that do not have a NullPredicate appendix - but we don't allow this in the RETURN clause yet anyways)
-	PropertyClauseInsights map[*tti.OC_ComparisonExpressionContext][]li.PropertyClauseInsight // insights of Comparison expressions / Property Clauses
+	LookupsReturn map[string][]string // contains all relevant lookups in Return (lookups that do not have a NullPredicate appendix - but we don't allow this in the RETURN clause yet anyways)
 }
 
 // ParseQuery parses a ttql query and returns a ParseResult which contains the relevant information to build Neo4j and TimecaleDB queries
@@ -226,11 +226,14 @@ func GetRelevantLookupInfoWhere(compareClause string, insights []li.PropertyClau
 		if !(leftPrefix || rightPrefix) {
 			return LookupInfo{}, nil
 		}
-		if insightLeft.IsPartOfActualComparison {
-			compareOperator = insightLeft.CompareOperator
-		} else if insightRight.IsPartOfActualComparison {
+
+		utils.Debugf("COMPARE OPERATOR INSIGHT LEFT:  %+v", insightLeft.CompareOperator)
+		utils.Debugf("COMPARE OPERATOR INSIGHT RIGHT:  %+v", insightRight.CompareOperator)
+
+		if insightLeft.IsPartOfActualComparison && insightRight.IsPartOfActualComparison {
+			// compare operator is alsways part of the right side of the expression
 			compareOperator = insightRight.CompareOperator
-		} else {
+		} else if !insightLeft.IsPartOfActualComparison && !insightRight.IsPartOfActualComparison {
 			return LookupInfo{}, errors.New("comparison expression with two propertylabel expressions that include no partial comparison")
 		}
 

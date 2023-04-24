@@ -46,7 +46,7 @@ func buildTmpWhereClause(from, to, whereClause string, matchElVars []string) str
 	}
 	for i, elVar := range matchElVars {
 
-		if from != "current" {
+		if from != "current" && from != "CURRENT" {
 			sb.WriteString(" ")
 			sb.WriteString(elVar)
 			sb.WriteString(".")
@@ -58,11 +58,11 @@ func buildTmpWhereClause(from, to, whereClause string, matchElVars []string) str
 			sb.WriteString(" ")
 			sb.WriteString(elVar)
 			sb.WriteString(".")
-			sb.WriteString("from == current ")
+			sb.WriteString("from = 'current' ")
 		}
 
-		// if to != current check elVar.start <= to elseif to == current then the element will start earlier (or same time) anyways
-		if to != "current" {
+		// if to != current check elVar.start <= to elseif to = current then the element will start earlier (or same time) anyways
+		if to != "current" && to != "CURRENT" {
 			sb.WriteString(" AND ")
 			sb.WriteString(elVar)
 			sb.WriteString(".")

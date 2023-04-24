@@ -47,7 +47,7 @@ ttQL_TimeClause
 // a TIME token. Through introducing this asslong unique Token we avoid problems with the greedyness of the Lexer  
 DATETIME:  (Digit Digit Digit Digit '-' Digit Digit '-' Digit Digit) ('T' (Digit Digit (':' Digit Digit (':' Digit Digit ('.' (Digit)+ )?)?)?) ('Z' | ( '+' | '-' ) Digit Digit ':' Digit Digit))?;
 
-CURRENT:  ( 'C' | 'u' ) ( 'R' | 'r' ) ( 'R' | 'r' ) ( 'E' | 'e' ) ( 'N' | 'n' ) ( 'T' | 't' ) ;
+CURRENT: 'CURRENT' | 'current'; 
 
 FROM : ( 'F' | 'f' ) ( 'R' | 'r' ) ( 'O' | 'o' ) ( 'M' | 'm' ) ;
 TO : ( 'T' | 't' ) ( 'O' | 'o' ) ;

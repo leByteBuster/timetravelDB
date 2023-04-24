@@ -37,10 +37,23 @@ func getSelectedTimeSeries(queryInfo parser.ParseResult, lookupsMap map[string][
 			mergeVariables = true
 		}
 		for _, prop := range lookups {
+
+			// if the explicit named property is no time series property - adopt the value from the shallow graph
 			if !strings.HasPrefix(prop, "ts_") && !strings.HasPrefix(prop, "properties_") {
-				continue
+
+				for _, el := range elements {
+					switch e := el.(type) {
+					case neo4j.Entity:
+						propVal := e.GetProperties()[prop]
+						lookup := getLookupString(elVar, prop)
+						graphData[lookup] = append(graphData[prop], propVal)
+					}
+				}
+
+				// else: fetch the according time series from TimescaleDB for all elements that fall under the according element variable
+			} else {
+				graphData, err = fetchTimeSeries(queryInfo.From, queryInfo.To, graphData, elements, prop, elVar, mergeVariables)
 			}
-			graphData, err = fetchTimeSeries(queryInfo.From, queryInfo.To, graphData, elements, prop, elVar, mergeVariables)
 		}
 	}
 	return graphData, err
@@ -211,7 +224,6 @@ func filterForCondLookups(from string, to string, relevantLookups []parser.Looku
 	for _, lookupInfo := range relevantLookups {
 		elements := graphData[lookupInfo.ElementVariable]
 
-		// check if ANY() condition is fullfilled.
 		toRemove, err = checkAnyCondition(from, to, graphData, elements, lookupInfo.Property, lookupInfo.ElementVariable, lookupInfo.CompareOperator, lookupInfo.CompareValue, lookupInfo.LookupLeft)
 
 		// TO IMPLEMENT:

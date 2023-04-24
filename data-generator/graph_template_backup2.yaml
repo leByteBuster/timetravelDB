@@ -1,0 +1,120 @@
+"nodes":
+  - "labels": ["client"]
+    "count": 3 
+    template:
+      IP:
+        "DataType": "string"
+        "Quantity": 2 
+      firewall:
+        "DataType": "boolean"
+        "Quantity": 3 
+      root:
+        "DataType": "string"
+        "Quantity": 1 
+      Risc:
+        "DataType": "int"
+        "Quantity": 5 
+      components:        
+        gpu:
+          "DataType": "string"
+          Quantity: 1
+        cpu:
+          "DataType": "string"
+          Quantity: 1
+        ram:
+          "DataType": "string"
+          "Quantity": 2
+  - labels: ["server"]
+    count: 1 
+    template:
+      IP:
+        "DataType": "string"
+        Quantity: 1
+      firewall:
+        "DataType": "boolean"
+        "Quantity": 3
+      root:
+        "DataType": "string"
+        Quantity: 10
+      Risc:
+        "DataType": "int"
+        "Quantity": 10 
+      components: 
+        cpu:
+          "DataType": "string"
+          "Quantity": 1
+        ram:
+          "DataType": "string"
+          "Quantity": 1
+edges:
+  - label: "traffic"
+    count: 3 
+    from: "server"
+    to: "client" 
+    template:
+      TCPUDP:
+        "DataType": "string"
+        "Quantity": 3 
+      IPv4IPv6:
+        "DataType": "string"
+        "Quantity": 2 
+      Risc:
+        "DataType": "int"
+        "Quantity": 5 
+      Count:
+        "DataType": "int"
+        "Quantity": 4 
+  - label: "traffic_in"
+    count: 3 
+    from: "client"
+    to: "server" 
+    template:
+      TCPUDP:
+        "DataType": "string"
+        "Quantity": 3 
+      IPv4IPv6:
+        "DataType": "string"
+        "Quantity": 2 
+      Risc:
+        "DataType": "int"
+        "Quantity": 5 
+      Count:
+        "DataType": "int"
+        "Quantity": 4 
+  - label: "self_client"
+    count: 2 
+    from: "client"
+    to: "client" 
+    template:
+      TCPUDP:
+        "DataType": "string"
+        "Quantity": 3 
+      IPv4IPv6:
+        "DataType": "string"
+        "Quantity": 2 
+      Risc:
+        "DataType": "int"
+        "Quantity": 5 
+      Count:
+        "DataType": "int"
+        "Quantity": 4 
+  - label: "self_server"
+    count: 10 
+    from: "server"
+    to: "server" 
+    template:
+      TCPUDP:
+        "DataType": "string"
+        "Quantity": 3 
+      IPv4IPv6:
+        "DataType": "string"
+        "Quantity": 2 
+      Risc:
+        "DataType": "int"
+        "Quantity": 5 
+      Count:
+        "DataType": "int"
+        "Quantity": 4 
+  
+  
+  

@@ -5,43 +5,63 @@
 
 Until now TTDB only works for Linux systems. 
 
-## ANTLR4
+##### GO (v1.20.2)
+https://github.com/golang/go
+
+##### ANTLR4 (v4.11.1)
 https://github.com/antlr/antlr4
 
-## GO-PROMPT
+##### GO-PROMPT (v0.2.6)
 https://github.com/c-bata/go-prompt
 
-## UUID
+##### UUID (v1.3.0)
 https://github.com/google/uuid
 
-## PGX - PostgreSQL Driver and Toolkit
+##### PGX - PostgreSQL Driver and Toolkit (v5.3.1)
 https://github.com/jackc/pgx/
-
-## Neo4j Go Driver
+ 
+##### Neo4j Go Driver (v5.5.0)
 https://github.com/neo4j/neo4j-go-driver
 
-## Decimal - Precise fixed point decimal numbers
+##### Decimal - Precise fixed point decimal numbers (v1.3.1)
 https://github.com/shopspring/decimal
   
-## Yaml 
+##### Yaml (v3.0.1)
 https://github.com/go-yaml/yaml/tree/v3
 
-## Docker
+##### OpenCypher (v9)
+http://opencypher.org/resources/
+
+##### Docker (v23.0.1)
 https://github.com/docker
 
-## Dockerize
+##### Docker Images
+
+###### TimescaleDB Image 
+timescale/timescaledb-ha (version: pg14-latest)
+
+###### Neo4j Image 
+neo4j (version: 5.2.0) 
+
+##### Dockerize (v0.6.1)
 https://github.com/jwilder/dockerize
 
-## Docker-Compose
+##### Docker-Compose (v2.17.2)
 https://github.com/docker/compose
 
-## Indirect dependencies
+##### Indirect dependencies
 Note. It might be neccessary to install secondary dependencies. This should become apparent when trying to run TTDB in case they are missing.  
 
-# Scripts
+##### Scripts
 
 All available scripts can bin found in the `/scripts` directory. For their functionality please refer to 
 [environment setup](#environment-setup) and [testing](#testing). 
+
+##### Github
+
+Github is used for hosting the software: https://github.com/LexaTRex/timetravelDB
+
+
 
 # HOW TO USE TimeTravelDB
 
@@ -82,6 +102,8 @@ install and run the timescaledb docker image (see: https://docs.timescale.com/in
 
 The `config.yaml` is to be adjusted according to the used ports and credentials. 
 
+
+__Note__: If the neo4j docker container is not coming up remove it completely by `docker rm test_neo4j` and re-run the according script. 
 
 ### Backup & Restore 
 For information on backing up and restoreing data of the containers please refer to [README_DOCKER.md](README_DOCKER.md). 

@@ -1,3 +1,19 @@
+- BUGS: Testing Data 
+  - [x] FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'TTT' RETURN *
+    - gibt result aus obwohl 'TTT' nicht vorhanden
+  - [x] FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE b.properties_Risc > 100 RETURN *
+    - gibt result aus obwohl höchster eintrag in b.properties_Risc 40 ist
+
+- [x] TODO BEFORE EVALUATING: 
+  - [x] normal properties can be returned explicitely as well (for RETURN clauess like "RETURN b, b.age")
+
+- [] TODO AFTER EVALUATING: 
+  - [] create new package "Query Processor Engine"
+  - [] implement labels as labels - not as properties!  
+      - i think this only needs to be changed for the relationships
+  - [] go through the list below. see what we need
+
+- [] compare operator <> 
 - [] choose symbol for: valid until current: [12:33.22, current)
 - [] sind die property lookups die keine zeitserien lookups sind inkludiert in dem ergebnis ?  
 - [] allow avg in WHERE clause ??
@@ -50,8 +66,8 @@
   - my idea works for MATCH (n)-[x]->(a) WHERE n.prop > 10 RETURN * 
 - [] handle exceptions when removing from result in MATCH (n)-[x]->(a) WHERE n.prop > 10 RETURN  n, x.prop2
 
-- [] make checking if a property exists (filtering) in mergeTimeSeriesInProperty more efficient 
-  - [] send an aggregate function to the time series:  use count OR: 
+- [x] make checking if a property exists (filtering) in mergeTimeSeriesInProperty more efficient 
+  - [x] send an aggregate function to the time series:  use count OR: 
        SELECT EXISTS (SELECT 1 FROM my_table WHERE value > 20);
 - [] longterm/future: allow alias names in RETUR clause 
 

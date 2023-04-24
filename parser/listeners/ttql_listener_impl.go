@@ -197,7 +197,7 @@ func (listener *TtqlTreeListener) EnterTtQL_Query(qC *tti.TtQL_QueryContext) {
 
 		// all children are antlr Tokens
 		leaf := child.GetPayload().(antlr.Token)
-		if leaf.GetTokenType() == tti.TTQLParserDATETIME {
+		if leaf.GetTokenType() == tti.TTQLParserDATETIME || leaf.GetTokenType() == tti.TTQLParserCURRENT {
 			if from == nil {
 				from = leaf
 			} else {

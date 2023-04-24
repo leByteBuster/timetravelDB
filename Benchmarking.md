@@ -4,6 +4,8 @@
 
 *graph alternations*
 
+100000 nodes 100000 edges
+
 10000 nodes 10000 edges
 
 1000 nodes 1000 edges
@@ -12,6 +14,9 @@
 
 10 nodes 10 edges 
 
+
+
+
 *property alternations*
 
 10 properties per graph element
@@ -19,6 +24,9 @@
 100 properties per graph element
 
 1000 properties per graph element
+
+10000 properties per graph element
+
 
 *time series length alternations (values per property)*
 
@@ -31,6 +39,8 @@
 100000 properties per graph element
 
 1000000 properties per graph element
+
+
 
 *ON*: only Neo4j queries
 *TTDB*: TTDB queries 
