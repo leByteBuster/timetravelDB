@@ -23,6 +23,11 @@ type TmpPropVal struct {
 	Value interface{}
 }
 
+type TimePeriod struct {
+	From string `yaml:"from"`
+	To   string `yaml:"to"`
+}
+
 type NodeTemplate struct {
 	Labels           []string       `yaml:"labels"`
 	Count            int            `yaml:"count"`
@@ -38,8 +43,9 @@ type EdgeTemplate struct {
 }
 
 type GraphTemplate struct {
-	Nodes []NodeTemplate `yaml:"nodes"`
-	Edges []EdgeTemplate `yaml:"edges"`
+	TimePeriod TimePeriod     `yaml:"timePeriod"`
+	Nodes      []NodeTemplate `yaml:"nodes"`
+	Edges      []EdgeTemplate `yaml:"edges"`
 }
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -57,9 +63,17 @@ var adjacency_list []map[int]int
 
 var R = rand.New(rand.NewSource(time.Now().UnixNano()))
 
-func GenerateData() {
+func GenerateData(template string) {
 
-	graphFile, err := os.ReadFile("data-generator/graph_template.yaml")
+	templatePath := ""
+
+	if template == "" {
+		templatePath = "data-generator/graph_template.yaml"
+	} else {
+		templatePath = "data-generator/" + template
+	}
+
+	graphFile, err := os.ReadFile(templatePath)
 	if err != nil {
 		log.Printf("error reading edge file: %v", err)
 		return
@@ -72,22 +86,41 @@ func GenerateData() {
 		return
 	}
 
+	timePeriod := graphTemplate.TimePeriod
 	nodeTemplates := graphTemplate.Nodes
 	edgeTemplates := graphTemplate.Edges
 
 	utils.Debugf("%#v\n", nodeTemplates)
 	utils.Debugf("%#v\n", edgeTemplates)
 
+	var begin time.Time
+	var end time.Time
+
+	utils.Debugf("Time Frame Generated Data: %+v", timePeriod)
+
 	// TODO: parse correctly
-	begin, err := time.Parse("2006-01-02 15:04:05.0000000 -0700 MST", "2022-11-22 15:33:13.0000005 +0000 UTC")
-	if err != nil {
-		log.Printf("couldn't parse time: %v", err)
-		return
-	}
-	end, err := time.Parse("2006-01-02 15:04:05.0000000 -0700 MST", "2023-01-12 15:33:13.0000005 +0000 UTC")
-	if err != nil {
-		log.Printf("couldn't parse time: %v", err)
-		return
+	if graphTemplate.TimePeriod.From == "" || graphTemplate.TimePeriod.To == "" {
+		begin, err = time.Parse("2006-01-02 15:04:05.0000000 -0700 MST", "2023-01-01 00:00:00.0000000 +0000 UTC")
+		if err != nil {
+			log.Printf("couldn't parse time: %v", err)
+			return
+		}
+		end, err = time.Parse("2006-01-02 15:04:05.0000000 -0700 MST", "2023-01-02 00:00:00.0000000 +0000 UTC")
+		if err != nil {
+			log.Printf("couldn't parse time: %v", err)
+			return
+		}
+	} else {
+		begin, err = time.Parse("2006-01-02T15:04:05.99999999999999Z", timePeriod.From)
+		if err != nil {
+			log.Printf("couldn't parse time: %v", err)
+			return
+		}
+		end, err = time.Parse("2006-01-02T15:04:05.99999999999999Z", timePeriod.To)
+		if err != nil {
+			log.Printf("couldn't parse time: %v", err)
+			return
+		}
 	}
 
 	var graphNodes [][]map[string]interface{}

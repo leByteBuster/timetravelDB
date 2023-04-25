@@ -15,6 +15,8 @@ sudo rm -rf $TTDB_SCRIPTS/../docker-test/neo4j/data/*
 sudo rm -rf $TTDB_SCRIPTS/../docker-test/timescaledb/backups/*
 sudo rm -rf $TTDB_SCRIPTS/../docker-test/timescaledb/data/*
 
+docker rm test_timescaledb
+docker rm test_neo4j
 
 # prepare testing envionment 
 docker-compose -f $TTDB_SCRIPTS/../docker-compose.yml up -d

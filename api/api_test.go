@@ -10,7 +10,8 @@ import (
 	"testing"
 
 	databaseapi "github.com/LexaTRex/timetravelDB/database-api"
-	"github.com/LexaTRex/timetravelDB/parser"
+	"github.com/LexaTRex/timetravelDB/query-processor/parser"
+	qpe "github.com/LexaTRex/timetravelDB/query-processor/qpengine"
 	"github.com/LexaTRex/timetravelDB/utils"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
@@ -80,7 +81,7 @@ func TestDeepQueries(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Error while parsing query: %v", err)
 		}
-		res, err := ProcessQuery(queryInfo)
+		res, err := qpe.ProcessQuery(queryInfo)
 		if err != nil {
 			t.Fatalf("Error while processing query: %v", err)
 		}
@@ -152,7 +153,7 @@ func TestShallowQueries(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Error while parsing query: %v", err)
 		}
-		res, err := ProcessQuery(queryInfo)
+		res, err := qpe.ProcessQuery(queryInfo)
 		if err != nil {
 			t.Fatalf("Error while processing query: %v", err)
 		}

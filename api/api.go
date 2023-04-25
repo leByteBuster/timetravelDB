@@ -8,11 +8,13 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/LexaTRex/timetravelDB/benchmark"
 	dataadapter "github.com/LexaTRex/timetravelDB/data-adapter"
 	dataadapterneo4j "github.com/LexaTRex/timetravelDB/data-adapter-neo4j-only"
 	datagenerator "github.com/LexaTRex/timetravelDB/data-generator"
 	databaseapi "github.com/LexaTRex/timetravelDB/database-api"
-	"github.com/LexaTRex/timetravelDB/parser"
+	"github.com/LexaTRex/timetravelDB/query-processor/parser"
+	qpe "github.com/LexaTRex/timetravelDB/query-processor/qpengine"
 	"github.com/LexaTRex/timetravelDB/utils"
 	"github.com/c-bata/go-prompt"
 )
@@ -115,7 +117,7 @@ func executor(in string) {
 	case "help", "h", "-h", "--help":
 		fmt.Println(HelpString)
 	case "Generate Data", "GD", "gd":
-		datagenerator.GenerateData()
+		datagenerator.GenerateData("")
 	case "Load Data", "LD", "ld":
 		dataadapter.LoadData()
 	case "Load Data Neo4j", "LDN", "ldn":
@@ -129,18 +131,21 @@ func executor(in string) {
 		utils.DEBUG = true
 	case "Debug=0", "--debug=0", "-debug=0", "--debug=false", "-debug=false":
 		utils.DEBUG = false
-	case "Benchmark":
-		runBenchmark()
+	case "Generate Benchmark Dataset 1", "GBD1":
+		datagenerator.GenerateData("graph_template_bm_1.yaml")
+	case "Generate Benchmark Dataset 2", "GBD2":
+		datagenerator.GenerateData("graph_template_bm_2.yaml")
+	case "Generate Benchmark Dataset 3", "GBD3":
+		datagenerator.GenerateData("graph_template_bm_3.yaml")
+	case "Generate Benchmark Dataset 4", "GBD4":
+		datagenerator.GenerateData("graph_template_bm_4.yaml")
+	case "Benchmark Neo", "BN":
+		benchmark.RunBenchmarkNeo4j()
+	case "Benchmark TTDB", "BT":
+		benchmark.RunBenchmarkTTDB()
 	default:
 		runTTQLQuery(in)
 	}
-}
-
-func runBenchmark() {
-	// TODO: implement benchmark
-	// - how to differe if only neo4j or TTDB
-	// -
-	panic("unimplemented")
 }
 
 func runTTQLQuery(in string) {
@@ -163,7 +168,7 @@ func runTTQLQuery(in string) {
 		log.Printf("\n%v: error parsing query", err)
 		return
 	}
-	queryRes, err := ProcessQuery(queryInfo)
+	queryRes, err := qpe.ProcessQuery(queryInfo)
 	if err != nil {
 		log.Fatalf("processing query failed: %v", err)
 		return
