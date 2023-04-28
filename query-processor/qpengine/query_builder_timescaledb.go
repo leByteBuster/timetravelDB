@@ -76,7 +76,6 @@ func buildQueryString(from, to, aggr string, cmpOp string, cmpVal any, lookupLef
 		}
 	}
 	builder.WriteString(") genericAliasName;")
-	fmt.Println(builder.String())
 
 	return builder.String(), nil
 }
@@ -127,7 +126,8 @@ func buildQueryStringCmpExists(from, to, aggr string, cmpOp string, cmpVal any, 
 		}
 	}
 	builder.WriteString(");")
-	fmt.Println(builder.String())
+
+	utils.Debug(builder.String())
 
 	return builder.String(), nil
 }

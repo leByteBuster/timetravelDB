@@ -6,8 +6,15 @@
 
 - [x] TODO BEFORE EVALUATING: 
   - [x] normal properties can be returned explicitely as well (for RETURN clauess like "RETURN b, b.age")
+  - [] check if timescaledb temporal condtion checking is sufficient with <=
+  - [] change neo4j temporal contition checking to use datetime('timestring') <= ..
+    - [] check if working properly
 
 - [] TODO AFTER EVALUATING: 
+  - [] update test data 
+    - [] maybe: "properties_" to "ts_"
+    - [] defenitely: datetime strings to datetime values of nodes and edges (start, end) 
+  - [] check: if Return n.ts_prop - are timestamps printed ? we might want to print them
   - [] create new package "Query Processor Engine"
   - [] implement labels as labels - not as properties!  
       - i think this only needs to be changed for the relationships

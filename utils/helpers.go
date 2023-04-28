@@ -322,8 +322,8 @@ func Debug(str ...interface{}) {
 }
 
 func Debugf(s string, v ...interface{}) {
-	log.Println()
 	if DEBUG {
+		log.Println()
 		log.Printf(s, v...)
 		return
 	}

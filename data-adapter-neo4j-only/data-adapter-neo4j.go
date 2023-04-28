@@ -44,12 +44,16 @@ func loadGraphNodesIntoNeo4jDatabase(graph_nodes []map[string]interface{}, ctx c
 	for _, node := range graph_nodes {
 
 		labels := node["labels"]
+
+		// temporality
 		start := node["start"]
 		end := node["end"]
 
 		delete(node, "labels")
+		delete(node, "start")
+		delete(node, "end")
 
-		queryFlat := `CREATE (n:` + labels.([]interface{})[0].(string) + ` {start: "` + start.(string) + `", end: "` + end.(string) + `",`
+		queryFlat := `CREATE (n:` + labels.([]interface{})[0].(string) + ` {start: datetime("` + start.(string) + `"), end: datetime("` + end.(string) + `"),`
 		primaryQueryFragmentsFlat := generateNeo4jFlatProperties(node)
 
 		for _, fragment := range primaryQueryFragmentsFlat {
@@ -69,10 +73,14 @@ func loadGraphEdgesIntoNeo4jDatabase(graph_edges []map[string]interface{}, ctx c
 	// Loop through the data array
 	for _, edge := range graph_edges {
 
+		// temporality
 		start := edge["start"]
 		end := edge["end"]
+
+		// vector
 		from := edge["from"]
 		to := edge["to"]
+
 		label := edge["label"]
 
 		delete(edge, "from")
@@ -81,7 +89,7 @@ func loadGraphEdgesIntoNeo4jDatabase(graph_edges []map[string]interface{}, ctx c
 		delete(edge, "end")
 		delete(edge, "labels")
 
-		queryPrefix := `MATCH (a),(b) WHERE a.nodeid = $from AND b.nodeid = $to CREATE (a)-[r:` + label.(string) + ` {start: "` + start.(string) + `", end: "` + end.(string) + `",`
+		queryPrefix := `MATCH (a),(b) WHERE a.nodeid = $from AND b.nodeid = $to CREATE (a)-[r:` + label.(string) + ` {start: datetime("` + start.(string) + `"), end: datetime("` + end.(string) + `"),`
 		querySuffix := `}]->(b)`
 
 		neo4jEdgeProperties := generateNeo4jFlatProperties(edge)
@@ -139,7 +147,7 @@ func generateNeo4jFlatProperties(property map[string]interface{}) []string {
 				}
 
 				// generate a unique property entry for every property value in the list. Number the property fields by the index of the list
-				valueFragmentTime := key + `_` + fmt.Sprint(i) + `_` + `time` + `: "` + fmt.Sprint(value["Start"]) + `", `
+				valueFragmentTime := key + `_` + fmt.Sprint(i) + `_` + `time` + `: datetime("` + fmt.Sprint(value["Start"]) + `"), `
 				// valueFragmentStart := key + `_` + fmt.Sprint(i) + `_` + `start` + `: "` + fmt.Sprint(value["Start"]) + `", `
 				// valueFragmentEnd := key + `_` + fmt.Sprint(i) + `_` + `end` + `: "` + fmt.Sprint(value["End"]) + `", `
 				valueFragmentValue := key + `_` + fmt.Sprint(i) + `_` + `value` + `: `

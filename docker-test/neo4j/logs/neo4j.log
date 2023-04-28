@@ -1835,3 +1835,14 @@ Caused by: java.lang.RuntimeException: Transaction logs are missing and recovery
 2023-04-24 15:20:41.643+0000 INFO  name: system
 2023-04-24 15:20:41.643+0000 INFO  creationDate: 2023-04-24T15:20:38.811Z
 2023-04-24 15:20:41.643+0000 INFO  Started.
+2023-04-25 16:39:17.090+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.General.UnknownError]: Lexical error at line 1, column 37.  Encountered: <EOF> after : "", reference 9ab59b8c-b562-426e-b63e-d118dba92baa.
+2023-04-25 16:39:18.387+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.General.UnknownError]: Lexical error at line 1, column 37.  Encountered: <EOF> after : "", reference 7e65370b-6339-486d-ba4c-65e915441f45.
+2023-04-28 10:20:18.636+0000 INFO  Starting...
+2023-04-28 10:20:19.923+0000 INFO  This instance is ServerId{b835d518} (b835d518-abb0-474b-8163-90f820ec7485)
+2023-04-28 10:20:21.804+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-04-28 10:20:25.838+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-04-28 10:20:27.263+0000 INFO  Remote interface available at http://localhost:7474/
+2023-04-28 10:20:27.270+0000 INFO  id: 09C543E3F1265F5316B1F5FA482B4E3511AC80251991A23A1DCEA1BF7413C615
+2023-04-28 10:20:27.271+0000 INFO  name: system
+2023-04-28 10:20:27.271+0000 INFO  creationDate: 2023-04-28T10:20:23.024Z
+2023-04-28 10:20:27.272+0000 INFO  Started.

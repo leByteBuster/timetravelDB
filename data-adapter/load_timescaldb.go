@@ -2,8 +2,6 @@ package dataadapter
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"strings"
 
 	databaseapi "github.com/LexaTRex/timetravelDB/database-api"
@@ -74,7 +72,6 @@ func loadDataTimeScaleDB(timeseries map[uuid.UUID][]map[string]interface{}) {
 		// create the table according to  the data type
 		databaseapi.WriteQueryTimeScale(createTableQuery, []interface{}{})
 
-		log.SetOutput(os.Stdout)
 		parameters := make([][]interface{}, len(values))
 		for i := range parameters {
 			parameters[i] = make([]interface{}, 0)

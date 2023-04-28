@@ -205,7 +205,7 @@ func getShallow(queryInfo parser.ParseResult) (map[string][]interface{}, error) 
 	if res.Err() != nil {
 		return nil, res.Err()
 	}
-	resMap, err := resultToMap(res)
+	resMap, err := ResultToMap(res)
 
 	utils.Debugf("NEO4J RESULT:\n      %+v", resMap)
 

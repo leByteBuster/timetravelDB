@@ -2,7 +2,6 @@ package parser
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"strings"
 
@@ -77,7 +76,7 @@ func ParseQuery(query string) (ParseResult, error) {
 // this code is outsourced because its still pretty messy because of all the printin. As soon as everything is stable clean this function up
 // maybe include error checks here
 func aggregateParsingInfo(listener *li.TtqlTreeListener) ParseResult {
-	fmt.Printf("\nTimeClauseInsights: \n from: %v\nto: %v\nisShallow: %v", listener.TimePeriod.From,
+	utils.Debug("\nTimeClauseInsights: \n from: %v\nto: %v\nisShallow: %v", listener.TimePeriod.From,
 		listener.TimePeriod.To, listener.IsShallow)
 
 	utils.Debug()
@@ -255,6 +254,7 @@ func GetRelevantLookupInfoWhere(compareClause string, insights []li.PropertyClau
 			return LookupInfo{}, nil
 		}
 	default:
+		log.Printf("This should not happen: %+v", insights)
 		return LookupInfo{}, errors.New("chained comparisons are not allowed")
 	}
 

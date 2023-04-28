@@ -76,3 +76,8 @@
 	 FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a) RETURN  a
 	 FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z MATCH (a) RETURN  a
 
+
+	    FROM 2021-12-22T15:33:13Z TO 2024-01-12T15:33:13Z SHALLOW MATCH (a)-[x]->(b) WHERE ANY(a.properties_components_cpu) = 'UGWJn' RETURN b, a.properties_components_cpu 
+	    FROM 2021-12-22T15:33:13Z TO 2024-01-12T15:33:13Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu = 'UGWJn' RETURN b, a.properties_components_cpu 
+
+	    FROM 2021-12-22T15:33:13Z TO 2024-01-12T15:33:13Z SHALLOW MATCH (a)-[x]->(b) WHERE any(a.properties_components_cpu) = 'UGWJn' RETURN b, a.properties_components_cpu 

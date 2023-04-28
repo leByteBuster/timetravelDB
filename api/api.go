@@ -123,26 +123,13 @@ func executor(in string) {
 	case "Load Data Neo4j", "LDN", "ldn":
 		dataadapterneo4j.LoadData()
 	case "Clear Data", "Clear DB", "CD", "cd", "Clear TTDB":
-		databaseapi.ClearNeo4j()
-		databaseapi.ClearTimescale()
-	case "Clear Neo4j":
-		databaseapi.ClearNeo4j()
+		databaseapi.ClearTTDB()
 	case "Debug=1", "--debug=1", "-debug=1", "--debug=true", "-debug=true":
 		utils.DEBUG = true
 	case "Debug=0", "--debug=0", "-debug=0", "--debug=false", "-debug=false":
 		utils.DEBUG = false
-	case "Generate Benchmark Dataset 1", "GBD1":
-		datagenerator.GenerateData("graph_template_bm_1.yaml")
-	case "Generate Benchmark Dataset 2", "GBD2":
-		datagenerator.GenerateData("graph_template_bm_2.yaml")
-	case "Generate Benchmark Dataset 3", "GBD3":
-		datagenerator.GenerateData("graph_template_bm_3.yaml")
-	case "Generate Benchmark Dataset 4", "GBD4":
-		datagenerator.GenerateData("graph_template_bm_4.yaml")
-	case "Benchmark Neo", "BN":
-		benchmark.RunBenchmarkNeo4j()
-	case "Benchmark TTDB", "BT":
-		benchmark.RunBenchmarkTTDB()
+	case "Benchmark", "BM", "bm":
+		benchmark.RunBenchmark()
 	default:
 		runTTQLQuery(in)
 	}
@@ -213,6 +200,8 @@ func cleanQuery(query string) string {
 
 	// Replace any() with a.prop
 	whereClause = strings.ReplaceAll(whereClause, "any(", "")
+	whereClause = strings.ReplaceAll(whereClause, "ANY(", "")
+	whereClause = strings.ReplaceAll(whereClause, "Any(", "")
 	whereClause = strings.ReplaceAll(whereClause, ")", "")
 
 	// Reassemble the query

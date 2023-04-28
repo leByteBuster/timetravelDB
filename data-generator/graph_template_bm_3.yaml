@@ -1,0 +1,30 @@
+timePeriod:
+  from: "2022-12-01T00:00:00Z"
+  to: "2022-12-02T00:00:00Z"
+nodes:
+  - labels: ["client"]
+    count: 10 
+    template:
+      IP:
+        "DataType": "string"
+        "Quantity": 100000
+      Risc:
+        "DataType": "int"
+        "Quantity": 100000 
+      Risc1:
+        "DataType": "int"
+        "Quantity": 100000
+      Risc2:
+        "DataType": "int"
+        "Quantity": 100000
+
+
+edges:
+  - label: "traffic"
+    count: 10 
+    from: "client"
+    to: "client" 
+    template:
+      Risc:
+        "DataType": "int"
+        "Quantity": 100000 

@@ -1,7 +1,6 @@
 package qpengine
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/LexaTRex/timetravelDB/query-processor/parser"
@@ -50,9 +49,10 @@ func buildTmpWhereClause(from, to, whereClause string, matchElVars []string) str
 			sb.WriteString(" ")
 			sb.WriteString(elVar)
 			sb.WriteString(".")
-			sb.WriteString("end >= '")
+			sb.WriteString("end >= ")
+			sb.WriteString("datetime('")
 			sb.WriteString(from)
-			sb.WriteString("'")
+			sb.WriteString("')")
 		} else {
 			// if from == current then only allow elements that elVar.from == current
 			sb.WriteString(" ")
@@ -66,9 +66,10 @@ func buildTmpWhereClause(from, to, whereClause string, matchElVars []string) str
 			sb.WriteString(" AND ")
 			sb.WriteString(elVar)
 			sb.WriteString(".")
-			sb.WriteString("start <= '")
+			sb.WriteString("start <= ")
+			sb.WriteString("datetime('")
 			sb.WriteString(to)
-			sb.WriteString("' ")
+			sb.WriteString("') ")
 		}
 		if i < len(matchElVars)-1 {
 			sb.WriteString("AND")
@@ -122,6 +123,6 @@ func buildFinalQuery(matchClause, whereClause, returnClause string) string {
 	sb.WriteString(returnClause)
 
 	tmpQuery := sb.String()
-	fmt.Println(tmpQuery)
+	utils.Debug(tmpQuery)
 	return tmpQuery
 }

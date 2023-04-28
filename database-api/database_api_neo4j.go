@@ -40,9 +40,6 @@ func ReadQueryNeo4j(query string) (neo4j.ResultWithContext, error) {
 
 	res, err := SessionNeo.Run(context.Background(), query, map[string]interface{}{})
 
-	utils.Debugf("Neo4j read query: %v", query)
-	utils.Debugf("res: %v", res)
-
 	if err != nil {
 		log.Printf("%v: error executing neo4j query: %v", err, query)
 		return nil, err

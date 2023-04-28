@@ -9,6 +9,11 @@ TTDB_SCRIPTS=$(dirname "$SCRIPT")
 # stop all running docker containers to avoid conflicts 
 docker stop $(docker ps -aq)
 
+# rm testing containers 
+docker rm test_neo4j
+docker rm test_timescaledb
+
+
 # cleanup before (if docker-compose was run in other ways than this script there might be some leftovers)
 sudo rm -rf $TTDB_SCRIPTS/../docker-test/neo4j/backups/*
 ls $TTDB_SCRIPTS/../docker-test/neo4j/backups/
