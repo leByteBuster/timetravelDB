@@ -16,6 +16,14 @@ var SessionNeo neo4j.SessionWithContext
 
 func ConnectNeo4j() (neo4j.DriverWithContext, error) {
 
+	// this might be needed for benchmarking. Right now i adjust the config file in the docker container by hand
+	// config := neo4j.Config{
+	// 	MaxTransactionRetryTime:      0, // disable timeout
+	// 	MaxConnectionLifetime:        0,
+	// 	ConnectionAcquisitionTimeout: 0,
+	// 	SocketConnectTimeout:         0,
+	// }
+
 	var sb strings.Builder
 	sb.WriteString("neo4j://")
 	sb.WriteString(ConfigNeo.Host)

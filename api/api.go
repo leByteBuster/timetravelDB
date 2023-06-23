@@ -119,15 +119,17 @@ func executor(in string) {
 	case "Generate Data", "GD", "gd":
 		datagenerator.GenerateData("")
 	case "Load Data", "LD", "ld":
-		dataadapter.LoadData()
+		dataadapter.LoadData("")
 	case "Load Data Neo4j", "LDN", "ldn":
-		dataadapterneo4j.LoadData()
+		dataadapterneo4j.LoadData("")
 	case "Clear Data", "Clear DB", "CD", "cd", "Clear TTDB":
 		databaseapi.ClearTTDB()
 	case "Debug=1", "--debug=1", "-debug=1", "--debug=true", "-debug=true":
 		utils.DEBUG = true
 	case "Debug=0", "--debug=0", "-debug=0", "--debug=false", "-debug=false":
 		utils.DEBUG = false
+	case "Benchmark Data", "GBD", "gbd":
+		benchmark.GenerateBenchmarkData()
 	case "Benchmark", "BM", "bm":
 		benchmark.RunBenchmark()
 	default:

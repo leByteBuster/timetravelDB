@@ -19,15 +19,32 @@ type TmpPropVal[T any] struct {
 	Value T
 }
 
-func LoadData() {
+func LoadData(template string) {
 
-	graph_nodes, err := utils.LoadJsonData("data-generator/generated-data/graph_nodes.json")
-	if err != nil {
-		log.Println(err)
-	}
-	graph_edges, err := utils.LoadJsonData("data-generator/generated-data/graph_edges.json")
-	if err != nil {
-		log.Println(err)
+	var graph_nodes []map[string]interface{}
+	var graph_edges []map[string]interface{}
+	var err error
+
+	if template == "" {
+		graph_nodes, err = utils.LoadJsonData("data-generator/generated-data/graph_nodes.json")
+		if err != nil {
+			log.Printf("Error loading nodes from json: %v", err)
+		}
+		graph_edges, err = utils.LoadJsonData("data-generator/generated-data/graph_edges.json")
+		if err != nil {
+			log.Printf("Error loading edges from json: %v", err)
+			return
+		}
+	} else {
+		graph_nodes, err = utils.LoadJsonData("data-generator/generated-data/graph_nodes" + template + ".json")
+		if err != nil {
+			log.Printf("Error loading nodes from json: %v", err)
+		}
+		graph_edges, err = utils.LoadJsonData("data-generator/generated-data/graph_edges" + template + ".json")
+		if err != nil {
+			log.Printf("Error loading edges from json: %v", err)
+			return
+		}
 	}
 
 	loadGraphNodesIntoNeo4jDatabase(graph_nodes, context.Background())

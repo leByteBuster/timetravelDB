@@ -1,0 +1,232 @@
+
+2023-05-05 19:38:52
+2023-05-05 19:38:52
+CPU Usage: 51,5%
+Memory Usage: 6111 MB
+Individual Process Usage:
+ 565475 lenovob   20   0 2118868  96724  95452 R  25,0   1,2   4:01.55 postgres
+ 571100 lenovob   20   0   12488   4960   4100 R  18,8   0,1   0:00.03 top
+  42754 root      20   0 1303424      0      0 S  12,5   0,0  66:37.91 docker-proxy
+ 374777 lenovob   20   0   59,2g   2,1g   1952 S  12,5  27,6 226:20.19 main
+    205 root       0 -20       0      0      0 I   6,2   0,0   0:26.63 kworker/7:1H-kblockd
+      1 root      20   0  169708   3680   1460 S   0,0   0,0   2:54.67 systemd
+      2 root      20   0       0      0      0 S   0,0   0,0   0:24.43 kthreadd
+      3 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 rcu_gp
+      4 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 rcu_par_gp
+      5 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 slub_flushwq
+---------------------------------------------------
+Docker Container Stats:
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O       PIDS
+c33f4b0e7ecd   test_timescaledb   19.97%    141.1MiB / 7.53GiB   1.83%     5.17GB / 24.7GB   135GB / 655GB   10
+bf1e09cfe811   test_neo4j         0.56%     36.24MiB / 7.53GiB   0.47%     603MB / 8.04GB    435GB / 256GB   85
+---------------------------------------------------
+2023-05-05 19:38:56
+2023-05-05 19:38:56
+CPU Usage: 7,1%
+Memory Usage: 6124 MB
+Individual Process Usage:
+ 374777 lenovob   20   0   59,2g   2,1g   1952 S  13,3  27,6 226:20.75 main
+ 565475 lenovob   20   0 2118868  97044  95772 S  13,3   1,2   4:02.40 postgres
+    137 root      20   0       0      0      0 S   6,7   0,0 154:11.82 kswapd0
+  42754 root      20   0 1303424      0      0 S   6,7   0,0  66:38.60 docker-proxy
+ 571162 lenovob   20   0   12488   4908   4052 R   6,7   0,1   0:00.01 top
+      1 root      20   0  169708   3680   1460 S   0,0   0,0   2:54.67 systemd
+      2 root      20   0       0      0      0 S   0,0   0,0   0:24.43 kthreadd
+      3 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 rcu_gp
+      4 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 rcu_par_gp
+      5 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 slub_flushwq
+---------------------------------------------------
+Docker Container Stats:
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O       PIDS
+c33f4b0e7ecd   test_timescaledb   21.46%    141.2MiB / 7.53GiB   1.83%     5.17GB / 24.7GB   135GB / 655GB   10
+bf1e09cfe811   test_neo4j         0.48%     36.37MiB / 7.53GiB   0.47%     603MB / 8.04GB    435GB / 256GB   85
+---------------------------------------------------
+2023-05-05 19:39:00
+2023-05-05 19:39:00
+CPU Usage: 5,9%
+Memory Usage: 6118 MB
+Individual Process Usage:
+  11853 lenovob   20   0   42,6g 295268  78536 S  25,0   3,7  63:41.56 code
+  42754 root      20   0 1303424      0      0 S  18,8   0,0  66:39.29 docker-proxy
+ 158240 lenovob   20   0   16,6g  51560  49924 S  18,8   0,7   7:07.72 code
+ 565475 lenovob   20   0 2118868  97308  96036 S  18,8   1,2   4:03.23 postgres
+   1277 root      20   0 1899848  39316  17748 S  12,5   0,5 137:17.62 Xorg
+   1296 root     -51   0       0      0      0 D  12,5   0,0  42:57.57 irq/161-rmi4_sm
+ 374777 lenovob   20   0   59,2g   2,1g   1952 S  12,5  27,6 226:21.29 main
+   2852 lenovob   20   0  572388  12072   7184 S   6,2   0,2   3:38.22 xfce4-panel
+  11908 lenovob   20   0   20,5g  25684  10596 S   6,2   0,3  12:04.43 code
+ 519130 root       0 -20       0      0      0 D   6,2   0,0   0:04.11 kworker/u17:1+i915_flip
+---------------------------------------------------
+Docker Container Stats:
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O       PIDS
+c33f4b0e7ecd   test_timescaledb   23.72%    141.7MiB / 7.53GiB   1.84%     5.17GB / 24.7GB   135GB / 655GB   10
+bf1e09cfe811   test_neo4j         0.47%     36.39MiB / 7.53GiB   0.47%     603MB / 8.04GB    435GB / 256GB   85
+---------------------------------------------------
+2023-05-05 19:39:04
+2023-05-05 19:39:04
+CPU Usage: 6,3%
+Memory Usage: 6110 MB
+Individual Process Usage:
+ 464102 lenovob   20   0   11940   4156   1056 S  33,3   0,1  30:26.40 htop
+  42754 root      20   0 1303424      0      0 S  20,0   0,0  66:39.92 docker-proxy
+ 565475 lenovob   20   0 2118868  97556  96284 D  20,0   1,2   4:04.06 postgres
+ 374777 lenovob   20   0   59,2g   2,1g   1952 S  13,3  27,6 226:21.81 main
+ 571281 lenovob   20   0   12488   4952   4096 R  13,3   0,1   0:00.02 top
+     34 root      20   0       0      0      0 S   6,7   0,0   0:29.67 ksoftirqd/2
+    272 root       0 -20       0      0      0 I   6,7   0,0   0:23.07 kworker/4:1H-kblockd
+   2960 lenovob   20   0  650956  18000   8284 S   6,7   0,2  13:44.85 xfce4-terminal
+ 439712 lenovob   20   0   12,2g 291004  83168 S   6,7   3,7  56:21.24 firefox
+ 440079 lenovob   20   0 2807464 237540  42588 S   6,7   3,0  12:09.56 Isolated Web Co
+---------------------------------------------------
+Docker Container Stats:
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O       PIDS
+c33f4b0e7ecd   test_timescaledb   31.40%    142MiB / 7.53GiB     1.84%     5.17GB / 24.7GB   135GB / 655GB   10
+bf1e09cfe811   test_neo4j         0.42%     36.43MiB / 7.53GiB   0.47%     603MB / 8.04GB    435GB / 256GB   85
+---------------------------------------------------
+2023-05-05 19:39:08
+2023-05-05 19:39:08
+CPU Usage: 6,5%
+Memory Usage: 6160 MB
+Individual Process Usage:
+    137 root      20   0       0      0      0 R 100,0   0,0 154:12.44 kswapd0
+  44443 7474      20   0 8169100 121416   4812 S  43,8   1,5 737:15.24 java
+   1296 root     -51   0       0      0      0 D  12,5   0,0  42:58.15 irq/161-rmi4_sm
+ 571334 lenovob   20   0   12488   4864   4008 R  12,5   0,1   0:00.02 top
+  11853 lenovob   20   0   42,6g 305848  80632 S   6,2   3,9  63:44.12 code
+      1 root      20   0  169708   3576   1356 S   0,0   0,0   2:54.67 systemd
+      2 root      20   0       0      0      0 S   0,0   0,0   0:24.43 kthreadd
+      3 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 rcu_gp
+      4 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 rcu_par_gp
+      5 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 slub_flushwq
+---------------------------------------------------
+Docker Container Stats:
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O       PIDS
+c33f4b0e7ecd   test_timescaledb   0.26%     129.3MiB / 7.53GiB   1.68%     5.17GB / 24.7GB   135GB / 655GB   11
+bf1e09cfe811   test_neo4j         49.47%    234.1MiB / 7.53GiB   3.04%     603MB / 8.04GB    435GB / 256GB   85
+---------------------------------------------------
+2023-05-05 19:39:12
+2023-05-05 19:39:12
+CPU Usage: 26,5%
+Memory Usage: 6005 MB
+Individual Process Usage:
+  44443 7474      20   0 8169100 242844   4812 S  94,1   3,1 737:18.63 java
+ 464102 lenovob   20   0   11940   4152   1056 S  58,8   0,1  30:26.95 htop
+  11853 lenovob   20   0   42,6g 289544  78944 R  41,2   3,7  63:46.81 code
+ 158240 lenovob   20   0   16,6g  56360  54784 S  11,8   0,7   7:08.84 code
+      1 root      20   0  169708   3500   1280 S   5,9   0,0   2:54.68 systemd
+    242 root      20   0       0      0      0 S   5,9   0,0   6:13.94 jbd2/nvme0n1p2-
+   1248 root      20   0 1797964  16400   1604 S   5,9   0,2  27:09.80 containerd
+   1277 root      20   0 1880836  39284  17724 S   5,9   0,5 137:18.97 Xorg
+   1296 root     -51   0       0      0      0 D   5,9   0,0  42:58.47 irq/161-rmi4_sm
+   1403 root      20   0 2054712  32184   4496 S   5,9   0,4  17:16.36 dockerd
+---------------------------------------------------
+Docker Container Stats:
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O       PIDS
+c33f4b0e7ecd   test_timescaledb   0.12%     136.7MiB / 7.53GiB   1.77%     5.17GB / 24.7GB   135GB / 655GB   10
+bf1e09cfe811   test_neo4j         95.76%    268.2MiB / 7.53GiB   3.48%     603MB / 8.04GB    435GB / 256GB   85
+---------------------------------------------------
+2023-05-05 19:39:16
+2023-05-05 19:39:16
+CPU Usage: 20,5%
+Memory Usage: 5224 MB
+Individual Process Usage:
+  44443 7474      20   0 8169100 263188   7144 S 100,0   3,3 737:22.46 java
+   1277 root      20   0 1891916  39284  17724 S   6,2   0,5 137:19.23 Xorg
+   1296 root     -51   0       0      0      0 D   6,2   0,0  42:58.75 irq/161-rmi4_sm
+  11853 lenovob   20   0   42,6g 277492  70036 S   6,2   3,5  63:47.75 code
+  43218 lenovob   20   0 2131340  59576  58740 S   6,2   0,8   1:15.69 postgres
+ 374777 lenovob   20   0   59,2g   1,1g   3996 S   6,2  14,7 226:22.74 main
+ 571464 lenovob   20   0   12488   4848   3992 R   6,2   0,1   0:00.01 top
+      1 root      20   0  169708   3500   1280 S   0,0   0,0   2:54.68 systemd
+      2 root      20   0       0      0      0 S   0,0   0,0   0:24.43 kthreadd
+      3 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 rcu_gp
+---------------------------------------------------
+Docker Container Stats:
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O       PIDS
+c33f4b0e7ecd   test_timescaledb   0.14%     136.8MiB / 7.53GiB   1.77%     5.17GB / 24.7GB   135GB / 655GB   10
+bf1e09cfe811   test_neo4j         98.40%    285.6MiB / 7.53GiB   3.70%     603MB / 8.04GB    435GB / 256GB   85
+---------------------------------------------------
+2023-05-05 19:39:20
+2023-05-05 19:39:20
+CPU Usage: 13,5%
+Memory Usage: 4535 MB
+Individual Process Usage:
+  44443 7474      20   0 8169100 281280   7932 S 100,0   3,6 737:26.30 java
+ 374777 lenovob   20   0   59,2g 461216   3996 S  12,5   5,8 226:23.09 main
+  11853 lenovob   20   0   42,6g 288084  78960 S   6,2   3,6  63:49.64 code
+ 571533 lenovob   20   0   12488   5008   4156 R   6,2   0,1   0:00.01 top
+      1 root      20   0  169708   3500   1280 S   0,0   0,0   2:54.68 systemd
+      2 root      20   0       0      0      0 S   0,0   0,0   0:24.43 kthreadd
+      3 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 rcu_gp
+      4 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 rcu_par_gp
+      5 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 slub_flushwq
+      6 root       0 -20       0      0      0 I   0,0   0,0   0:00.00 netns
+---------------------------------------------------
+Docker Container Stats:
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O       PIDS
+c33f4b0e7ecd   test_timescaledb   0.16%     136.8MiB / 7.53GiB   1.77%     5.17GB / 24.7GB   135GB / 655GB   10
+bf1e09cfe811   test_neo4j         97.51%    303.2MiB / 7.53GiB   3.93%     603MB / 8.04GB    435GB / 256GB   87
+---------------------------------------------------
+2023-05-05 19:39:24
+2023-05-05 19:39:24
+CPU Usage: 34,3%
+Memory Usage: 4404 MB
+Individual Process Usage:
+  44443 7474      20   0 8169100 317964   8672 S 100,0   4,0 737:30.18 java
+  11853 lenovob   20   0   42,6g 299208  68176 R  87,5   3,8  63:52.30 code
+ 568719 lenovob   20   0   23,1g 153984  61816 S  37,5   2,0   0:31.96 Isolated Web Co
+   1277 root      20   0 1890316  39288  17724 S  18,8   0,5 137:20.01 Xorg
+ 158240 lenovob   20   0   16,6g  45088  43596 S  12,5   0,6   7:09.60 code
+ 374777 lenovob   20   0   59,2g 272000   4004 S  12,5   3,4 226:23.44 main
+   1296 root     -51   0       0      0      0 D   6,2   0,0  42:59.30 irq/161-rmi4_sm
+ 439712 lenovob   20   0   12,2g 262536  74028 S   6,2   3,3  56:21.41 firefox
+      1 root      20   0  169708   3500   1280 S   0,0   0,0   2:54.68 systemd
+      2 root      20   0       0      0      0 S   0,0   0,0   0:24.43 kthreadd
+---------------------------------------------------
+Docker Container Stats:
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O       PIDS
+c33f4b0e7ecd   test_timescaledb   0.99%     136.9MiB / 7.53GiB   1.78%     5.17GB / 24.7GB   135GB / 655GB   10
+bf1e09cfe811   test_neo4j         100.22%   339.2MiB / 7.53GiB   4.40%     603MB / 8.04GB    435GB / 256GB   87
+---------------------------------------------------
+2023-05-05 19:39:28
+2023-05-05 19:39:28
+CPU Usage: 15,7%
+Memory Usage: 4272 MB
+Individual Process Usage:
+  11853 lenovob   20   0   42,6g 299672  66740 R 106,2   3,8  63:53.80 code
+  44443 7474      20   0 8169100 322964   8672 S 100,0   4,1 737:34.12 java
+   1277 root      20   0 1886016  39288  17724 S  18,8   0,5 137:20.32 Xorg
+   1296 root     -51   0       0      0      0 D  12,5   0,0  42:59.54 irq/161-rmi4_sm
+  11773 lenovob   20   0   20,6g  57808  29868 S  12,5   0,7   9:27.56 code
+ 158240 lenovob   20   0   16,6g  43300  41900 S  12,5   0,5   7:09.81 code
+   2516 lenovob   20   0  234948    248    180 S   6,2   0,0   0:18.49 at-spi2-registr
+   2608 lenovob   20   0 1522740  26496   6416 R   6,2   0,3  45:10.43 xfwm4
+   2955 lenovob   20   0  270448    276      0 S   6,2   0,0   0:20.44 okular
+   2959 lenovob   20   0  255212   1308    704 S   6,2   0,0   2:45.67 msm_notifier
+---------------------------------------------------
+Docker Container Stats:
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O       PIDS
+c33f4b0e7ecd   test_timescaledb   0.14%     136.9MiB / 7.53GiB   1.78%     5.17GB / 24.7GB   135GB / 655GB   10
+bf1e09cfe811   test_neo4j         98.33%    341.8MiB / 7.53GiB   4.43%     603MB / 8.04GB    435GB / 256GB   87
+---------------------------------------------------
+2023-05-05 19:39:32
+2023-05-05 19:39:32
+CPU Usage: 24,6%
+Memory Usage: 4274 MB
+Individual Process Usage:
+  44443 7474      20   0 8169100 323692   8672 S 100,0   4,1 737:38.05 java
+  11853 lenovob   20   0   42,6g 317220  78520 S  12,5   4,0  63:55.41 code
+     41 root      20   0       0      0      0 S   6,2   0,0   0:29.17 ksoftirqd/3
+   1277 root      20   0 1903600  39288  17724 S   6,2   0,5 137:20.73 Xorg
+   1296 root     -51   0       0      0      0 D   6,2   0,0  42:59.80 irq/161-rmi4_sm
+   2954 lenovob   20   0  270560    276      0 S   6,2   0,0   0:18.47 okular
+ 158240 lenovob   20   0   16,6g  55748  54216 S   6,2   0,7   7:10.16 code
+ 439922 lenovob   20   0 2989264 145212  20760 S   6,2   1,8   9:36.03 WebExtensions
+ 571706 lenovob   20   0   12488   4848   3992 R   6,2   0,1   0:00.01 top
+      1 root      20   0  169708   3500   1280 S   0,0   0,0   2:54.68 systemd
+---------------------------------------------------
+Docker Container Stats:
+CONTAINER ID   NAME               CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O       PIDS
+c33f4b0e7ecd   test_timescaledb   0.12%     136.9MiB / 7.53GiB   1.78%     5.17GB / 24.7GB   135GB / 655GB   10
+bf1e09cfe811   test_neo4j         98.51%    342MiB / 7.53GiB     4.44%     603MB / 8.04GB    435GB / 256GB   87
+---------------------------------------------------

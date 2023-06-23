@@ -75,7 +75,7 @@ func GenerateData(template string) {
 
 	graphFile, err := os.ReadFile(templatePath)
 	if err != nil {
-		log.Printf("error reading edge file: %v", err)
+		log.Fatalf("error reading edge file: %v", err)
 		return
 	}
 
@@ -172,10 +172,13 @@ func GenerateData(template string) {
 		graphNodesRes = append(graphNodesRes, nodeGroup...)
 	}
 
-	exportGraphAsJson(graphNodesRes, graphEdgesRes, "data-generator/generated-data/")
+	exportGraphAsJson(graphNodesRes, graphEdgesRes, "data-generator/generated-data/", template)
 }
 
-func exportGraphAsJson(graph_nodes []map[string]interface{}, graph_edges []map[string]interface{}, file_path string) {
+func exportGraphAsJson(graph_nodes []map[string]interface{}, graph_edges []map[string]interface{}, file_path, template string) {
+
+	var edgeFile *os.File
+	var nodeFile *os.File
 
 	err := os.MkdirAll(file_path, 0755)
 	if err != nil {
@@ -183,22 +186,34 @@ func exportGraphAsJson(graph_nodes []map[string]interface{}, graph_edges []map[s
 		return
 	}
 
-	edgeFile, err := os.OpenFile(file_path+"graph_edges.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0664)
+	if template == "" {
+		edgeFile, err = os.OpenFile(file_path+"graph_edges.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0664)
+	} else {
+		edgeFile, err = os.OpenFile(file_path+"graph_edges"+template+".json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0664)
+	}
+
 	if err != nil {
 		log.Printf("error open edge file: %v\n", err)
 		edgeFile.Close()
 		return
 	}
+
 	defer edgeFile.Close()
 	encoderEdges := json.NewEncoder(edgeFile)
 	encoderEdges.Encode(graph_edges)
 
-	nodeFile, err := os.OpenFile(file_path+"graph_nodes.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0664)
+	if template == "" {
+		nodeFile, err = os.OpenFile(file_path+"graph_nodes.json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0664)
+	} else {
+		nodeFile, err = os.OpenFile(file_path+"graph_nodes"+template+".json", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0664)
+	}
+
 	if err != nil {
 		log.Printf("error open node file: %v\n", err)
 		nodeFile.Close()
 		return
 	}
+
 	defer nodeFile.Close()
 	encoderNodes := json.NewEncoder(nodeFile)
 	encoderNodes.Encode(graph_nodes)

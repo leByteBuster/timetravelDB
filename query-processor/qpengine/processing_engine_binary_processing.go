@@ -146,7 +146,8 @@ func fetchSinglePropTimeSeries(queryInfo parser.ParseResult, graphData map[strin
 					return graphData, fmt.Errorf("%w; error - couldnt fetch  properties for %v of element", err, property)
 				}
 			} else {
-				return graphData, errors.New("error - uuid is not a string - this should not happen")
+				log.Printf("Element of error: %v", e)
+				return graphData, errors.New("error - uuid is not a string - this should not happen" + fmt.Sprintf("%v", uuid))
 			}
 		} else {
 			return graphData, fmt.Errorf("unknown type of object %v", el)
@@ -179,7 +180,8 @@ func fetchTimeSeriesAll(from string, to string, graphData map[string][]interface
 
 					properties[prop] = timeseries
 				} else {
-					return graphData, errors.New("error - uuid is not a string - this should not happen")
+					log.Printf("Element of error: %v", e)
+					return graphData, errors.New("error - uuid is not a string - this should not happen. uuid: " + fmt.Sprintf("%v", uuid))
 				}
 			}
 		default:
@@ -261,7 +263,8 @@ func fetchTimeSeries(from string, to string, graphData map[string][]interface{},
 					propertyMapOfElement[property] = properties
 				}
 			} else {
-				return nil, errors.New("error - uuid is not a string - this should not happen")
+				log.Printf("Element of error: %v", e)
+				return nil, errors.New("error - uuid is not a string - this should not happen" + fmt.Sprintf("%v", uuid))
 			}
 		default:
 			panic("error - type not supportet")
@@ -296,7 +299,8 @@ func checkAnyCondition(from string, to string, graphData map[string][]interface{
 					rowsToRemove = append(rowsToRemove, i)
 				}
 			} else {
-				return nil, errors.New("error - uuid is not a string - this should not happen")
+				log.Printf("Element of error: %v", e)
+				return nil, errors.New("error - uuid is not a string - this should not happen" + fmt.Sprintf("%v", uuid))
 			}
 		default:
 			panic("error - type not supportet")

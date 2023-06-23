@@ -1846,3 +1846,209 @@ Caused by: java.lang.RuntimeException: Transaction logs are missing and recovery
 2023-04-28 10:20:27.271+0000 INFO  name: system
 2023-04-28 10:20:27.271+0000 INFO  creationDate: 2023-04-28T10:20:23.024Z
 2023-04-28 10:20:27.272+0000 INFO  Started.
+2023-04-29 10:25:44.519+0000 INFO  Neo4j Server shutdown initiated by request
+2023-04-29 10:25:44.525+0000 INFO  Stopping...
+2023-04-29 10:25:51.405+0000 INFO  Stopped.
+2023-04-29 10:33:33.390+0000 INFO  Starting...
+2023-04-29 10:33:34.240+0000 INFO  This instance is ServerId{4d61c6bc} (4d61c6bc-60a4-448f-963d-0d55b826af3d)
+2023-04-29 10:33:35.599+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-04-29 10:33:37.823+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-04-29 10:33:38.851+0000 INFO  Remote interface available at http://localhost:7474/
+2023-04-29 10:33:38.859+0000 INFO  id: F9EAF30A0DD650A3AC9CECFBA0C6840ACBC85688E93E19977B5D3FD9BC72E08B
+2023-04-29 10:33:38.859+0000 INFO  name: system
+2023-04-29 10:33:38.860+0000 INFO  creationDate: 2023-04-29T10:33:36.433Z
+2023-04-29 10:33:38.860+0000 INFO  Started.
+2023-04-29 16:13:26.673+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.General.UnknownError]: Lexical error at line 1, column 35.  Encountered: <EOF> after : "", reference 7b3765a1-1c9d-4c80-b9b5-e8c19deeb00e.
+2023-04-29 16:22:34.737+0000 INFO  Neo4j Server shutdown initiated by request
+2023-04-29 16:22:34.740+0000 INFO  Stopping...
+2023-04-29 16:22:40.977+0000 INFO  Stopped.
+2023-04-29 16:23:16.011+0000 WARN  Use of deprecated setting 'dbms.transaction.timeout'. It is replaced by 'db.transaction.timeout'.
+2023-04-29 16:23:16.059+0000 INFO  Starting...
+2023-04-29 16:23:19.100+0000 INFO  This instance is ServerId{4d61c6bc} (4d61c6bc-60a4-448f-963d-0d55b826af3d)
+2023-04-29 16:23:22.543+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-04-29 16:23:29.903+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-04-29 16:23:32.493+0000 INFO  Remote interface available at http://localhost:7474/
+2023-04-29 16:23:32.507+0000 INFO  id: F9EAF30A0DD650A3AC9CECFBA0C6840ACBC85688E93E19977B5D3FD9BC72E08B
+2023-04-29 16:23:32.509+0000 INFO  name: system
+2023-04-29 16:23:32.510+0000 INFO  creationDate: 2023-04-29T10:33:36.433Z
+2023-04-29 16:23:32.511+0000 INFO  Started.
+2023-05-01 11:49:28.489+0000 INFO  Starting...
+2023-05-01 11:49:29.650+0000 INFO  This instance is ServerId{becc3e0c} (becc3e0c-ced5-48d4-909e-8b7bc280f1c3)
+2023-05-01 11:49:31.738+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-01 11:49:35.400+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-01 11:49:37.001+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-01 11:49:37.007+0000 INFO  id: A3EB40537F36052640D5624C7F496CB4ACC32F074CC79CE609E8CBB1AAB9795F
+2023-05-01 11:49:37.008+0000 INFO  name: system
+2023-05-01 11:49:37.010+0000 INFO  creationDate: 2023-05-01T11:49:32.848Z
+2023-05-01 11:49:37.010+0000 INFO  Started.
+2023-05-02 22:55:20.948+0000 INFO  Starting...
+2023-05-02 22:55:22.199+0000 INFO  This instance is ServerId{ef7e8f2d} (ef7e8f2d-f826-4b2c-a47c-4e7b4503c118)
+2023-05-02 22:55:23.685+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-02 22:55:27.019+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-02 22:55:28.248+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-02 22:55:28.253+0000 INFO  id: 1DE5DBEF372FFC0294C4DE9C3194BDA81FD53942C15C5B9CEA70BE11D941B5DD
+2023-05-02 22:55:28.254+0000 INFO  name: system
+2023-05-02 22:55:28.255+0000 INFO  creationDate: 2023-05-02T22:55:24.992Z
+2023-05-02 22:55:28.255+0000 INFO  Started.
+2023-05-02 23:05:03.232+0000 INFO  Neo4j Server shutdown initiated by request
+2023-05-02 23:05:03.234+0000 INFO  Stopping...
+2023-05-02 23:05:08.519+0000 INFO  Stopped.
+2023-05-02 23:05:23.077+0000 WARN  Use of deprecated setting 'dbms.transaction.timeout'. It is replaced by 'db.transaction.timeout'.
+2023-05-02 23:05:23.090+0000 INFO  Starting...
+2023-05-02 23:05:23.610+0000 INFO  This instance is ServerId{ef7e8f2d} (ef7e8f2d-f826-4b2c-a47c-4e7b4503c118)
+2023-05-02 23:05:24.464+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-02 23:05:25.793+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-02 23:05:26.586+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-02 23:05:26.591+0000 INFO  id: 1DE5DBEF372FFC0294C4DE9C3194BDA81FD53942C15C5B9CEA70BE11D941B5DD
+2023-05-02 23:05:26.592+0000 INFO  name: system
+2023-05-02 23:05:26.592+0000 INFO  creationDate: 2023-05-02T22:55:24.992Z
+2023-05-02 23:05:26.593+0000 INFO  Started.
+2023-05-03 13:49:43.182+0000 INFO  Starting...
+2023-05-03 13:49:43.954+0000 INFO  This instance is ServerId{2a65f496} (2a65f496-12d5-4349-b655-3a3169623556)
+2023-05-03 13:49:45.566+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-03 13:49:48.611+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-03 13:49:49.770+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-03 13:49:49.774+0000 INFO  id: D165997E530F030F1969279A794582F8D3AB07C51E489003B62A1F7174947276
+2023-05-03 13:49:49.775+0000 INFO  name: system
+2023-05-03 13:49:49.775+0000 INFO  creationDate: 2023-05-03T13:49:46.989Z
+2023-05-03 13:49:49.775+0000 INFO  Started.
+2023-05-03 13:51:50.930+0000 INFO  Neo4j Server shutdown initiated by request
+2023-05-03 13:51:50.931+0000 INFO  Stopping...
+2023-05-03 13:51:56.286+0000 INFO  Stopped.
+2023-05-03 13:52:09.770+0000 WARN  Use of deprecated setting 'dbms.transaction.timeout'. It is replaced by 'db.transaction.timeout'.
+2023-05-03 13:52:09.783+0000 INFO  Starting...
+2023-05-03 13:52:10.348+0000 INFO  This instance is ServerId{2a65f496} (2a65f496-12d5-4349-b655-3a3169623556)
+2023-05-03 13:52:11.265+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-03 13:52:12.590+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-03 13:52:13.429+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-03 13:52:13.433+0000 INFO  id: D165997E530F030F1969279A794582F8D3AB07C51E489003B62A1F7174947276
+2023-05-03 13:52:13.433+0000 INFO  name: system
+2023-05-03 13:52:13.434+0000 INFO  creationDate: 2023-05-03T13:49:46.989Z
+2023-05-03 13:52:13.434+0000 INFO  Started.
+2023-05-07 16:16:11.696+0000 INFO  Starting...
+2023-05-07 16:16:12.582+0000 INFO  This instance is ServerId{5962e058} (5962e058-bc14-408c-b124-c127f833272a)
+2023-05-07 16:16:13.902+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-07 16:16:17.376+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-07 16:16:19.212+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-07 16:16:19.219+0000 INFO  id: F0FA3A748471644AB39DC1106BC2CA674CEA97F1F1D27BC23E5AF3176CBA1212
+2023-05-07 16:16:19.220+0000 INFO  name: system
+2023-05-07 16:16:19.221+0000 INFO  creationDate: 2023-05-07T16:16:14.929Z
+2023-05-07 16:16:19.222+0000 INFO  Started.
+2023-05-08 16:10:26.931+0000 INFO  Starting...
+2023-05-08 16:10:27.844+0000 INFO  This instance is ServerId{39466289} (39466289-078c-45fc-adc7-593bf017cb04)
+2023-05-08 16:10:29.441+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-08 16:10:32.970+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-08 16:10:34.647+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-08 16:10:34.653+0000 INFO  id: 06C1DA8DD7591D8E3CD2110628FB365395CE6D4167F264E45D0DE0E068C9095C
+2023-05-08 16:10:34.654+0000 INFO  name: system
+2023-05-08 16:10:34.654+0000 INFO  creationDate: 2023-05-08T16:10:30.605Z
+2023-05-08 16:10:34.655+0000 INFO  Started.
+2023-05-10 12:26:39.249+0000 INFO  Neo4j Server shutdown initiated by request
+2023-05-10 12:26:39.258+0000 INFO  Stopping...
+2023-05-10 12:26:45.312+0000 INFO  Stopped.
+2023-05-10 12:27:01.129+0000 WARN  Use of deprecated setting 'dbms.transaction.timeout'. It is replaced by 'db.transaction.timeout'.
+2023-05-10 12:27:01.192+0000 INFO  Starting...
+2023-05-10 12:27:02.365+0000 INFO  This instance is ServerId{39466289} (39466289-078c-45fc-adc7-593bf017cb04)
+2023-05-10 12:27:03.805+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-10 12:27:06.232+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-10 12:27:07.613+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-10 12:27:07.621+0000 INFO  id: 06C1DA8DD7591D8E3CD2110628FB365395CE6D4167F264E45D0DE0E068C9095C
+2023-05-10 12:27:07.621+0000 INFO  name: system
+2023-05-10 12:27:07.622+0000 INFO  creationDate: 2023-05-08T16:10:30.605Z
+2023-05-10 12:27:07.623+0000 INFO  Started.
+2023-05-10 23:04:55.429+0000 INFO  Neo4j Server shutdown initiated by request
+2023-05-10 23:04:55.439+0000 INFO  Stopping...
+2023-05-10 23:05:01.310+0000 INFO  Stopped.
+2023-05-10 23:05:13.295+0000 WARN  Use of deprecated setting 'dbms.transaction.timeout'. It is replaced by 'db.transaction.timeout'.
+2023-05-10 23:05:13.319+0000 INFO  Starting...
+2023-05-10 23:05:14.179+0000 INFO  This instance is ServerId{39466289} (39466289-078c-45fc-adc7-593bf017cb04)
+2023-05-10 23:05:16.235+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-10 23:05:28.339+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-10 23:05:30.282+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-10 23:05:30.296+0000 INFO  id: 06C1DA8DD7591D8E3CD2110628FB365395CE6D4167F264E45D0DE0E068C9095C
+2023-05-10 23:05:30.298+0000 INFO  name: system
+2023-05-10 23:05:30.299+0000 INFO  creationDate: 2023-05-08T16:10:30.605Z
+2023-05-10 23:05:30.300+0000 INFO  Started.
+2023-05-10 23:47:45.578+0000 INFO  Neo4j Server shutdown initiated by request
+2023-05-10 23:47:45.582+0000 INFO  Stopping...
+2023-05-10 23:47:50.787+0000 INFO  Stopped.
+2023-05-10 23:48:03.506+0000 INFO  Starting...
+2023-05-10 23:48:04.269+0000 INFO  This instance is ServerId{4fb2c4ab} (4fb2c4ab-2e0a-40bc-a4bb-9fc1e06ac3db)
+2023-05-10 23:48:05.492+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-10 23:48:07.917+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-10 23:48:08.746+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-10 23:48:08.750+0000 INFO  id: 2B6BD75388E78048CF0186C9D860FE20D467F2FBA641C1399E4A25FF7F8FD87A
+2023-05-10 23:48:08.750+0000 INFO  name: system
+2023-05-10 23:48:08.750+0000 INFO  creationDate: 2023-05-10T23:48:06.247Z
+2023-05-10 23:48:08.751+0000 INFO  Started.
+2023-05-10 23:49:56.315+0000 INFO  Neo4j Server shutdown initiated by request
+2023-05-10 23:49:56.317+0000 INFO  Stopping...
+2023-05-10 23:50:01.625+0000 INFO  Stopped.
+2023-05-10 23:52:32.939+0000 INFO  Starting...
+2023-05-10 23:52:33.578+0000 INFO  This instance is ServerId{a3a43d4c} (a3a43d4c-f9a3-4269-aa67-56a6abc6e83b)
+2023-05-10 23:52:34.844+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-10 23:52:37.391+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-10 23:52:38.358+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-10 23:52:38.362+0000 INFO  id: 311EB63B07B56FF6BBE10D8744139D177F1C275A9E7B84A2D226FFD5FC68482A
+2023-05-10 23:52:38.363+0000 INFO  name: system
+2023-05-10 23:52:38.363+0000 INFO  creationDate: 2023-05-10T23:52:35.699Z
+2023-05-10 23:52:38.363+0000 INFO  Started.
+2023-05-10 23:53:42.131+0000 INFO  Neo4j Server shutdown initiated by request
+2023-05-10 23:53:42.133+0000 INFO  Stopping...
+2023-05-10 23:53:47.422+0000 INFO  Stopped.
+2023-05-10 23:53:55.008+0000 WARN  Use of deprecated setting 'dbms.transaction.timeout'. It is replaced by 'db.transaction.timeout'.
+2023-05-10 23:53:55.024+0000 INFO  Starting...
+2023-05-10 23:53:55.641+0000 INFO  This instance is ServerId{a3a43d4c} (a3a43d4c-f9a3-4269-aa67-56a6abc6e83b)
+2023-05-10 23:53:56.708+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-10 23:53:58.191+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-10 23:53:59.095+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-10 23:53:59.098+0000 INFO  id: 311EB63B07B56FF6BBE10D8744139D177F1C275A9E7B84A2D226FFD5FC68482A
+2023-05-10 23:53:59.099+0000 INFO  name: system
+2023-05-10 23:53:59.099+0000 INFO  creationDate: 2023-05-10T23:52:35.699Z
+2023-05-10 23:53:59.099+0000 INFO  Started.
+2023-05-12 22:50:43.163+0000 INFO  Neo4j Server shutdown initiated by request
+2023-05-12 22:50:43.184+0000 INFO  Stopping...
+2023-05-12 22:50:49.595+0000 INFO  Stopped.
+2023-05-12 22:51:02.758+0000 INFO  Starting...
+2023-05-12 22:51:03.484+0000 INFO  This instance is ServerId{9dac182c} (9dac182c-49c6-4865-b307-ada17a654cb2)
+2023-05-12 22:51:04.755+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-12 22:51:07.293+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-12 22:51:08.180+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-12 22:51:08.184+0000 INFO  id: 071FF00C59220CA392CAF66A4121409A3817B1F6BE04CC8AD93DB104682F5833
+2023-05-12 22:51:08.185+0000 INFO  name: system
+2023-05-12 22:51:08.185+0000 INFO  creationDate: 2023-05-12T22:51:05.6Z
+2023-05-12 22:51:08.186+0000 INFO  Started.
+2023-05-12 22:52:59.089+0000 INFO  Neo4j Server shutdown initiated by request
+2023-05-12 22:52:59.092+0000 INFO  Stopping...
+2023-05-12 22:53:04.468+0000 INFO  Stopped.
+2023-05-12 22:53:12.571+0000 INFO  Starting...
+2023-05-12 22:53:13.362+0000 INFO  This instance is ServerId{9dac182c} (9dac182c-49c6-4865-b307-ada17a654cb2)
+2023-05-12 22:53:14.804+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-05-12 22:53:16.773+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-05-12 22:53:17.898+0000 INFO  Remote interface available at http://localhost:7474/
+2023-05-12 22:53:17.903+0000 INFO  id: 071FF00C59220CA392CAF66A4121409A3817B1F6BE04CC8AD93DB104682F5833
+2023-05-12 22:53:17.904+0000 INFO  name: system
+2023-05-12 22:53:17.904+0000 INFO  creationDate: 2023-05-12T22:51:05.6Z
+2023-05-12 22:53:17.904+0000 INFO  Started.
+2023-05-15 08:09:02.384+0000 INFO  Neo4j Server shutdown initiated by request
+2023-05-15 08:09:02.402+0000 INFO  Stopping...
+2023-05-15 08:09:10.188+0000 INFO  Stopped.
+2023-06-15 16:44:30.304+0000 INFO  Starting...
+2023-06-15 16:44:30.952+0000 INFO  This instance is ServerId{f6bb15bb} (f6bb15bb-c7d2-4fad-a2f1-01da5a80771c)
+2023-06-15 16:44:32.079+0000 INFO  ======== Neo4j 5.2.0 ========
+2023-06-15 16:44:35.119+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2023-06-15 16:44:36.393+0000 INFO  Remote interface available at http://localhost:7474/
+2023-06-15 16:44:36.397+0000 INFO  id: B5FD6CC5C89ECB0B0D6FBEDA9746AF7B323E7EF6151C5F75F9D400F0DCA0EFF3
+2023-06-15 16:44:36.398+0000 INFO  name: system
+2023-06-15 16:44:36.399+0000 INFO  creationDate: 2023-06-15T16:44:32.89Z
+2023-06-15 16:44:36.399+0000 INFO  Started.
+2023-06-22 23:20:29.403+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Transaction.TransactionCommitFailed]: Could not apply the transaction to the store after written to log, reference 7dad5005-98ca-4098-9347-8ca9b69b9ce8.
+2023-06-22 23:22:50.867+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and needs to be restarted. Please see database logs for more details., reference f194471b-e39d-40d3-909e-7a3d53eea4e1.
+2023-06-22 23:22:51.711+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and needs to be restarted. Please see database logs for more details., reference 79bf33c1-de65-422b-a5f4-d4138dc62805.
+2023-06-22 23:22:56.956+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and needs to be restarted. Please see database logs for more details., reference 25157aaa-d5a2-4802-8bfd-7e075f067ce1.
+2023-06-22 23:22:58.694+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and needs to be restarted. Please see database logs for more details., reference 5aef3f74-5072-49ca-afa5-b1509136848a.
+2023-06-22 23:22:59.625+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and needs to be restarted. Please see database logs for more details., reference bf811de9-6e76-474a-a420-e7a5bb334f40.
+2023-06-22 23:23:00.741+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and needs to be restarted. Please see database logs for more details., reference 600aafd5-bffb-48e7-9cc9-a95647ef6df4.
+2023-06-22 23:23:01.446+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and needs to be restarted. Please see database logs for more details., reference 57f439dd-c142-4035-a0e5-dda1dece68e5.
+2023-06-22 23:23:02.037+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and needs to be restarted. Please see database logs for more details., reference 79a8bc51-5f6d-475c-a6af-83de59386561.
+2023-06-22 23:23:02.695+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and n
