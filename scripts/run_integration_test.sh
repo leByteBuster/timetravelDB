@@ -12,6 +12,7 @@ docker stop $(docker ps -aq)
 # rm testing containers 
 docker rm test_neo4j
 docker rm test_timescaledb
+docker rm restore_neo4j 
 
 
 # cleanup before (if docker-compose was run in other ways than this script there might be some leftovers)

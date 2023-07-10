@@ -51,7 +51,7 @@ func TestDeepQueries(t *testing.T) {
 	}
 	defer DriverNeo.Close(context.Background())
 
-	databaseapi.SessionNeo = DriverNeo.NewSession(context.Background(), neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	databaseapi.SessionNeo = DriverNeo.NewSession(context.Background(), neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer databaseapi.SessionNeo.Close(context.Background())
 
 	// initialize TimescaleDB
@@ -61,6 +61,12 @@ func TestDeepQueries(t *testing.T) {
 		os.Exit(1)
 	}
 	defer databaseapi.SessionTS.Close()
+
+	// change dates of test data from strings to datetimes. workaround. do backup of this later and replace test data
+	databaseapi.ReadQueryNeo4j("MATCH ()-[n]->() SET n.start = datetime(n.start) RETURN n")
+	databaseapi.ReadQueryNeo4j("MATCH ()-[n]->() SET n.end = datetime(n.end) RETURN n")
+	databaseapi.ReadQueryNeo4j("MATCH (n) SET n.start = datetime(n.start) RETURN n")
+	databaseapi.ReadQueryNeo4j("MATCH (n) SET n.end = datetime(n.end) RETURN n")
 
 	query1 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) RETURN  a,x,b"
 	query2 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z  MATCH (a)-[x]->(b) WHERE b.properties_Risc > 0 RETURN  b, b.properties_Risc"
@@ -118,7 +124,7 @@ func TestShallowQueries(t *testing.T) {
 	}
 	defer DriverNeo.Close(context.Background())
 
-	databaseapi.SessionNeo = DriverNeo.NewSession(context.Background(), neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	databaseapi.SessionNeo = DriverNeo.NewSession(context.Background(), neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	defer databaseapi.SessionNeo.Close(context.Background())
 
 	// initialize TimescaleDB
@@ -129,6 +135,12 @@ func TestShallowQueries(t *testing.T) {
 	}
 
 	defer databaseapi.SessionTS.Close()
+
+	// change dates of test data from strings to datetimes. workaround. do backup of this later and replace test data
+	databaseapi.ReadQueryNeo4j("MATCH ()-[n]->() SET n.start = datetime(n.start) RETURN n")
+	databaseapi.ReadQueryNeo4j("MATCH ()-[n]->() SET n.end = datetime(n.end) RETURN n")
+	databaseapi.ReadQueryNeo4j("MATCH (n) SET n.start = datetime(n.start) RETURN n")
+	databaseapi.ReadQueryNeo4j("MATCH (n) SET n.end = datetime(n.end) RETURN n")
 
 	query1 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NOT NULL RETURN *"
 	query2 := "FROM 2021-12-22T15:33:13.0000005Z TO 2024-01-12T15:33:13.0000006Z SHALLOW MATCH (a)-[x]->(b) WHERE a.properties_components_cpu IS NOT NULL RETURN  a.properties_components_cpu"
