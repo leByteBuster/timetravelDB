@@ -70,7 +70,7 @@ func RunBenchmark() {
 		/////////////////////////////
 
 		// clear databases
-		databaseapi.ClearTTDB()
+		databaseapi.ClearData()
 
 		log.Println("Database cleared. Load dataset.")
 
@@ -97,7 +97,7 @@ func RunBenchmark() {
 		/////////////////////////////
 
 		// clear databases
-		databaseapi.ClearTTDB()
+		databaseapi.ClearData()
 
 		log.Println("Database cleared. Load Neo4j dataset.")
 
@@ -477,11 +477,10 @@ func logToFile(filename string) {
 // queries are  put to the end of the file for better readability
 
 var neo4jQueries []string = []string{
-	// todo: check: use n.nodeid or ID(n)
 
-	////////////
-	//// #1 ////
-	////////////
+	//////////
+	// #1 ////
+	//////////
 
 	// query single node with id 0 if intersection with X to Y
 	// this is not the whole query ! we still gotta filter all the properties for the time
@@ -490,273 +489,244 @@ var neo4jQueries []string = []string{
 	// which adds additional functionality
 	// see: ~/Documents/school/master_thesis/research_fetch_single_node_filter_properties_only_neo4j
 	// NOTE: time series inside elements not filtered by time interval
-	//"MATCH (n) WHERE n.nodeid = 0 AND n.end >= datetime('" + X + "') AND n.start <= datetime('" + Y + "') RETURN n",
+	"MATCH (n) WHERE n.nodeid = 0 AND n.end >= datetime('" + X + "') AND n.start <= datetime('" + Y + "') RETURN n",
 
-	////////////
-	//// #2 ////
-	////////////
+	//////////
+	// #2 ////
+	//////////
 
 	// query single time series property of single node from X to Y
 	// with all time series entries that between  X and Y
-	// TODO:
-	// - [x] ordering should be ordered because the elements are ordered by ts_Risc_1_time, ts_Risc_2_time, ..
-	// - [x] addting timestamps to output
-	// `MATCH (n)
-	// 	WHERE n.nodeid = 0 AND n.end >= datetime('` + X + `') AND n.start <= datetime('` + Y + `')` +
-	// 	`WITH n, [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc_'] AS riscProps
-	//  	  WITH n, size(riscProps) / 2 AS ts_Risc_numbers
-	// 		WITH n, range(0, ts_Risc_numbers - 1) AS indices
-	//  RETURN
-	// 		REDUCE(acc = [], i IN indices |
-	// 			acc + CASE
-	// 				WHEN n['ts_Risc_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc_' + i + '_time'],n['ts_Risc_' + i + '_value']]
-	// 				ELSE null
-	// 			END
-	// 		) AS props`,
 
-	////////////
-	//// #4 ////
-	////////////
+	`MATCH (n)
+	 	WHERE n.nodeid = 0 AND n.end >= datetime('` + X + `') AND n.start <= datetime('` + Y + `')` +
+		`WITH n, [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc_'] AS riscProps
+	  	  WITH n, size(riscProps) / 2 AS ts_Risc_numbers
+	 		WITH n, range(0, ts_Risc_numbers - 1) AS indices
+	  RETURN
+	 		REDUCE(acc = [], i IN indices |
+	 			acc + CASE
+	 				WHEN n['ts_Risc_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc_' + i + '_time'],n['ts_Risc_' + i + '_value']]
+	 				ELSE null
+	 			END
+	 		) AS props`,
+
+	//////////
+	// #4 ////
+	//////////
 
 	// query multiple time series properties of a single node
-	// TODO:
-	// - [] replace time strings with variable as soon as working
-	// `MATCH (n)
-	// 	WHERE n.nodeid = 0 AND n.end >= datetime('2022-12-01T00:00:00Z') AND n.start <= datetime('2022-12-02T00:00:00Z')
-	// 	WITH n,
-	// 	  [prop IN keys(n) WHERE prop STARTS WITH 'ts_IP_'] AS ts_IP_props,
-	// 	  [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc_'] AS ts_Risc_props,
-	// 	  [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc1_'] AS ts_Risc1_props,
-	// 	  [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc2_'] AS ts_Risc2_props
-	// 	WITH n,
-	// 	  size(ts_IP_props) / 2 AS ts_IP_numbers,
-	// 	  size(ts_Risc_props) / 2 AS ts_Risc_numbers,
-	// 	  size(ts_Risc1_props) / 2 AS ts_Risc1_numbers,
-	// 	  size(ts_Risc2_props) / 2 AS ts_Risc2_numbers,
-	// 	  ts_IP_props,
-	// 	  ts_Risc_props,
-	// 	  ts_Risc1_props,
-	// 	  ts_Risc2_props
-	// 	WITH n,
-	// 	  range(0, ts_IP_numbers - 1) AS ts_IP_indices,
-	// 	  range(0, ts_Risc_numbers - 1) AS ts_Risc_indices,
-	// 	  range(0, ts_Risc1_numbers - 1) AS ts_Risc1_indices,
-	// 	  range(0, ts_Risc2_numbers - 1) AS ts_Risc2_indices,
-	// 	  ts_IP_props,
-	// 	  ts_Risc_props,
-	// 	  ts_Risc1_props,
-	// 	  ts_Risc2_props
-	// 	RETURN
-	// 	  REDUCE(acc = [], i IN ts_IP_indices |
-	// 	    acc + CASE
-	// 	      WHEN n['ts_IP_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_IP_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_IP_' + i + '_time'], n['ts_IP_' + i + '_value']]
-	// 	      ELSE null
-	// 	    END
-	// 	  ) AS ts_IP_props,
-	// 	  REDUCE(acc = [], i IN ts_Risc_indices |
-	// 	    acc + CASE
-	// 	      WHEN n['ts_Risc_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc_' + i + '_time'], n['ts_Risc_' + i + '_value']]
-	// 	      ELSE null
-	// 	    END
-	// 	  ) AS ts_Risc_props,
-	// 	  REDUCE(acc = [], i IN ts_Risc1_indices |
-	// 	    acc + CASE
-	// 	      WHEN n['ts_Risc1_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc1_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc1_' + i + '_time'], n['ts_Risc1_' + i + '_value']]
-	// 	      ELSE null
-	// 	    END
-	// 	  ) AS ts_Risc1_props,
-	// 	  REDUCE(acc = [], i IN ts_Risc2_indices |
-	// 	    acc + CASE
-	// 	      WHEN n['ts_Risc2_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc2_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc2_' + i + '_time'], n['ts_Risc2_' + i + '_value']]
-	// 	      ELSE null
-	// 	    END
-	// 	  ) AS ts_Risc2_props`,
+	`MATCH (n)
+	 	WHERE n.nodeid = 0 AND n.end >= datetime('2022-12-01T00:00:00Z') AND n.start <= datetime('2022-12-02T00:00:00Z')
+	 	WITH n,
+	 	  [prop IN keys(n) WHERE prop STARTS WITH 'ts_IP_'] AS ts_IP_props,
+	 	  [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc_'] AS ts_Risc_props,
+	 	  [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc1_'] AS ts_Risc1_props,
+	 	  [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc2_'] AS ts_Risc2_props
+	 	WITH n,
+	 	  size(ts_IP_props) / 2 AS ts_IP_numbers,
+	 	  size(ts_Risc_props) / 2 AS ts_Risc_numbers,
+	 	  size(ts_Risc1_props) / 2 AS ts_Risc1_numbers,
+	 	  size(ts_Risc2_props) / 2 AS ts_Risc2_numbers,
+	 	  ts_IP_props,
+	 	  ts_Risc_props,
+	 	  ts_Risc1_props,
+	 	  ts_Risc2_props
+	 	WITH n,
+	 	  range(0, ts_IP_numbers - 1) AS ts_IP_indices,
+	 	  range(0, ts_Risc_numbers - 1) AS ts_Risc_indices,
+	 	  range(0, ts_Risc1_numbers - 1) AS ts_Risc1_indices,
+	 	  range(0, ts_Risc2_numbers - 1) AS ts_Risc2_indices,
+	 	  ts_IP_props,
+	 	  ts_Risc_props,
+	 	  ts_Risc1_props,
+	 	  ts_Risc2_props
+	 	RETURN
+	 	  REDUCE(acc = [], i IN ts_IP_indices |
+	 	    acc + CASE
+	 	      WHEN n['ts_IP_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_IP_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_IP_' + i + '_time'], n['ts_IP_' + i + '_value']]
+	 	      ELSE null
+	 	    END
+	 	  ) AS ts_IP_props,
+	 	  REDUCE(acc = [], i IN ts_Risc_indices |
+	 	    acc + CASE
+	 	      WHEN n['ts_Risc_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc_' + i + '_time'], n['ts_Risc_' + i + '_value']]
+	 	      ELSE null
+	 	    END
+	 	  ) AS ts_Risc_props,
+	 	  REDUCE(acc = [], i IN ts_Risc1_indices |
+	 	    acc + CASE
+	 	      WHEN n['ts_Risc1_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc1_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc1_' + i + '_time'], n['ts_Risc1_' + i + '_value']]
+	 	      ELSE null
+	 	    END
+	 	  ) AS ts_Risc1_props,
+	 	  REDUCE(acc = [], i IN ts_Risc2_indices |
+	 	    acc + CASE
+	 	      WHEN n['ts_Risc2_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc2_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc2_' + i + '_time'], n['ts_Risc2_' + i + '_value']]
+	 	      ELSE null
+	 	    END
+	 	  ) AS ts_Risc2_props`,
 
-	////////////
-	//// #7 ////
-	////////////
+	//////////
+	// #7 ////
+	//////////
 
 	// query a node b if it occurs in pattern (a)-[r]->(b)
-	// missing: temporal checking for all containing properties (note: prob not possible without apoc, see above)
-	// 	temporal checking possible on single time series, but on generic i would need complex string operations
-	//  using regex to extract all 	interrelated time series values and time values
 	// NOTE: time series inside elements are not filetered by the time interval
-	// `MATCH (a)-[r]->(b)
-	//     WHERE a.end >= datetime('` + X + `') AND a.start <= datetime('` + Y + `') AND
-	// 				  r.end >= datetime('` + X + `') AND r.start <= datetime('` + Y + `') AND
-	// 				  b.end >= datetime('` + X + `') AND b.start <= datetime('` + Y + `')
-	//  RETURN b`,
+	`MATCH (a)-[r]->(b)
+	     WHERE a.end >= datetime('` + X + `') AND a.start <= datetime('` + Y + `') AND
+	 				  r.end >= datetime('` + X + `') AND r.start <= datetime('` + Y + `') AND
+	 				  b.end >= datetime('` + X + `') AND b.start <= datetime('` + Y + `')
+	  RETURN b`,
 
-	////////////
-	//// #3 ////
-	////////////
+	//////////
+	// #3 ////
+	//////////
 
 	// query a time series property of all nodes (that have this property)
-	// TODO:
-	// - [x] ordering
-	// - [x] addting timestamps to output
-	// `
-	// MATCH (n)
-	// 	  WHERE n.end >= datetime('` + X + `') AND n.start <= datetime('` + Y + `')
-	// 	WITH n, [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc_'] AS riscProps
-	// 	   WITH n, size(riscProps) / 2 AS ts_Risc_numbers
-	// 	WITH n, range(0, ts_Risc_numbers - 1) AS indices
-	// RETURN
-	// 	REDUCE(acc = [], i IN indices |
-	// 		acc + CASE
-	// 			WHEN n['ts_Risc_' + i + '_time'] >= datetime('` + X + `') AND n['ts_Risc_' + i + '_time'] < datetime('` + Y + `') THEN [n['ts_Risc_' + i + '_time'],n['ts_Risc_' + i + '_value']]
-	// 			ELSE null
-	// 		END
-	// 	) AS props`,
+	`
+	 MATCH (n)
+	 	  WHERE n.end >= datetime('` + X + `') AND n.start <= datetime('` + Y + `')
+	 	WITH n, [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc_'] AS riscProps
+	 	   WITH n, size(riscProps) / 2 AS ts_Risc_numbers
+	 	WITH n, range(0, ts_Risc_numbers - 1) AS indices
+	 RETURN
+	 	REDUCE(acc = [], i IN indices |
+	 		acc + CASE
+	 			WHEN n['ts_Risc_' + i + '_time'] >= datetime('` + X + `') AND n['ts_Risc_' + i + '_time'] < datetime('` + Y + `') THEN [n['ts_Risc_' + i + '_time'],n['ts_Risc_' + i + '_value']]
+	 			ELSE null
+	 		END
+	 	) AS props`,
 
-	////////////
-	//// #5 ////
-	////////////
+	//////////
+	// #5 ////
+	//////////
 
 	// query multiple time series properties of all nodes n
-	// still not ordered !
-	// TODO:
-	// - [x] ordering
-	// - [] replace time strings with variable as soon as working
-	// - [x] add time string to output
-	//`MATCH (n)
-	//	WHERE n.end >= datetime('2022-12-01T00:00:00Z') AND n.start <= datetime('2022-12-02T00:00:00Z')
-	//	WITH n,
-	//	  [prop IN keys(n) WHERE prop STARTS WITH 'ts_IP_'] AS ts_IP_props,
-	//	  [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc_'] AS ts_Risc_props,
-	//	  [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc1_'] AS ts_Risc1_props,
-	//	  [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc2_'] AS ts_Risc2_props
-	//	WITH n,
-	//	  size(ts_IP_props) / 2 AS ts_IP_numbers,
-	//	  size(ts_Risc_props) / 2 AS ts_Risc_numbers,
-	//	  size(ts_Risc1_props) / 2 AS ts_Risc1_numbers,
-	//	  size(ts_Risc2_props) / 2 AS ts_Risc2_numbers,
-	//	  ts_IP_props,
-	//	  ts_Risc_props,
-	//	  ts_Risc1_props,
-	//	  ts_Risc2_props
-	//	WITH n,
-	//	  range(0, ts_IP_numbers - 1) AS ts_IP_indices,
-	//	  range(0, ts_Risc_numbers - 1) AS ts_Risc_indices,
-	//	  range(0, ts_Risc1_numbers - 1) AS ts_Risc1_indices,
-	//	  range(0, ts_Risc2_numbers - 1) AS ts_Risc2_indices,
-	//	  ts_IP_props,
-	//	  ts_Risc_props,
-	//	  ts_Risc1_props,
-	//	  ts_Risc2_props
-	//	RETURN
-	//	  REDUCE(acc = [], i IN ts_IP_indices |
-	//	    acc + CASE
-	//	      WHEN n['ts_IP_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_IP_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_IP_' + i + '_time'], n['ts_IP_' + i + '_value']]
-	//	      ELSE null
-	//	    END
-	//	  ) AS ts_IP_props,
-	//	  REDUCE(acc = [], i IN ts_Risc_indices |
-	//	    acc + CASE
-	//	      WHEN n['ts_Risc_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc_' + i + '_time'], n['ts_Risc_' + i + '_value']]
-	//	      ELSE null
-	//	    END
-	//	  ) AS ts_Risc_props,
-	//	  REDUCE(acc = [], i IN ts_Risc1_indices |
-	//	    acc + CASE
-	//	      WHEN n['ts_Risc1_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc1_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc1_' + i + '_time'], n['ts_Risc1_' + i + '_value']]
-	//	      ELSE null
-	//	    END
-	//	  ) AS ts_Risc1_props,
-	//	  REDUCE(acc = [], i IN ts_Risc2_indices |
-	//	    acc + CASE
-	//	      WHEN n['ts_Risc2_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc2_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc2_' + i + '_time'], n['ts_Risc2_' + i + '_value']]
-	//	      ELSE null
-	//	    END
-	//	  ) AS ts_Risc2_props`,
+	`MATCH (n)
+		WHERE n.end >= datetime('2022-12-01T00:00:00Z') AND n.start <= datetime('2022-12-02T00:00:00Z')
+		WITH n,
+		  [prop IN keys(n) WHERE prop STARTS WITH 'ts_IP_'] AS ts_IP_props,
+		  [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc_'] AS ts_Risc_props,
+		  [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc1_'] AS ts_Risc1_props,
+		  [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc2_'] AS ts_Risc2_props
+		WITH n,
+		  size(ts_IP_props) / 2 AS ts_IP_numbers,
+		  size(ts_Risc_props) / 2 AS ts_Risc_numbers,
+		  size(ts_Risc1_props) / 2 AS ts_Risc1_numbers,
+		  size(ts_Risc2_props) / 2 AS ts_Risc2_numbers,
+		  ts_IP_props,
+		  ts_Risc_props,
+		  ts_Risc1_props,
+		  ts_Risc2_props
+		WITH n,
+		  range(0, ts_IP_numbers - 1) AS ts_IP_indices,
+		  range(0, ts_Risc_numbers - 1) AS ts_Risc_indices,
+		  range(0, ts_Risc1_numbers - 1) AS ts_Risc1_indices,
+		  range(0, ts_Risc2_numbers - 1) AS ts_Risc2_indices,
+		  ts_IP_props,
+		  ts_Risc_props,
+		  ts_Risc1_props,
+		  ts_Risc2_props
+		RETURN
+		  REDUCE(acc = [], i IN ts_IP_indices |
+		    acc + CASE
+		      WHEN n['ts_IP_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_IP_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_IP_' + i + '_time'], n['ts_IP_' + i + '_value']]
+		      ELSE null
+		    END
+		  ) AS ts_IP_props,
+		  REDUCE(acc = [], i IN ts_Risc_indices |
+		    acc + CASE
+		      WHEN n['ts_Risc_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc_' + i + '_time'], n['ts_Risc_' + i + '_value']]
+		      ELSE null
+		    END
+		  ) AS ts_Risc_props,
+		  REDUCE(acc = [], i IN ts_Risc1_indices |
+		    acc + CASE
+		      WHEN n['ts_Risc1_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc1_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc1_' + i + '_time'], n['ts_Risc1_' + i + '_value']]
+		      ELSE null
+		    END
+		  ) AS ts_Risc1_props,
+		  REDUCE(acc = [], i IN ts_Risc2_indices |
+		    acc + CASE
+		      WHEN n['ts_Risc2_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND n['ts_Risc2_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN [n['ts_Risc2_' + i + '_time'], n['ts_Risc2_' + i + '_value']]
+		      ELSE null
+		    END
+		  ) AS ts_Risc2_props`,
 
-	////////////
-	//// #6 ////
-	////////////
+	//////////
+	// #6 ////
+	//////////
 
-	//// query a time series property of all nodes if ANY(prop) > 20 (that have this property)
-	//// returns all, but still not ordered
-	//
+	// query a time series property of all nodes if ANY(prop) > 20 (that have this property)
+	// returns all, but still not ordered
+
 	// this one is a list of values  [value,value,...]
 	// they are ordered by time already because they came from ts_Risc_1_time, ts_Risc_2_time, ...
-	// TODO:
-	// - [] time string replacement with variable
-	// ` MATCH (n)
-	//  		WHERE n.end >= datetime('2022-12-01T00:00:00Z') AND n.start <= datetime('2022-12-02T00:00:00Z')
-	//  			WITH n, [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc_'] AS riscProps
-	//  			WITH n, size(riscProps) / 2 AS ts_Risc_numbers
-	//  			WITH n, range(0, ts_Risc_numbers - 1) AS indices
-	//  			WITH REDUCE(acc = [], i IN indices |
-	//  					acc + CASE
-	//  							WHEN n['ts_Risc_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND
-	//  								   n['ts_Risc_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN
-	//  									 n['ts_Risc_' + i + '_value']
-	//  							ELSE null
-	//  					END
-	//  			) AS props
-	//  			WITH props, [prop IN props WHERE prop > 20] AS filteredProps
-	//  			WHERE size(filteredProps) > 0
-	//  	RETURN props`,
+	` MATCH (n)
+	  		WHERE n.end >= datetime('2022-12-01T00:00:00Z') AND n.start <= datetime('2022-12-02T00:00:00Z')
+	  			WITH n, [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc_'] AS riscProps
+	  			WITH n, size(riscProps) / 2 AS ts_Risc_numbers
+	  			WITH n, range(0, ts_Risc_numbers - 1) AS indices
+	  			WITH REDUCE(acc = [], i IN indices |
+	  					acc + CASE
+	  							WHEN n['ts_Risc_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND
+	  								   n['ts_Risc_' + i + '_time'] < datetime('2022-12-02T00:00:00Z') THEN
+	  									 n['ts_Risc_' + i + '_value']
+	  							ELSE null
+	  					END
+	  			) AS props
+	  			WITH props, [prop IN props WHERE prop > 20] AS filteredProps
+	  			WHERE size(filteredProps) > 0
+	  	RETURN props`,
 
 	// this one is with timestamps in result list [timestamp,value,timestamp,value,...]
 	// they are ordered by time already because the came from ts_Risc_1, ts_Risc_2, ...
-	// THIS IS NOT WORKING: somehow condition n['ts_Risc_' + i + '_value'] > 20 is not applied (at least in browser. check it)
-	// this is due to that the list contains numeric as well as datetime values
 
-	// `MATCH (n)
-	// WHERE n.end >= datetime('2022-12-01T00:00:00Z') AND n.start <= datetime('2022-12-02T00:00:00Z')
-	// 	WITH n, [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc_'] AS riscProps
-	// 	WITH n, size(riscProps) / 2 AS ts_Risc_numbers
-	// 	WITH n, range(0, ts_Risc_numbers - 1) AS indices
-	// 	WITH REDUCE(acc = [], i IN indices |
-	// 					acc + CASE
-	// 									WHEN
-	// 										n['ts_Risc_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND
-	// 										n['ts_Risc_' + i + '_time'] < datetime('2022-12-02T00:00:00Z')
-	// 										THEN [n['ts_Risc_' + i + '_time'], n['ts_Risc_' + i + '_value']]
-	// 									ELSE null
-	// 					END
-	// 	) AS time_series
-	// 	WITH time_series, [i IN range(0, size(time_series) - 1, 2) WHERE time_series[i+1] > 20 | time_series[i]] AS filteredProps
-	// 	WHERE size(filteredProps) > 0
-	// RETURN time_series
-	// 	`,
+	`MATCH (n)
+	 WHERE n.end >= datetime('2022-12-01T00:00:00Z') AND n.start <= datetime('2022-12-02T00:00:00Z')
+	 	WITH n, [prop IN keys(n) WHERE prop STARTS WITH 'ts_Risc_'] AS riscProps
+	 	WITH n, size(riscProps) / 2 AS ts_Risc_numbers
+	 	WITH n, range(0, ts_Risc_numbers - 1) AS indices
+	 	WITH REDUCE(acc = [], i IN indices |
+	 					acc + CASE
+	 									WHEN
+	 										n['ts_Risc_' + i + '_time'] >= datetime('2022-12-01T00:00:00Z') AND
+	 										n['ts_Risc_' + i + '_time'] < datetime('2022-12-02T00:00:00Z')
+	 										THEN [n['ts_Risc_' + i + '_time'], n['ts_Risc_' + i + '_value']]
+	 									ELSE null
+	 					END
+	 	) AS time_series
+	 	WITH time_series, [i IN range(0, size(time_series) - 1, 2) WHERE time_series[i+1] > 20 | time_series[i]] AS filteredProps
+	 	WHERE size(filteredProps) > 0
+	 RETURN time_series
+	 	`,
 
-	`MATCH (a)-[r1]->(b)-[r2]->(c)
-	    WHERE a.end >= datetime('` + X + `') AND a.start <= datetime('` + Y + `') AND
-					  r1.end >= datetime('` + X + `') AND r1.start <= datetime('` + Y + `') AND
-					  b.end >= datetime('` + X + `') AND b.start <= datetime('` + Y + `') AND
-						r2.end >= datetime('` + X + `') AND r2.start <= datetime('` + Y + `') AND
-					  c.end >= datetime('` + X + `') AND c.start <= datetime('` + Y + `') 
-	 RETURN b`,
+	//`MATCH (a)-[r1]->(b)-[r2]->(c)
+	//    WHERE a.end >= datetime('` + X + `') AND a.start <= datetime('` + Y + `') AND
+	//				  r1.end >= datetime('` + X + `') AND r1.start <= datetime('` + Y + `') AND
+	//				  b.end >= datetime('` + X + `') AND b.start <= datetime('` + Y + `') AND
+	//					r2.end >= datetime('` + X + `') AND r2.start <= datetime('` + Y + `') AND
+	//				  c.end >= datetime('` + X + `') AND c.start <= datetime('` + Y + `')
+	// RETURN c`,
 }
 
 var ttDBQueries []string = []string{
-	// "FROM " + X + " TO " + Y + " MATCH (n) WHERE n.nodeid = 0 RETURN n",                                            // 1
-	// "FROM " + X + " TO " + Y + " MATCH (n) WHERE n.nodeid = 0 RETURN n.ts_Risc",                                    // 2
-	// "FROM " + X + " TO " + Y + " MATCH (n) WHERE  n.nodeid = 0  RETURN n.ts_IP, n.ts_Risc, n.ts_Risc1, n.ts_Risc2", // 4
-	//"FROM " + X + " TO " + Y + " MATCH (a)-[r]->(b) RETURN b",                                                      // 7
-	// "FROM " + X + " TO " + Y + " MATCH (n) RETURN n.ts_Risc",                                  // 3
-	// "FROM " + X + " TO " + Y + " MATCH (n) RETURN n.ts_IP, n.ts_Risc, n.ts_Risc1, n.ts_Risc2", // 5
-	// "FROM " + X + " TO " + Y + " MATCH (n) WHERE any(n.ts_Risc) > 20 RETURN n.ts_Risc",        // 6
-	"FROM " + X + " TO " + Y + " MATCH (a)-[r1]->(b)-[r2]->(c) RETURN c", //
-
-	// this wont be possible because i need to check the temporality of all  elements
-	// so every element must be falling under a variable
-	// "FROM X TO Y MATCH (a)-[*2]->(b) WHERE ANY(b.ts_Risc > 20) RETURN b",
+	"FROM " + X + " TO " + Y + " MATCH (n) WHERE n.nodeid = 0 RETURN n",                                            // 1
+	"FROM " + X + " TO " + Y + " MATCH (n) WHERE n.nodeid = 0 RETURN n.ts_Risc",                                    // 2
+	"FROM " + X + " TO " + Y + " MATCH (n) WHERE  n.nodeid = 0  RETURN n.ts_IP, n.ts_Risc, n.ts_Risc1, n.ts_Risc2", // 4
+	"FROM " + X + " TO " + Y + " MATCH (a)-[r]->(b) RETURN b",                                                      // 7
+	"FROM " + X + " TO " + Y + " MATCH (n) RETURN n.ts_Risc",                                                       // 3
+	"FROM " + X + " TO " + Y + " MATCH (n) RETURN n.ts_IP, n.ts_Risc, n.ts_Risc1, n.ts_Risc2",                      // 5
+	"FROM " + X + " TO " + Y + " MATCH (n) WHERE any(n.ts_Risc) > 20 RETURN n.ts_Risc",                             // 6
 }
 
 var ttDBQueriesShallow []string = []string{
-	// "FROM " + X + " TO " + Y + " SHALLOW MATCH (n) WHERE n.nodeid = 0 RETURN n",                                          // 1
-	// "FROM " + X + " TO " + Y + " SHALLOW MATCH (n) WHERE n.nodeid = 0 RETURN n.ts_Risc",                                  // 2
-	// "FROM " + X + " TO " + Y + " SHALLOW MATCH (n) WHERE n.nodeid = 0 RETURN n.ts_IP, n.ts_Risc, n.ts_Risc1, n.ts_Risc2", // 4
-	//"FROM " + X + " TO " + Y + " SHALLOW MATCH (a)-[r]->(b) RETURN b",                                                    // 7
-	// "FROM " + X + " TO " + Y + " SHALLOW MATCH (n) RETURN n.ts_Risc",                                  // 3
-	// "FROM " + X + " TO " + Y + " SHALLOW MATCH (n) RETURN n.ts_IP, n.ts_Risc, n.ts_Risc1, n.ts_Risc2", // 5
-	// "FROM " + X + " TO " + Y + " SHALLOW MATCH (n) WHERE any(n.ts_Risc) > 20 RETURN n.ts_Risc",        // 6
-	"FROM " + X + " TO " + Y + " SHALLOW MATCH (a)-[r1]->(b)-[r2]->(c) RETURN c", //
-
-	// this wont be possible because i need to check the temporality of all  elements
-	// so every element must be falling under a variable
-	// "FROM X TO Y SHALLOW MATCH (a)-[*2]->(b) WHERE ANY(b.ts_Risc > 20) RETURN b",
+	"FROM " + X + " TO " + Y + " SHALLOW MATCH (n) WHERE n.nodeid = 0 RETURN n",                                          // 1
+	"FROM " + X + " TO " + Y + " SHALLOW MATCH (n) WHERE n.nodeid = 0 RETURN n.ts_Risc",                                  // 2
+	"FROM " + X + " TO " + Y + " SHALLOW MATCH (n) WHERE n.nodeid = 0 RETURN n.ts_IP, n.ts_Risc, n.ts_Risc1, n.ts_Risc2", // 4
+	"FROM " + X + " TO " + Y + " SHALLOW MATCH (a)-[r]->(b) RETURN b",                                                    // 7
+	"FROM " + X + " TO " + Y + " SHALLOW MATCH (n) RETURN n.ts_Risc",                                                     // 3
+	"FROM " + X + " TO " + Y + " SHALLOW MATCH (n) RETURN n.ts_IP, n.ts_Risc, n.ts_Risc1, n.ts_Risc2",                    // 5
+	"FROM " + X + " TO " + Y + " SHALLOW MATCH (n) WHERE any(n.ts_Risc) > 20 RETURN n.ts_Risc",                           // 6
 }

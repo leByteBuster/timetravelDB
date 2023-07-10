@@ -123,7 +123,7 @@ func executor(in string) {
 	case "Load Data Neo4j", "LDN", "ldn":
 		dataadapterneo4j.LoadData("")
 	case "Clear Data", "Clear DB", "CD", "cd", "Clear TTDB":
-		databaseapi.ClearTTDB()
+		databaseapi.ClearData()
 	case "Debug=1", "--debug=1", "-debug=1", "--debug=true", "-debug=true":
 		utils.DEBUG = true
 	case "Debug=0", "--debug=0", "-debug=0", "--debug=false", "-debug=false":

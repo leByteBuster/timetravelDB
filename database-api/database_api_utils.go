@@ -1,6 +1,6 @@
 package databaseapi
 
-func ClearTTDB() {
+func ClearData() {
 	ClearNeo4j()
 	ClearTimescale()
 }
