@@ -63,6 +63,8 @@ var adjacency_list []map[int]int
 
 var R = rand.New(rand.NewSource(time.Now().UnixNano()))
 
+// a unique 'template' string offers the ability to store multiple files with generated nodes.
+// if template string is empty existing graph_nodes.json and graph_edges.json are just overwritten
 func GenerateData(template string) {
 
 	templatePath := ""
@@ -98,7 +100,6 @@ func GenerateData(template string) {
 
 	utils.Debugf("Time Frame Generated Data: %+v", timePeriod)
 
-	// TODO: parse correctly
 	if graphTemplate.TimePeriod.From == "" || graphTemplate.TimePeriod.To == "" {
 		begin, err = time.Parse("2006-01-02 15:04:05.0000000 -0700 MST", "2023-01-01 00:00:00.0000000 +0000 UTC")
 		if err != nil {
@@ -133,16 +134,20 @@ func GenerateData(template string) {
 	}
 	for _, edgeGroup := range edgeTemplates {
 		var edges []map[string]any
+
+		// relations between nodes with same label ("intra relations")
 		if edgeGroup.From == edgeGroup.To {
 			for _, nodeGroup := range graphNodes {
 
-				// this is kind of unstable because we are only alloed single labels for the data generator
+				// this is kind of unstable because we are only allowed single labels for the data generator
 				labels := nodeGroup[0]["labels"].([]string)
 				if labels[0] == edgeGroup.From {
 					utils.Debugf("generate intra relations from %v to %v", edgeGroup.From, edgeGroup.To)
 					edges = generateIntraRelations(edgeGroup.Count, edgeGroup.Label, nodeGroup, edgeGroup.PropertyTemplate)
 				}
 			}
+
+			// relations between nodes with a different label ("inter relations")
 		} else {
 			fromGroups := make([][]map[string]interface{}, 0)
 			toGroups := make([][]map[string]interface{}, 0)
