@@ -111,26 +111,35 @@ func executor(in string) {
 	switch in {
 	case "hello":
 		fmt.Println("Hello, welcome to TTDB CLI !")
-	case "quit", "q", "exit", "Exit", "Quit", "EXIT":
+	case "quit", "q":
+		fmt.Println("Exit..")
 		handleExit() // note: cannot handle this with defer (probably goroutine race condition)
 		os.Exit(0)
-	case "help", "h", "-h", "--help":
+	case "help", "h":
 		fmt.Println(HelpString)
-	case "Generate Data", "GD", "gd":
+	case "generate", "g":
+		fmt.Println("Generating data defined by template..")
 		datagenerator.GenerateData("")
-	case "Load Data", "LD", "ld":
+	case "load", "l":
+		fmt.Println("Loading TTDB data..")
 		dataadapter.LoadData("")
-	case "Load Data Neo4j", "LDN", "ldn":
+	case "loadneo", "ln":
+		fmt.Println("Loading TTNeo4j data..")
 		dataadapterneo4j.LoadData("")
-	case "Clear Data", "Clear DB", "CD", "cd", "Clear TTDB":
+	case "clear", "c":
+		fmt.Println("Clear data..")
 		databaseapi.ClearData()
-	case "Debug=1", "--debug=1", "-debug=1", "--debug=true", "-debug=true":
+	case "debug=1", "debug=true":
+		fmt.Println("Activate debugging mode..")
 		utils.DEBUG = true
-	case "Debug=0", "--debug=0", "-debug=0", "--debug=false", "-debug=false":
+	case "debug=0", "debug=false":
+		fmt.Println("Deactivate debugging mode..")
 		utils.DEBUG = false
-	case "Benchmark Data", "GBD", "gbd":
+	case "genbdata", "bd":
+		fmt.Println("Generate benchmark data..")
 		benchmark.GenerateBenchmarkData()
-	case "Benchmark", "BM", "bm":
+	case "benchmark", "bm":
+		fmt.Println("Run benchmark..")
 		benchmark.RunBenchmark()
 	default:
 		runTTQLQuery(in)
