@@ -1,15 +1,30 @@
 package dataadapter
 
 import (
-	"context"
 	"fmt"
 	"log"
 
-	databaseapi "github.com/LexaTRex/timetravelDB/database-api"
 	"github.com/LexaTRex/timetravelDB/utils"
-	"github.com/google/uuid"
 )
 
+// NOTE: we do not add the nodeid or relationid. neo4j itself sets a these ids
+// starting from 0 with the first node added to the datatbase. This should
+// match the ids from the generated data.
+
+// NOTE:
+// this data loader stores the element id's as neo4j properties nodeid and relationid
+// since neo4j ids cannot be set manually
+
+// TODO: nodes should be able to contain a list of labels. so far they only are able to
+//			 include one label
+
+// TODO: use go routines to parallize data loading
+
+// template string allows the loading of generated files other
+// than graph_nodes.json and graph_edges.json in the form of
+// graph_nodes<template>.json. This way we can keep multiple
+// generated data files.
+// TODO: This is not the cleanest way. change this
 func LoadData(template string) {
 
 	var graph_nodes []map[string]interface{}
@@ -27,7 +42,6 @@ func LoadData(template string) {
 			return
 		}
 	} else {
-		// TODO: remove
 		fmt.Println("Load template: ", template)
 		graph_nodes, err = utils.LoadJsonData("data-generator/generated-data/graph_nodes" + template + ".json")
 		if err != nil {
@@ -40,30 +54,14 @@ func LoadData(template string) {
 		}
 	}
 
-	utils.Debugf("\n Number nodes: %v", len(graph_nodes))
-	utils.Debugf("\n Number edges: %v", len(graph_edges))
-
-	nodeQueries, timeSeriesNodes := getQueryStringsNodes(graph_nodes)
-	edgeQueries, timeSeriesEdges := getQueryStringsEdges(graph_edges)
-	utils.Debugf("\n edge time-series: %v", timeSeriesEdges)
-
-	databaseapi.WriteQueryMultipleNeo4j(context.Background(), nodeQueries, map[string]interface{}{})
-	databaseapi.WriteQueryMultipleNeo4j(context.Background(), edgeQueries, map[string]interface{}{})
-
-	utils.Debugf("\n node Queries: %v", nodeQueries)
-	utils.Debugf("\n edge Queries: %v", edgeQueries)
-	utils.Debugf("\n node time-series: %v", timeSeriesNodes)
-	utils.Debugf("\n Number time-series map nodes: %v", len(timeSeriesNodes))
-	utils.Debugf("\n Number time-series map edges: %v", len(timeSeriesEdges))
-
-	timeSeries := map[uuid.UUID][]map[string]interface{}{}
-
-	for k, v := range timeSeriesNodes {
-		timeSeries[k] = v
+	// TODO: maybe split preparing data and loading into 2 functions
+	// prepare and format data from templates to load in neo4j, load to neo4j database
+	// timeSeriesMap holds all time series data which was extracted in the process
+	timeSeriesMap, err := loadDataNeo4j(graph_nodes, graph_edges)
+	if err != nil {
+		log.Printf("Error loading Neo4j data: %v", err)
+		return
 	}
-	for k, v := range timeSeriesEdges {
-		timeSeries[k] = v
-	}
-
-	loadDataTimeScaleDB(timeSeries)
+	// load time series data to TimescaleDB database
+	loadDataTimeScaleDB(timeSeriesMap)
 }
