@@ -25,6 +25,23 @@ type FileLoadResult struct {
 // generated data files. pass empty string to use generated default files
 func LoadData(template string) {
 
+	nodes, edges, err := loadDataFromJson(template)
+	if err != nil {
+		log.Printf("Error loading json: %v", err)
+		return
+	}
+
+	err = loadIntoDatabase(nodes, edges)
+
+	if err != nil {
+		log.Printf("Error loading json: %v", err)
+		return
+	}
+
+}
+
+func loadDataFromJson(template string) ([]map[string]interface{}, []map[string]interface{}, error) {
+
 	var graphNodesResult FileLoadResult
 	var graphEdgesResult FileLoadResult
 
@@ -50,24 +67,30 @@ func LoadData(template string) {
 	graphEdgesResult = <-edgesChan
 
 	if graphNodesResult.err != nil {
-		log.Printf("Error loading nodes from json: %v", graphNodesResult.err)
+		return nil, nil, fmt.Errorf("Error loading nodes from json: %v", graphNodesResult.err)
 	}
 
 	if graphEdgesResult.err != nil {
-		log.Printf("Error loading edges from json: %v", graphEdgesResult.err)
-		return
+		return nil, nil, fmt.Errorf("Error loading edges from json: %v", graphEdgesResult.err)
 	}
 
-	// TODO: maybe split preparing data and loading into 2 functions
-	// prepare and format data from templates to load in neo4j, load to neo4j database
-	// timeSeriesMap holds all time series data which was extracted in the process
-	timeSeriesMap, err := loadDataNeo4j(graphNodesResult.data, graphEdgesResult.data)
+	return graphNodesResult.data, graphEdgesResult.data, nil
+}
+
+func loadIntoDatabase(nodes, edges []map[string]interface{}) error {
+
+	// TODO: if time series entries would be a stream i could start goroutines here to load time series into
+	//       timescaleDB
+
+	// load graph elements to neo4j database timeSeriesMap holds all time series data which was extracted in the process
+	timeSeriesMap, err := loadDataNeo4j(nodes, edges)
 	if err != nil {
-		log.Printf("Error loading Neo4j data: %v", err)
-		return
+		return fmt.Errorf("Error loading Neo4j data: %v", err)
 	}
 	// load time series data to TimescaleDB database
 	loadDataTimeScaleDB(timeSeriesMap)
+
+	return nil
 }
 
 func loadJsonFileAsync(filePath string, resultChan chan<- FileLoadResult) {
