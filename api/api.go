@@ -19,6 +19,8 @@ import (
 	"github.com/c-bata/go-prompt"
 )
 
+// TODO: help string an commands anpassen
+
 var NeoErr error
 var TsErr error
 var ConfigErr error
