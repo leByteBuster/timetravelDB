@@ -6,11 +6,40 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 
 	databaseapi "github.com/LexaTRex/timetravelDB/database-api"
 	"github.com/LexaTRex/timetravelDB/utils"
 	"github.com/google/uuid"
 )
+
+// TODO: make all structs private
+
+// Define a new type for timeSeriesMap
+type TimeSeriesMap struct {
+	data  map[uuid.UUID][]map[string]interface{}
+	mutex sync.Mutex
+}
+
+func (tsm *TimeSeriesMap) Set(key uuid.UUID, value []map[string]interface{}) {
+	tsm.mutex.Lock()
+	tsm.data[key] = value
+	tsm.mutex.Unlock()
+}
+
+func NewTimeSeriesMap() *TimeSeriesMap {
+	return &TimeSeriesMap{data: map[uuid.UUID][]map[string]interface{}{}}
+}
+
+type NodesResult struct {
+	nodeData []RelevantNodeData
+	err      error
+}
+
+type EdgesResult struct {
+	edgeData []RelevantEdgeData
+	err      error
+}
 
 type RelevantEdgeData struct {
 	RelevantNodeData
@@ -26,7 +55,7 @@ type RelevantNodeData struct {
 }
 
 // extracts all relevant data from nodes
-func retrieveDataFromNodes(graph_nodes []map[string]interface{}, timeSeriesMap map[uuid.UUID][]map[string]interface{}) ([]RelevantNodeData, error) {
+func retrieveDataFromNodes(graph_nodes []map[string]interface{}, timeSeriesMap *TimeSeriesMap, nodesChan chan<- NodesResult) {
 
 	var allNodesData []RelevantNodeData
 	allNodesData = []RelevantNodeData{}
@@ -36,10 +65,11 @@ func retrieveDataFromNodes(graph_nodes []map[string]interface{}, timeSeriesMap m
 
 		// TODO: make this a goroutine
 
-		nodeData, err := retrieveDataFromNode(node, timeSeriesMap)
+		nodeData, err := retrieveDataFromNode(node)
 
 		if err != nil {
-			return nil, err
+			nodesChan <- NodesResult{nodeData: nil, err: err}
+			return
 		}
 
 		// TODO: is this really necessary ? why do we not just pass egde.properties to generateFlatproperties ?
@@ -64,11 +94,11 @@ func retrieveDataFromNodes(graph_nodes []map[string]interface{}, timeSeriesMap m
 		allNodesData = append(allNodesData, nodeData)
 
 	}
-	return allNodesData, nil
+	nodesChan <- NodesResult{nodeData: allNodesData, err: nil}
 }
 
 // extracts all relevant data from edges
-func retrieveDataFromEdges(graph_edges []map[string]interface{}, timeSeriesMap map[uuid.UUID][]map[string]interface{}) ([]RelevantEdgeData, error) {
+func retrieveDataFromEdges(graph_edges []map[string]interface{}, timeSeriesMap *TimeSeriesMap, edgesChan chan<- EdgesResult) {
 
 	var allEdgesData []RelevantEdgeData
 	allEdgesData = []RelevantEdgeData{}
@@ -78,10 +108,11 @@ func retrieveDataFromEdges(graph_edges []map[string]interface{}, timeSeriesMap m
 
 		// TODO: make this a goroutine
 
-		edgeData, err := retrieveDataFromEdge(edge, timeSeriesMap)
+		edgeData, err := retrieveDataFromEdge(edge)
 
 		if err != nil {
-			return nil, err
+			edgesChan <- EdgesResult{edgeData: nil, err: err}
+			return
 		}
 
 		// delete the retrieved fields to ease the recursive traversing of the edge
@@ -109,7 +140,7 @@ func retrieveDataFromEdges(graph_edges []map[string]interface{}, timeSeriesMap m
 		allEdgesData = append(allEdgesData, edgeData)
 
 	}
-	return allEdgesData, nil
+	edgesChan <- EdgesResult{edgeData: allEdgesData, err: nil}
 }
 
 func buildEdgeQueries(allEdgesData []RelevantEdgeData) []string {
@@ -175,7 +206,7 @@ func buildNodeQueries(allNodesData []RelevantNodeData) []string {
 }
 
 // read out all the relevant fields of an edge beside the properties
-func retrieveDataFromEdge(edge map[string]interface{}, timeSeriesMap map[uuid.UUID][]map[string]interface{}) (RelevantEdgeData, error) {
+func retrieveDataFromEdge(edge map[string]interface{}) (RelevantEdgeData, error) {
 
 	var relevantData RelevantEdgeData
 
@@ -220,7 +251,7 @@ func retrieveDataFromEdge(edge map[string]interface{}, timeSeriesMap map[uuid.UU
 }
 
 // read out all the relevant fields of an edge beside the properties
-func retrieveDataFromNode(node map[string]interface{}, timeSeriesMap map[uuid.UUID][]map[string]interface{}) (RelevantNodeData, error) {
+func retrieveDataFromNode(node map[string]interface{}) (RelevantNodeData, error) {
 
 	fmt.Println("Complete node: ", node)
 
@@ -264,7 +295,7 @@ func retrieveDataFromNode(node map[string]interface{}, timeSeriesMap map[uuid.UU
 // val". px depeds on the depth of the nesting of properties. val is either a single value for indefinite properties or a
 // uuid for time series properties.  in case of a time series the time series is stored within the timeSeriesMap with the
 // uuid as key.
-func generateFlatProperties(fields map[string]interface{}, timeSeriesMap map[uuid.UUID][]map[string]interface{}) ([]string, error) {
+func generateFlatProperties(fields map[string]interface{}, timeSeriesMap *TimeSeriesMap) ([]string, error) {
 
 	// TODO: think about making this a [][]string, just collecting all the single property labels from each stage in an
 	// array and putting them together after. could be cleaner. BUT consider that also the uuid must be stored. just
@@ -302,7 +333,7 @@ func generateFlatProperties(fields map[string]interface{}, timeSeriesMap map[uui
 			valueFragmentUuid := key + `: "` + id.String() + `", `
 			queryPropertyFragments = append(queryPropertyFragments, valueFragmentUuid)
 
-			timeSeriesMap[id] = timeSeries
+			timeSeriesMap.Set(id, timeSeries)
 
 		// if value is a string its a simple vaue of an indefinite property..
 		case string:
@@ -326,28 +357,36 @@ func generateFlatProperties(fields map[string]interface{}, timeSeriesMap map[uui
 }
 
 func loadDataNeo4j(graphNodes, graphEdges []map[string]interface{}) (map[uuid.UUID][]map[string]interface{}, error) {
+
 	utils.Debugf("\n Number nodes: %v", len(graphNodes))
 	utils.Debugf("\n Number edges: %v", len(graphEdges))
 
-	timeSeriesMap := map[uuid.UUID][]map[string]interface{}{}
+	timeSeriesMap := NewTimeSeriesMap()
 
-	relevantNodeData, err := retrieveDataFromNodes(graphNodes, timeSeriesMap)
-	if err != nil {
-		return nil, fmt.Errorf("Error retrieving data from nodes: %v", err)
+	nodesChan := make(chan NodesResult)
+	edgesChan := make(chan EdgesResult)
+
+	go retrieveDataFromNodes(graphNodes, timeSeriesMap, nodesChan)
+	go retrieveDataFromEdges(graphEdges, timeSeriesMap, edgesChan)
+
+	nodesResult := <-nodesChan
+	edgesResult := <-edgesChan
+
+	if nodesResult.err != nil {
+		return nil, fmt.Errorf("Error retrieving data from nodes: %v", nodesResult.err)
 	}
-	relevantEdgeData, err := retrieveDataFromEdges(graphEdges, timeSeriesMap)
-	if err != nil {
-		return nil, fmt.Errorf("Error retrieving data from edges: %v", err)
+	if edgesResult.err != nil {
+		return nil, fmt.Errorf("Error retrieving data from edges: %v", edgesResult.err)
 	}
 
-	utils.Debugf("\n Relevant Node Data: %v", relevantNodeData)
-	utils.Debugf("\n Relevant Edge Data: %v", relevantEdgeData)
+	utils.Debugf("\n Relevant Node Data: %v", nodesResult.nodeData)
+	utils.Debugf("\n Relevant Edge Data: %v", edgesResult.edgeData)
 
 	utils.Debugf("\n time-series: %v", timeSeriesMap)
-	utils.Debugf("\n Number time-series entries: %v", len(timeSeriesMap))
+	utils.Debugf("\n Number time-series entries: %v", len(timeSeriesMap.data))
 
-	nodeQueries := buildNodeQueries(relevantNodeData)
-	edgeQueries := buildEdgeQueries(relevantEdgeData)
+	nodeQueries := buildNodeQueries(nodesResult.nodeData)
+	edgeQueries := buildEdgeQueries(edgesResult.edgeData)
 
 	databaseapi.WriteQueryMultipleNeo4j(context.Background(), nodeQueries, map[string]interface{}{})
 	databaseapi.WriteQueryMultipleNeo4j(context.Background(), edgeQueries, map[string]interface{}{})
@@ -355,5 +394,5 @@ func loadDataNeo4j(graphNodes, graphEdges []map[string]interface{}) (map[uuid.UU
 	utils.Debugf("\n node Queries: %v", nodeQueries)
 	utils.Debugf("\n edge Queries: %v", edgeQueries)
 
-	return timeSeriesMap, nil
+	return timeSeriesMap.data, nil
 }
