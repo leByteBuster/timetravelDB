@@ -35,9 +35,6 @@ func LoadConfig() (Neo4jConfig, TimescaleConfig, error) {
 
 	err = yaml.Unmarshal(b, &config)
 	if err != nil {
-		panic(err)
-	} // err = yaml.Unmarshal(b, &config)
-	if err != nil {
 		return Neo4jConfig{}, TimescaleConfig{}, err
 	}
 
