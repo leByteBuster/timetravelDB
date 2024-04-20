@@ -31,6 +31,16 @@ func NewTimeSeriesMap() *TimeSeriesMap {
 	return &TimeSeriesMap{data: map[uuid.UUID][]map[string]interface{}{}}
 }
 
+type EdgeResult struct {
+	nodeData RelevantNodeData
+	err      error
+}
+
+type NodeResult struct {
+	nodeData RelevantNodeData
+	err      error
+}
+
 type NodesResult struct {
 	nodeData []RelevantNodeData
 	err      error
@@ -65,10 +75,14 @@ func retrieveDataFromNodes(graph_nodes []map[string]interface{}, timeSeriesMap *
 
 		// TODO: make this a goroutine
 
-		nodeData, err := retrieveDataFromNode(node)
+		nodeChan := make(chan NodeResult)
 
-		if err != nil {
-			nodesChan <- NodesResult{nodeData: nil, err: err}
+		go retrieveDataFromNode(node, nodeChan)
+
+		nodeResult := <-nodeChan
+
+		if nodeResult.err != nil {
+			nodesChan <- NodesResult{nodeData: nil, err: nodeResult.err}
 			return
 		}
 
@@ -88,10 +102,14 @@ func retrieveDataFromNodes(graph_nodes []map[string]interface{}, timeSeriesMap *
 
 		// generate flat property strings 'property: value'
 		flatPropertyStrings, err := generateFlatProperties(node, timeSeriesMap)
+		if err != nil {
+			nodesChan <- NodesResult{nodeData: nil, err: err}
+			return
+		}
 
-		nodeData.FlatProperties = flatPropertyStrings
+		nodeResult.nodeData.FlatProperties = flatPropertyStrings
 
-		allNodesData = append(allNodesData, nodeData)
+		allNodesData = append(allNodesData, nodeResult.nodeData)
 
 	}
 	nodesChan <- NodesResult{nodeData: allNodesData, err: nil}
@@ -251,7 +269,7 @@ func retrieveDataFromEdge(edge map[string]interface{}) (RelevantEdgeData, error)
 }
 
 // read out all the relevant fields of an edge beside the properties
-func retrieveDataFromNode(node map[string]interface{}) (RelevantNodeData, error) {
+func retrieveDataFromNode(node map[string]interface{}, nodeChan chan<- NodeResult) {
 
 	fmt.Println("Complete node: ", node)
 
@@ -260,25 +278,28 @@ func retrieveDataFromNode(node map[string]interface{}) (RelevantNodeData, error)
 	// temporality
 	startStr, ok := node["start"].(string)
 	if !ok {
-		return RelevantNodeData{}, errors.New("Data corruption, start time of node must be string")
+		nodeChan <- NodeResult{RelevantNodeData{}, errors.New("Data corruption, start time of node must be string")}
+		return
 	}
 	relevantData.Start = startStr
 
 	endStr, ok := node["end"].(string)
 	if !ok {
-		return RelevantNodeData{}, errors.New("Data corruption, end time of node must be string")
+		nodeChan <- NodeResult{RelevantNodeData{}, errors.New("Data corruption, end time of node must be string")}
+		return
 	}
 	relevantData.End = endStr
 
 	labels, ok := node["labels"].([]interface{})
 	if !ok {
-		return RelevantNodeData{}, errors.New("Data corruption, labels of node must be array")
+		nodeChan <- NodeResult{RelevantNodeData{}, errors.New("Data corruption, labels of node must be array")}
 	}
 	// NOTE: right now this is an array and we only read the first one
 	// TODO: multiple labels should be possible
 	labelStr, ok := labels[0].(string)
 	if !ok {
-		return RelevantNodeData{}, errors.New("Data corruption, labelStr must be a string")
+		nodeChan <- NodeResult{RelevantNodeData{}, errors.New("Data corruption, labelStr must be a string")}
+		return
 	}
 
 	relevantData.Start = startStr
@@ -287,7 +308,7 @@ func retrieveDataFromNode(node map[string]interface{}) (RelevantNodeData, error)
 
 	utils.Debugf("\n Single Node Data inner: %v", relevantData)
 
-	return relevantData, nil
+	nodeChan <- NodeResult{relevantData, nil}
 }
 
 // This functions loops through the fields of a generated json graph element and creates flattened property strings while
