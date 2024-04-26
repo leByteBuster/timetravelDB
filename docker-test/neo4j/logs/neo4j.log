@@ -2051,4 +2051,12 @@ Caused by: java.lang.RuntimeException: Transaction logs are missing and recovery
 2023-06-22 23:23:00.741+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and needs to be restarted. Please see database logs for more details., reference 600aafd5-bffb-48e7-9cc9-a95647ef6df4.
 2023-06-22 23:23:01.446+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and needs to be restarted. Please see database logs for more details., reference 57f439dd-c142-4035-a0e5-dda1dece68e5.
 2023-06-22 23:23:02.037+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and needs to be restarted. Please see database logs for more details., reference 79a8bc51-5f6d-475c-a6af-83de59386561.
-2023-06-22 23:23:02.695+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and n
+2023-06-22 23:23:02.695+0000 ERROR Client triggered an unexpected error [Neo.DatabaseError.Statement.ExecutionFailed]: The database has encountered a critical error, and n2024-04-26 17:20:04.486+0000 INFO  Starting...
+2024-04-26 17:20:05.353+0000 INFO  This instance is ServerId{416b4778} (416b4778-f6c5-4991-a5f5-52bab757bf12)
+2024-04-26 17:20:06.829+0000 INFO  ======== Neo4j 5.2.0 ========
+2024-04-26 17:20:10.080+0000 INFO  Bolt enabled on 0.0.0.0:7687.
+2024-04-26 17:20:11.542+0000 INFO  Remote interface available at http://localhost:7474/
+2024-04-26 17:20:11.548+0000 INFO  id: 71529F2E85011D2F639C505F52D307EFEEFA9A2DD11C1DE610032BDA31B9C5D5
+2024-04-26 17:20:11.548+0000 INFO  name: system
+2024-04-26 17:20:11.548+0000 INFO  creationDate: 2024-04-26T17:20:07.78Z
+2024-04-26 17:20:11.549+0000 INFO  Started.

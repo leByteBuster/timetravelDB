@@ -34,10 +34,15 @@ func ConnectNeo4j() (neo4j.DriverWithContext, error) {
 	if err != nil {
 		return nil, err
 	}
+	err = driver.VerifyConnectivity(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	return driver, nil
-
 }
 
+// TODO:
+// -[] create new session for each batch. but only one driver for application
 func SessionNeo4j(ctx context.Context, driver neo4j.DriverWithContext) neo4j.SessionWithContext {
 	sessionNeo := driver.NewSession(ctx, neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite})
 	return sessionNeo
@@ -61,6 +66,11 @@ func ReadQueryNeo4j(query string) (neo4j.ResultWithContext, error) {
 func WriteQueryNeo4j(ctx context.Context, query string, params map[string]interface{}) {
 	res, err := SessionNeo.Run(ctx, query, params)
 
+	// What to use ??
+	// neo4j.ExecuteQuery[]
+	// SessionNeo.Run()
+	// SessionNeo.ExecuteWrite
+
 	utils.Debugf("Neo4j write query: %v", query)
 	utils.Debugf("res: %v", res)
 
@@ -70,6 +80,20 @@ func WriteQueryNeo4j(ctx context.Context, query string, params map[string]interf
 	}
 }
 
+// TODO: implement this query function
+//   - [] batchAmount is the number of queries collected before we write
+//   - [] somehow there should be a timeout we write the latest so we dont get stuck in case we stay below the batchAmount
+//   - []
+func BatchWriteQueryNeo4j(ctx context.Context, query string, params map[string]interface{}, batchAmount int) {
+}
+
+// TODO:
+//   - [] implement this query
+func AsyncWriteQueryNeo4j(ctx context.Context, query string, params map[string]interface{}) {
+}
+
+// NOTE :
+// - this is bad style if i have multiple queries either write them batch style or concurrently
 func WriteQueryMultipleNeo4j(ctx context.Context, queries []string, params map[string]interface{}) {
 	for _, query := range queries {
 		WriteQueryNeo4j(ctx, query, params)

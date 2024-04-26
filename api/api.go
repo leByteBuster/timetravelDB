@@ -76,6 +76,8 @@ func Api() {
 	// connect to Neo4j database
 
 	databaseapi.DriverNeo, NeoErr = databaseapi.ConnectNeo4j()
+
+	// session should be created per query / batch of queries
 	if NeoErr != nil {
 		log.Fatalf("creating neo4j connection failed: %v", NeoErr)
 	} else {
